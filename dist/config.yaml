@@ -1,0 +1,37 @@
+# ===================================================================
+# Project Configuration File (config.yaml)
+# ===================================================================
+# Instructions:
+# - This file now has sections for both Arduino Cloud accounts.
+# - Fill in the credentials for both Account A and Account B.
+# - If you only want to run one account for testing, you can
+#   set the "enabled" flag for the other account to false.
+
+# --- Mosquitto Server Configuration ---
+# The full path to the mosquitto executable.
+# Use double backslashes (\\) for paths on Windows.
+mosquitto_path: "C:\\Program Files\\mosquitto\\mosquitto.exe"
+
+# The full path to the mosquitto configuration file.
+mosquitto_config_path: "C:\\Program Files\\mosquitto\\mosquitto.conf"
+
+# --- Arduino Cloud Credentials (Account A: Ambiance & Environment) ---
+account_a:
+  enabled: true
+  device_id: "a5ae4bba-2de1-4550-a15a-ee4d37d8a75b"
+  secret_key: "?bWig6rFqOJquyU@IgClVQeNL"
+  # Variables for this account:
+  # - classroom_lights
+  # - classroom_curtain
+  # - classroom_motion
+  # - classroom_temperature
+  # - kettle
+
+# --- Arduino Cloud Credentials (Account B: Security & Access) ---
+account_b:
+  enabled: false
+  device_id: "PASTE_ACCOUNT_B_DEVICE_ID_HERE"
+  secret_key: "PASTE_ACCOUNT_B_SECRET_KEY_HERE"
+  # Variables for this account:
+  # - door_sensor (Contact Sensor)
+  # - door_lock (Smart Plug)
