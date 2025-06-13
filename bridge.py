@@ -1,11 +1,9 @@
 # ====================================================================
 #  McMaster Engineering Summer Camp - Smart Classroom IoT Hub
-#  PRODUCTION VERSION 6.0 - FINAL ROBUST VERSION
+#  PRODUCTION VERSION 7.0 - DYNAMIC & CONFIG-DRIVEN
 #
-#  This script is designed for maximum stability. It assumes
-#  the Mosquitto server is running as a background service and will
-#  continuously try to connect to it, making it resilient to
-#  server restarts or crashes.
+#  This script is now a generic engine. All logic for variable
+#  mapping and message routing is loaded from config.yaml at runtime.
 # ====================================================================
 
 import paho.mqtt.client as mqtt
@@ -16,20 +14,16 @@ import logging
 import yaml
 import threading
 import sys
+from datetime import datetime
 
-# --- 1. LOGGING SETUP ---
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(threadName)s - %(message)s'
-)
-
-# --- 2. GLOBAL CLIENT VARIABLES ---
+# --- 1. LOGGING & GLOBAL SETUP ---
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(threadName)s - %(message)s')
 local_client = None
-cloud_client_A = None
-cloud_client_B = None
+cloud_clients = {}  # Dictionary to hold all cloud clients
+mqtt_to_cloud_map = {}  # Our dynamic routing table
 
 
-# --- 3. CLOUD CLIENT WORKER THREAD ---
+# --- 2. DYNAMIC CALLBACK & WORKER CLASSES ---
 class CloudWorker(threading.Thread):
     """A self-healing thread to manage a connection to the Arduino Cloud."""
 
@@ -45,158 +39,174 @@ class CloudWorker(threading.Thread):
                 logging.info(f"Starting connection loop...")
                 self.client.start()
             except Exception as e:
-                logging.error(f"Connection loop for {self.name} crashed: {e}")
-                logging.info(f"Attempting to reconnect {self.name} in 15 seconds...")
+                logging.error(f"Connection loop crashed: {e}")
                 time.sleep(15)
 
 
-# --- 4. MQTT CALLBACKS ---
+def generic_on_write_callback(client, value, variable_config):
+    """A generic callback factory for all actuator variables."""
+    cloud_var_name = variable_config['name']
+    local_topic = variable_config['topic']
+    var_type = variable_config['type']
 
-# === Callbacks for commands FROM Arduino Cloud ===
-def on_curtain_write(client, value):
-    if local_client and local_client.is_connected():
-        local_client.publish("classroom/curtain/command", "OPEN" if value else "CLOSE")
+    logging.info(f"Cloud command received for '{cloud_var_name}': {value}")
 
-
-def on_kettle_write(client, value):
-    if local_client and local_client.is_connected():
-        local_client.publish("classroom/appliance/command", "ON" if value else "OFF")
-
-
-def on_lights_write(client, value):
-    try:
-        if local_client and local_client.is_connected():
+    # Format payload based on variable type
+    payload = ""
+    if var_type == "Boolean":
+        payload = "ON" if value else "OFF"
+        if "lock" in cloud_var_name: payload = "LOCK" if value else "UNLOCK"
+    elif var_type == "Color":
+        try:
             cmd = f"SWITCH={'ON' if value['switch'] else 'OFF'},BRIGHTNESS={value.get('brightness', 100)},R={value['color']['r']},G={value['color']['g']},B={value['color']['b']}"
-            local_client.publish("classroom/lighting/command", cmd)
-    except Exception:
-        logging.error("Error parsing 'light' command from cloud.", exc_info=True)
+            payload = cmd
+        except Exception:
+            logging.error("Error parsing color command", exc_info=True)
+    else:  # Default to sending the raw value
+        payload = str(value)
 
-
-def on_door_lock_write(client, value):
     if local_client and local_client.is_connected():
-        local_client.publish("classroom/door/command", "LOCK" if value else "UNLOCK")
+        command_topic = f"{local_topic}/command"
+        local_client.publish(command_topic, payload)
 
 
-# === Callbacks for messages FROM local student devices ===
+# --- 3. LOCAL MQTT CLIENT SETUP ---
 def on_connect_local(client, userdata, flags, rc, properties=None):
     if rc == 0:
         logging.info("Connection to Local Mosquitto Service SUCCEEDED.")
-        client.subscribe("classroom/+/status")
-        client.subscribe("classroom/+/data")
+        # Dynamically subscribe to all topics defined in the config
+        for topic in mqtt_to_cloud_map.keys():
+            logging.info(f"Subscribing to local topic: {topic}")
+            client.subscribe(topic)
     else:
         logging.error(f"Failed to connect to local Mosquitto service, return code {rc}")
 
 
 def on_message_local(client, userdata, msg):
+    """Handles messages from student devices and routes them to the cloud."""
     try:
         payload = msg.payload.decode()
         logging.info(f"Local message received: Topic: {msg.topic}, Payload: {payload}")
 
-        # Route message to the correct cloud account client
-        if msg.topic == "classroom/environment/data":
-            parts = {p.split(':')[0].strip(): p.split(':')[1].strip() for p in payload.split(',')}
-            if "temp" in parts and cloud_client_A:
-                cloud_client_A["classroom_temperature"] = float(parts["temp"])
-            if "motion" in parts and cloud_client_A:
-                cloud_client_A["classroom_motion"] = (parts["motion"].lower() == 'true')
+        # Look up the routing rule in our map
+        if msg.topic in mqtt_to_cloud_map:
+            rules = mqtt_to_cloud_map[msg.topic]
+            for rule in rules:
+                try:
+                    cloud_client = cloud_clients[rule['account']]
+                    cloud_var_name = rule['name']
+                    key = rule.get('key_in_payload')
+                    var_type = rule['type']
 
-        elif msg.topic == "classroom/curtain/status" and cloud_client_A:
-            cloud_client_A["classroom_curtain"] = (payload.upper() == "OPEN")
+                    value_to_send = None
+                    if key:  # Payload is structured, e.g., "temp:25,motion:true"
+                        parts = {p.split(':')[0].strip(): p.split(':')[1].strip() for p in payload.split(',')}
+                        if key in parts:
+                            raw_value = parts[key]
+                            if var_type == "Boolean":
+                                value_to_send = (raw_value.lower() == 'true')
+                            elif var_type == "Float":
+                                value_to_send = float(raw_value)
+                            elif var_type == "Integer":
+                                value_to_send = int(raw_value)
+                            else:
+                                value_to_send = raw_value
+                    else:  # Payload is a simple value, e.g., "OPEN"
+                        if var_type == "Boolean":
+                            value_to_send = (payload.upper() in ["ON", "OPEN", "LOCKED"])
+                        else:
+                            value_to_send = payload
 
-        elif msg.topic == "classroom/appliance/status" and cloud_client_A:
-            cloud_client_A["kettle"] = (payload.upper() == "ON")
+                    if value_to_send is not None:
+                        logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}'")
+                        cloud_client[cloud_var_name] = value_to_send
 
-        elif msg.topic == "classroom/door/status":
-            door_open_str, lock_str = payload.split(',')
-            if cloud_client_B:
-                cloud_client_B["door_sensor"] = (door_open_str.upper() == "OPEN")
-                cloud_client_B["door_lock"] = (lock_str.upper() == "LOCKED")
+                except Exception:
+                    logging.error(f"Error processing rule for {msg.topic}", exc_info=True)
+
+        # --- Handle Special Kiosk Requests ---
+        elif msg.topic == "classroom/kiosk/request":
+            if payload == "CURRENT_TIME":
+                now = datetime.now().strftime("%I:%M %p")  # e.g., "02:30 PM"
+                cloud_clients['account_b']['kiosk_display_line1'] = "Current Time"
+                cloud_clients['account_b']['kiosk_display_line2'] = now
+            # Add logic for other kiosk requests here...
 
     except Exception:
-        logging.error(f"Error processing local message from topic '{msg.topic}'", exc_info=True)
+        logging.error(f"Error processing main local message from topic '{msg.topic}'", exc_info=True)
 
 
-# --- 5. MAIN EXECUTION BLOCK ---
+# --- 4. MAIN EXECUTION BLOCK ---
 if __name__ == "__main__":
-    logging.info("========================================")
-    logging.info("  McMaster Smart Classroom Hub Starting ")
-    logging.info("========================================")
+    logging.info("=====================================================")
+    logging.info("  McMaster Smart Classroom Hub (Dynamic) Starting  ")
+    logging.info("=====================================================")
 
     try:
-        with open("config.yaml", 'r') as f:
+        with open("dist/config.yaml", 'r') as f:
             config = yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error("FATAL: config.yaml not found! Please create it next to the application. Exiting.")
-        time.sleep(10)
+        logging.error("FATAL: config.yaml not found! Exiting.")
+        time.sleep(10);
         sys.exit(1)
 
-    # --- Setup Account A ---
-    if config.get('account_a', {}).get('enabled', False):
-        try:
-            acc_a_config = config['account_a']
-            cloud_client_A = ArduinoCloudClient(
-                device_id=acc_a_config['device_id'],
-                username=acc_a_config['device_id'],
-                password=bytes(acc_a_config['secret_key'], 'utf-8')
-            )
-            cloud_client_A.register("classroom_lights", on_write=on_lights_write)
-            cloud_client_A.register("classroom_curtain", on_write=on_curtain_write)
-            cloud_client_A.register("kettle", on_write=on_kettle_write)
-            cloud_client_A.register("classroom_temperature")
-            cloud_client_A.register("classroom_motion")
-            CloudWorker("Account A", cloud_client_A).start()
-        except Exception:
-            logging.error("Failed to initialize Account A client.", exc_info=True)
+    # --- Dynamically Setup Cloud Clients from Config ---
+    for acc_name, acc_config in config.items():
+        if isinstance(acc_config, dict) and acc_config.get('enabled', False):
+            try:
+                logging.info(f"Initializing cloud client for '{acc_name}'...")
+                client = ArduinoCloudClient(
+                    device_id=acc_config['device_id'],
+                    username=acc_config['device_id'],
+                    password=bytes(acc_config['secret_key'], 'utf-8')
+                )
 
-    # --- Setup Account B ---
-    if config.get('account_b', {}).get('enabled', False):
-        try:
-            acc_b_config = config['account_b']
-            cloud_client_B = ArduinoCloudClient(
-                device_id=acc_b_config['device_id'],
-                username=acc_b_config['device_id'],
-                password=bytes(acc_b_config['secret_key'], 'utf-8')
-            )
-            cloud_client_B.register("door_lock", on_write=on_door_lock_write)
-            cloud_client_B.register("door_sensor")
-            CloudWorker("Account B", cloud_client_B).start()
-        except Exception:
-            logging.error("Failed to initialize Account B client.", exc_info=True)
+                for var_config in acc_config.get('variables', []):
+                    # Register the variable
+                    var_name = var_config['name']
+                    direction = var_config['direction']
 
-    # --- Setup Local Client with a ROBUST, RECONNECTING loop ---
+                    if direction in ["FROM_CLOUD", "BIDIRECTIONAL"]:
+                        # Create a callback with the specific variable config
+                        callback = lambda c, v, vc=var_config: generic_on_write_callback(c, v, vc)
+                        client.register(var_name, on_write=callback)
+                    else:
+                        client.register(var_name)
+
+                    # Build the MQTT routing map
+                    if direction in ["TO_CLOUD", "BIDIRECTIONAL"]:
+                        topic = var_config['topic']
+                        # For BIDIRECTIONAL, the status topic is topic + "/status"
+                        if direction == "BIDIRECTIONAL": topic += "/status"
+
+                        if topic not in mqtt_to_cloud_map: mqtt_to_cloud_map[topic] = []
+                        rule = var_config.copy()
+                        rule['account'] = acc_name
+                        mqtt_to_cloud_map[topic].append(rule)
+
+                cloud_clients[acc_name] = client
+                CloudWorker(acc_name, client).start()
+            except Exception:
+                logging.error(f"Failed to initialize {acc_name} client.", exc_info=True)
+
+    # --- Setup and connect the Local Client ---
     local_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="SmartClassroomHub")
     local_client.on_connect = on_connect_local
     local_client.on_message = on_message_local
 
-    # This loop ensures the main thread keeps trying to connect to Mosquitto
-    while not local_client.is_connected():
+    while True:
         try:
-            logging.info("Attempting to connect to local Mosquitto service...")
-            local_client.connect("localhost", 1883, 60)
-            local_client.loop_start()  # Start a background thread for the local client
-
-            # Brief wait to confirm connection before breaking the loop
-            time.sleep(1)
             if not local_client.is_connected():
-                # This case handles if connect() returns without error but fails to establish
-                local_client.loop_stop()
-                raise ConnectionError("Failed to establish connection, retrying.")
-
-        except (ConnectionRefusedError, ConnectionError) as e:
-            logging.warning(f"Local Mosquitto connection failed: {e}. Is the service running? Retrying in 5 seconds...")
+                logging.info("Attempting to connect to local Mosquitto service...")
+                local_client.connect("localhost", 1883, 60)
+                local_client.loop_start()
+            time.sleep(2)
+        except KeyboardInterrupt:
+            logging.info("Shutdown initiated by user.")
+            break
+        except Exception:
+            logging.warning("Local Mosquitto connection failed. Retrying in 5s...", exc_info=True)
             time.sleep(5)
-        except Exception as e:
-            logging.error(f"An unexpected error occurred while connecting to local server: {e}", exc_info=True)
-            time.sleep(10)
 
-    # --- Keep the main thread alive ---
-    try:
-        logging.info("Hub is fully running. Press Ctrl+C in this window to exit.")
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        logging.info("Shutdown initiated by user.")
-    finally:
-        if local_client.is_connected():
-            local_client.loop_stop()
-        logging.info("Hub application has stopped.")
+    if local_client.is_connected(): local_client.loop_stop()
+    logging.info("Hub application has stopped.")
