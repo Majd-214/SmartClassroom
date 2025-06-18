@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McMaster Smart Classroom - Student Handbook</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/product-sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* ====================================================================
+      McMaster Smart Classroom - Consolidated Stylesheet
+    ====================================================================
+    */
+
+        /* --- Global & Foundational Styles --- */
+        body {
+            font-family: 'Product Sans', sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #202124;
+            color: #e8eaed;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.7;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+        }
+
+        /* --- Functional CSS (Animations, Scrollbar) --- */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #202124;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #3c4043;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #5f6368;
+        }
+
+        /* --- Content-Area Styling (Scoped to '.page') --- */
+        .page h1,
+        .page h2,
+        .page h3,
+        .page h4 {
+            color: #f1f3f4;
+            font-weight: 700;
+            border-bottom: 1px solid #3c4043;
+            padding-bottom: 8px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        .page h1 {
+            font-size: 2.5em;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        .page h2 {
+            font-size: 2em;
+        }
+
+        .page h3 {
+            font-size: 1.5em;
+            border-bottom: none;
+        }
+
+        .page h4 {
+            font-size: 1.2em;
+            color: #bdc1c6;
+            border-bottom: none;
+            margin-top: 32px;
+        }
+
+        .page p {
+            font-size: 1em;
+            margin-bottom: 16px;
+        }
+
+        .page strong,
+        .page b {
+            color: #e8eaed;
+            font-weight: 700;
+        }
+
+        .page a {
+            color: #8ab4f8;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .page a:hover {
+            color: #a7c5f9;
+            text-decoration: underline;
+        }
+
+        .page ul,
+        .page ol {
+            padding-left: 20px;
+        }
+
+        .page li {
+            margin-bottom: 8px;
+        }
+
+        .page li>p {
+            margin-bottom: 0;
+        }
+
+        .page table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin: 24px 0;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .page th,
+        .page td {
+            border-bottom: 1px solid #3c4043;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .page td {
+            border-right: 1px solid #3c4043;
+        }
+
+        .page th:last-child,
+        .page td:last-child {
+            border-right: none;
+        }
+
+        .page tbody tr:last-child th,
+        .page tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .page thead {
+            background-color: #3c4043;
+            color: #f1f3f4;
+            font-weight: 700;
+        }
+
+        .page tbody tr:nth-child(even) {
+            background-color: #282a2c;
+        }
+
+        .page hr {
+            border: none;
+            border-top: 1px solid #3c4043;
+            margin: 40px 0;
+        }
+
+        /* --- Code Block & Syntax Highlighting --- */
+
+        .page :not(pre)>code {
+            background-color: #2d2e30;
+            border: 1px solid #3c4043;
+            padding: 2px 5px;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+
+        .page pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .page pre code {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #e8eaed;
+        }
+
+        /* Specific syntax highlighting colors */
+        .sh-preprocessor {
+            color: #c586c0;
+        }
+
+        .sh-keyword {
+            color: #569cd6;
+        }
+
+        .sh-type {
+            color: #4ec9b0;
+        }
+
+        .sh-function {
+            color: #dcdcaa;
+        }
+
+        .sh-variable {
+            color: #9cdcfe;
+        }
+
+        .sh-string {
+            color: #ce9178;
+        }
+
+        .sh-comment {
+            color: #6a9955;
+        }
+
+        .sh-literal {
+            color: #b5cea8;
+        }
+
+        .sh-info {
+            color: #4ec9b0;
+        }
+
+        .sh-class {
+            color: #4ec9b0;
+        }
+
+        .sh-operator {
+            color: #d4d4d4;
+        }
+
+        .sh-number {
+            color: #b5cea8;
+        }
+
+        /* Custom styles for the Overview (Instructor Briefing) page */
+        .overview-section-header {
+            font-family: 'Product Sans', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+        }
+
+        .overview-card {
+            background-color: #2D2E30;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .overview-gradient-heading {
+            background: linear-gradient(90deg, #8ab4f8, #c1d9fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .flow-step-border-accent {
+            border-left-color: #8ab4f8;
+        }
+
+        .flow-step-border-primary {
+            border-left-color: #e8eaed;
+        }
+
+        .flow-step-border-secondary {
+            border-left-color: #bdc1c6;
+        }
+
+        /* New pastel colors for warnings */
+        .flow-step-border-warning {
+            border-left-color: #ffb300;
+            /* Softer amber for border */
+        }
+
+        .bg-warning-tint {
+            background-color: rgba(255, 179, 0, 0.08);
+            /* Very light amber tint */
+        }
+
+        .text-error-red-soft {
+            color: #ef5350;
+            /* A standard Material Design red, kept for strong warning */
+        }
+
+        .flow-arrow {
+            color: #8ab4f8;
+        }
+
+        /* Chart container styling as per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Styles for code blocks within the infographic, to ensure consistency */
+        .infographic-code-block pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .infographic-code-block pre code {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #e8eaed;
+        }
+
+        /* New styles for modern design elements */
+        .highlight-box {
+            background-color: rgba(138, 180, 248, 0.08);
+            /* Light accent blue with transparency */
+            border-left: 4px solid #8ab4f8;
+            /* Accent blue border */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            /* Adjust spacing */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .highlight-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon-large {
+            font-size: 3rem;
+            /* Larger icons for impact */
+            color: #8ab4f8;
+            /* Accent color for icons */
+            margin-bottom: 0.5rem;
+        }
+    </style>
+    <script>
+        // Customizing Tailwind with the color scheme from the handbook
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-bg': '#202124',
+                        /* Original handbook background */
+                        'surface': '#2d2e30',
+                        /* Original handbook surface */
+                        'primary': '#e8eaed',
+                        /* Original handbook primary text */
+                        'secondary': '#bdc1c6',
+                        /* Original handbook secondary text */
+                        'accent': '#8ab4f8',
+                        /* Original handbook accent blue */
+                        'custom-border': '#3c4043',
+                        /* Original handbook border */
+
+                        /* New colors for errors/warnings and additional blue accents */
+                        'error-red': '#ef5350',
+                        /* A standard Material Design red */
+                        'warning-yellow': '#ffeb3b',
+                        /* A standard Material Design yellow */
+                        'info-blue': '#2196f3',
+                        /* A standard Material Design blue */
+                        'light-blue-accent': '#c1d9fd',
+                        /* Lighter shade of accent */
+
+                        /* Specific colors for the warning box */
+                        'warning-tint': 'rgba(255, 179, 0, 0.08)', /* Softer amber tint for background */
+                        'warning-border-color': '#FFB300', /* Softer amber for border */
+
+                        'background-dark': '#202124',
+                        'card-bg': '#2D2E30',
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                    },
+                    fontFamily: {
+                        product: ['Product Sans', 'sans-serif'],
+                        /* Only Product Sans for main text */
+                        fira: ['Fira Code', 'monospace'],
+                        /* Only Fira Code for code */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-custom-bg text-primary font-product">
+
+    <nav class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-custom-border">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex items-center justify-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="#" data-page="home"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Home</a>
+                    <a href="#" data-page="overview"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Overview</a>
+                    <div class="relative" id="dropdown-container">
+                        <button id="nav-missions-btn" type="button"
+                            class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-colors focus:outline-none">
+                            <span>Mission Briefings</span>
+                            <svg class="ml-2 h-4 w-4 transition-transform duration-200" id="dropdown-arrow"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div id="dropdown-menu"
+                            class="hidden absolute mt-2 w-64 bg-surface border border-custom-border rounded-xl shadow-lg py-1">
+                            <a href="#" class="dropdown-item" data-page="station1">Station 1: HVAC & Appliance</a>
+                            <a href="#" class="dropdown-item" data-page="station2">Station 2: Environmental Sensors</a>
+                            <a href="#" class="dropdown-item" data-page="station3">Station 3: Smart Lighting</a>
+                            <a href="#" class="dropdown-item" data-page="station4">Station 4: Door Security</a>
+                            <a href="#" class="dropdown-item" data-page="station5">Station 5: Automated Curtain</a>
+                            <a href="#" class="dropdown-item" data-page="station6">Station 6: Master Control Panel</a>
+                        </div>
+                    </div>
+                    <a href="#" data-page="api-reference"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">API Reference</a>
+                    <a href="#" data-page="upload-troubleshoot"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Upload &
+                        Troubleshoot</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-8">
+        <div id="home" class="page">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">McMaster Smart Classroom</h1>
+            <p class="text-center text-secondary text-lg mb-8">Welcome, Future Engineers! Your exciting mission at the
+                McMaster Summer Camp is to work as a team of specialists to bring this Smart Classroom to life. Each
+                group has been assigned a critical station. This handbook will guide you through your specific mission
+                briefing and provide a detailed reference for the powerful <code>SmartDevice</code> library you'll be
+                using.</p>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">1. Getting Started: The
+                Universal Template</h2>
+            <p class="text-secondary">For all stations, your journey begins with the
+                <b><code>UniversalDeviceTemplate.ino</code></b> file. This template is designed to give you a clear,
+                structured starting point by handling all the complex networking behind the scenes. Your main job is to
+                "fill in the blanks" in the designated sections with your station's specific code.
+            </p>
+
+            <h3 class="text-xl font-bold text-primary mb-3">Understanding Your Template</h3>
+            <p class="text-secondary">Open the template in your Arduino IDE:
+                <code>File &gt; Examples &gt; SmartDevice &gt; UniversalDeviceTemplate</code>. You will see three main
+                sections you need to interact with:
+            </p>
+
+            <ol class="list-decimal list-inside pl-4 space-y-4">
+                <li>
+                    <b>Configuration Section:</b>
+                    <p class="text-secondary mt-2">At the very top of the file, you'll find parameters to identify your
+                        device and its communication channels. You <b>must</b> change these to match your station's
+                        assignment:</p>
+                    <pre><code><span class="sh-comment">// Give your device a unique name to identify it on the network.</span>
+<span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"My_Station_Device"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "Sarah_Door_Lock"</span>
+
+<span class="sh-keyword">const char*</span> <span class="sh-variable">COMMAND_TOPIC</span> = <span class="sh-string">"classroom/some_device/command"</span>; <span class="sh-comment">// &lt;-- CHANGE for your station</span>
+<span class="sh-keyword">const char*</span> <span class="sh-variable">STATUS_TOPIC</span> = <span class="sh-string">"classroom/some_device/status"</span>;   <span class="sh-comment">// &lt;-- CHANGE for your station</span></code></pre>
+                </li>
+                <li>
+                    <b><code>setupMyHardware()</code> Function:</b>
+                    <p class="text-secondary mt-2">This function runs <b>only once</b> when your ESP8266 first starts
+                        up. It's the perfect place to:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        <li>Initialize your hardware components (e.g., set pin modes, start sensors, attach servos).
+                        </li>
+                        <li>Prepare any libraries your sensors or actuators need.</li>
+                    </ul>
+                    <p class="text-secondary mt-2">Think of it as setting up your workstation before you begin your main
+                        project.</p>
+                    <pre><code><span class="sh-keyword">void</span> <span class="sh-function">setupMyHardware</span>() {
+  <span class="sh-comment">// Your hardware setup code goes here.</span>
+  <span class="sh-comment">// EXAMPLE: pinMode(PIN_D7, OUTPUT); // Configure D7 as an output</span>
+}</code></pre>
+                </li>
+                <li>
+                    <b><code>loopMySensorLogic()</code> Function:</b>
+                    <p class="text-secondary mt-2">This function runs <b>repeatedly, many times per second</b>, after
+                        <code>setupMyHardware()</code> is complete. It's ideal for:
+                    </p>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        <li>Continuously reading data from sensors.</li>
+                        <li>Sending periodic updates or sensor readings to the cloud.</li>
+                        <li>Any tasks that need to happen over and over again.</li>
+                    </ul>
+                    <p class="text-secondary mt-2">This is where you'll tell your device to keep an eye on things.</p>
+                    <pre><code><span class="sh-comment">// This function runs over and over. It's perfect for SENSORS that need to</span>
+<span class="sh-comment">// constantly check for new data and publish it to the cloud.</span>
+<span class="sh-keyword">void</span> <span class="sh-function">loopMySensorLogic</span>() {
+  <span class="sh-comment">// Your sensor reading and data publishing logic goes here.</span>
+  <span class="sh-comment">// EXAMPLE: int buttonState = digitalRead(PIN_D1); // Read a button</span>
+  <span class="sh-comment">// EXAMPLE: myDevice.publishTo(STATUS_TOPIC, String(buttonState)); // Send button state</span>
+}</code></pre>
+                </li>
+                <li>
+                    <b><code>handleMyActuatorLogic(String command)</code> Function:</b>
+                    <p class="text-secondary mt-2">This function runs <b>only when your device receives a command</b>
+                        from the central hub (e.g., "turn light on"). It's perfect for:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        <li>Controlling actuators (like lights, motors, relays) based on incoming instructions.</li>
+                        <li>Responding to specific commands with actions.</li>
+                        <li>(For Station 6 - Master Control Panel: You will replace the default use of this function
+                            with a more advanced callback as explained in your mission briefing).</li>
+                    </ul>
+                    <p class="text-secondary mt-2">This is where your device takes action based on external
+                        instructions.</p>
+                    <pre><code><span class="sh-keyword">void</span> <span class="sh-function">handleMyActuatorLogic</span>(<span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+  <span class="sh-comment">// Your actuator control logic goes here.</span>
+  <span class="sh-comment">// EXAMPLE: if (command == "LIGHT_ON") { digitalWrite(PIN_D7, HIGH); }</span>
+}</code></pre>
+                </li>
+            </ol>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">2. Core Networking: The
+                "System Engine"</h2>
+            <p class="text-secondary">Below the sections you will modify, you'll find the "System Engine" code. This
+                part handles all the behind-the-scenes magic of connecting to Wi-Fi, managing communication with the
+                central hub, and ensuring your device stays online. <b>You should NOT modify this section.</b> It's the
+                robust foundation for your project!</p>
+            <p class="text-secondary">Key elements handled by the System Engine include:</p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li>Initializing the <code>SmartDevice</code> library.</li>
+                <li>Connecting to the Wi-Fi network using the provided credentials.</li>
+                <li>Establishing and maintaining the connection to the MQTT broker (the central message server).</li>
+                <li>Subscribing to your device's specific command topic.</li>
+                <li>Calling your <code>setupMyHardware()</code>, <code>loopMySensorLogic()</code>, and
+                    <code>handleMyActuatorLogic()</code> functions at the appropriate times.
+                </li>
+            </ul>
+
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h4 class="font-bold text-lg text-accent mb-2">Common Network Information</h4>
+                <p class="text-sm text-accent/80 mb-3">You will need this information for the configuration section of
+                    your code. It should also be on the main whiteboard.</p>
+                <ul class="list-disc list-inside text-sm space-y-2">
+                    <li><b>Wi-Fi Network (SSID):</b> <code>McMasterIoT-Camp</code></li>
+                    <li><b>Wi-Fi Password:</b> <code>Roomba2025</code></li>
+                    <li><b>Hub IP Address:</b> <code>192.168.0.147</code> (confirm with instructor)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="overview" class="page">
+            <!-- Palette: Original Handbook Theme -->
+            <!-- Background: #202124, Surface: #2d2e30, Primary: #e8eaed, Secondary: #bdc1c6, Accent: #8ab4f8, Border: #3c4043 -->
+            <!-- NEITHER Mermaid JS NOR SVG were used in this output. -->
+
+            <!-- Section 1: The Mission - Introduction -->
+            <section class="text-center py-12">
+                <h1 class="text-4xl md:text-6xl overview-section-header overview-gradient-heading">Instructor Briefing
+                </h1>
+                <p class="mt-4 text-lg md:text-xl text-secondary max-w-3xl mx-auto">Welcome, Future Engineers! Your
+                    mission is to build a living, intelligent classroom system, piece by piece.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="overview-card p-6 rounded-2xl">
+                        <p class="text-6xl font-extrabold text-accent"><span
+                                class="material-icons text-7xl align-middle">system_update_alt</span></p>
+                        <p class="mt-2 text-xl font-bold">Integrated System</p>
+                    </div>
+                    <div class="overview-card p-6 rounded-2xl">
+                        <p class="text-6xl font-extrabold text-accent"><span
+                                class="material-icons text-7xl align-middle">handyman</span></p>
+                        <p class="mt-2 text-xl font-bold">Specialized Stations</p>
+                    </div>
+                    <div class="overview-card p-6 rounded-2xl">
+                        <p class="text-6xl font-extrabold text-accent"><span
+                                class="material-icons text-7xl align-middle">rocket_launch</span></p>
+                        <p class="mt-2 text-xl font-bold">Limitless Innovation</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Your Core Toolkit -->
+            <section class="py-12">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-center text-primary">Your <span
+                        class="text-accent">Core Toolkit</span></h2>
+                <p class="mt-4 text-lg text-secondary text-center max-w-3xl mx-auto">You'll harness the power of a tiny
+                    computer and a versatile programming environment.</p>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="overview-card p-8 rounded-2xl text-center">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">memory</span></p>
+                        <h3 class="mt-4 text-2xl font-bold text-primary">ESP8266</h3>
+                        <p class="text-secondary">The compact, Wi-Fi-enabled microcontroller that acts as the brain for
+                            your IoT device.</p>
+                    </div>
+                    <div class="overview-card p-8 rounded-2xl text-center">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">code</span></p>
+                        <h3 class="mt-4 text-2xl font-bold text-primary">Arduino IDE</h3>
+                        <p class="text-secondary">Your integrated development environment for writing, compiling, and
+                            uploading C++ code to the ESP8266.</p>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Section 3: The Universal Template Workflow -->
+            <section class="py-12">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-center text-primary">Your Workflow: The
+                    <span class="text-accent">Universal Template</span>
+                </h2>
+                <p class="mt-4 text-lg text-secondary text-center max-w-3xl mx-auto">Every station begins with the same
+                    <code>UniversalDeviceTemplate.ino</code>. We've pre-configured the complex networking, so you can
+                    focus on your unique hardware logic.
+                </p>
+
+                <div class="mt-12 grid grid-cols-1 gap-8">
+                    <!-- Step 1: Configure -->
+                    <div
+                        class="overview-card p-6 rounded-2xl flex items-start gap-4 border-l-4 flow-step-border-accent">
+                        <div class="flex-shrink-0 text-3xl font-bold text-accent">1</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary">Configure Device Identity</h3>
+                            <p class="text-secondary mt-2">Locate the "Configuration Section" at the top of your
+                                <code>UniversalDeviceTemplate.ino</code>. You <b>must</b> update
+                                <code>DEVICE_NAME</code>, <code>COMMAND_TOPIC</code>, and <code>STATUS_TOPIC</code> with
+                                the unique values provided by your instructor. This tells the network who your device is
+                                and how it communicates.
+                            </p>
+                            <div
+                                class="infographic-code-block mt-4 p-3 bg-background-dark rounded-lg font-mono text-sm text-secondary">
+                                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"My_Station_Device"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code><br />
+                                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">COMMAND_TOPIC</span> = <span class="sh-string">"classroom/your/command"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code><br />
+                                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">STATUS_TOPIC</span> = <span class="sh-string">"classroom/your/status"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center text-4xl py-4 flow-arrow">↓</div>
+
+                    <!-- Step 2: Write Code in Functions - REVISED DISPLAY -->
+                    <div
+                        class="overview-card p-6 rounded-2xl flex items-start gap-4 border-l-4 flow-step-border-accent">
+                        <div class="flex-shrink-0 text-3xl font-bold text-accent">2</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary">Write Your Logic in Core Functions</h3>
+                            <p class="text-secondary mt-2">Your specific hardware logic goes into three dedicated
+                                functions.
+                                Understanding when each runs is crucial:</p>
+
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="highlight-box">
+                                    <span class="material-icons icon-large">build_circle</span>
+                                    <h4 class="font-bold text-accent"><code>setupMyHardware()</code></h4>
+                                    <p class="text-sm text-secondary">Executes <b>ONCE</b> at startup. Ideal for pin
+                                        configuration (<code>pinMode</code>), sensor initialization, and attaching
+                                        components like servos.</p>
+                                </div>
+                                <div class="highlight-box">
+                                    <span class="material-icons icon-large">autorenew</span>
+                                    <h4 class="font-bold text-accent"><code>loopMySensorLogic()</code></h4>
+                                    <p class="text-sm text-secondary">Runs <b>REPEATEDLY</b> (many times/sec). Use for
+                                        continuous sensor readings and periodically publishing data to the cloud
+                                        (<code>myDevice.publishTo()</code>).</p>
+                                </div>
+                                <div class="highlight-box">
+                                    <span class="material-icons icon-large">bolt</span>
+                                    <h4 class="font-bold text-accent">
+                                        <code>handleMyActuatorLogic<br>(String command)</code>
+                                    </h4>
+                                    <p class="text-sm text-secondary">Executes <b>ON-DEMAND</b> when your device
+                                        receives a
+                                        command. Perfect for controlling actuators (lights, motors) and reporting their
+                                        new
+                                        status.</p>
+                                </div>
+                            </div>
+                            <p class="text-secondary text-center mt-4 text-sm">The functions above run in different
+                                frequencies. <code>setupMyHardware()</code> runs once, while
+                                <code>loopMySensorLogic()</code> runs continuously. <code>handleMyActuatorLogic()</code>
+                                runs only when a command is received.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-center text-4xl py-4 flow-arrow">↓</div>
+
+                    <!-- Step 3: The System Engine - WARNING REVISED -->
+                    <div
+                        class="overview-card p-6 rounded-2xl flex items-start gap-4 border-l-4 flow-step-border-warning bg-warning-tint">
+                        <div class="flex-shrink-0 text-3xl font-bold text-warning-border-color">3</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary">The "System Engine": Hands-Off Zone!</h3>
+                            <p class="text-secondary mt-2">Below your code sections lies the critical "System Engine".
+                                This automatically handles all Wi-Fi and MQTT connections, ensuring your device stays
+                                online and communicates. <b class="text-error-red-soft">DO NOT EDIT THIS SECTION.</b>
+                                Any changes here could prevent
+                                your device from connecting.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Going Live & Troubleshooting -->
+            <section class="py-12">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-center text-primary">Going <span
+                        class="text-accent">Live</span> & Debugging</h2>
+                <p class="mt-4 text-lg text-secondary text-center max-w-3xl mx-auto">Even experts hit roadblocks. This
+                    guide will help you upload your code and tackle common issues.</p>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="overview-card p-6 rounded-2xl h-full">
+                        <h3 class="text-2xl font-bold text-primary">4-Step Code Upload</h3>
+                        <ol class="mt-4 list-decimal list-inside space-y-3 text-secondary">
+                            <li><b>Select Board:</b> In Arduino IDE, go to
+                                <code>Tools &gt; Board &gt; ESP8266 Boards</code> and choose
+                                <code>Generic ESP8266 Module</code>.
+                            </li>
+                            <li><b>Select Port:</b> Go to <code>Tools &gt; Port</code> and select the serial port
+                                connected to your ESP8266. Unplug and replug to identify it if needed.</li>
+                            <li><b>Enter Flash Mode (If necessary):</b>
+                                <p class="mt-2 text-sm">If your board doesn't automatically upload, manually trigger
+                                    flash mode:</p>
+                                <ol class="list-[lower-alpha] list-inside ml-4 mt-1 space-y-1">
+                                    <li><b>Unplug</b> your ESP8266 board.</li>
+                                    <li><b>Hold down the "FLASH" or "BOOT" button</b> on the board.</li>
+                                    <li>While holding the button, <b>plug the USB cable back in</b>.</li>
+                                    <li>Release the button after 1-2 seconds.</li>
+                                </ol>
+                            </li>
+                            <li><b>Upload & Monitor:</b> Click the "Upload" (right-arrow) button. Once uploaded, open
+                                the "Serial Monitor" (magnifying glass icon) and set baud rate to <code>115200</code>.
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="overview-card p-6 rounded-2xl h-full flex flex-col justify-between">
+                        <h3 class="text-2xl font-bold text-primary text-center">Common Bug Hotspots</h3>
+                        <p class="text-secondary text-center mt-2">Where engineers spend most of their time! Know these
+                            common issues.</p>
+                        <div class="chart-container flex-grow pt-4">
+                            <canvas id="troubleshootingChart"></canvas>
+                        </div>
+                        <p class="text-sm text-secondary text-center mt-4">Proportion of common troubleshooting areas.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 p-6 overview-card rounded-2xl border-l-4 border-accent">
+                    <h4 class="text-xl font-bold text-accent">Debugging with <code>Serial.println()</code></h4>
+                    <p class="text-secondary mt-2">Your best debugging tool! Use
+                        <code>Serial.println("Your message here");</code> to print values, check logic paths, and see
+                        what your device is doing in real-time in the Serial Monitor. This is invaluable for pinpointing
+                        problems!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 5: The 6 Stations -->
+            <section class="py-12 text-center">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-primary">One Team, <span
+                        class="overview-gradient-heading">Six Missions</span></h2>
+                <p class="mt-4 text-lg text-secondary max-w-3xl mx-auto">Each station plays a vital role. Together, your
+                    devices form the complete Smart Classroom system!</p>
+                <div class="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">ac_unit</span></p>
+                        <p class="font-bold mt-2">HVAC</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">thermostat</span></p>
+                        <p class="font-bold mt-2">Sensors</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">lightbulb</span></p>
+                        <p class="font-bold mt-2">Lighting</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">lock</span></p>
+                        <p class="font-bold mt-2">Security</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">blinds_closed</span></p>
+                        <p class="font-bold mt-2">Curtain</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">tune</span></p>
+                        <p class="font-bold mt-2">Panel</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-item, .dropdown-item');
+            const dropdownContainer = document.getElementById('dropdown-container');
+            const dropdownButton = document.getElementById('nav-missions-btn');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const dropdownArrow = document.getElementById('dropdown-arrow');
+
+            function showPage(pageId) {
+                pages.forEach(page => page.classList.remove('active'));
+
+                const activePage = document.getElementById(pageId);
+                if (activePage) {
+                    activePage.classList.add('active');
+                }
+
+                navLinks.forEach(link => {
+                    const isDropdownButton = link.id === 'nav-missions-btn';
+                    const isForCurrentPage = link.dataset.page === pageId;
+                    const isDropdownPageActive = activePage && activePage.id.startsWith('station');
+
+                    link.classList.remove('bg-accent', 'text-custom-bg', 'font-bold');
+                    link.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+
+                    if (isForCurrentPage && !link.classList.contains('dropdown-item')) {
+                        link.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
+                        link.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+                    }
+                    else if (isDropdownButton && isDropdownPageActive) {
+                        link.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
+                        link.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+                    }
+                });
+
+                closeDropdown();
+                // Call chart rendering function when the infographic page is active
+                if (pageId === 'overview') {
+                    renderInfographicCharts();
+                }
+            }
+
+            function openDropdown() {
+                dropdownMenu.classList.remove('hidden');
+                dropdownArrow.style.transform = 'rotate(180deg)';
+            }
+
+            function closeDropdown() {
+                dropdownMenu.classList.add('hidden');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+            }
+
+            // --- Event Listeners ---
+            navLinks.forEach(link => {
+                if (link.dataset.page) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showPage(link.dataset.page);
+                        window.scrollTo(0, 0);
+                    });
+                }
+            });
+
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isHidden = dropdownMenu.classList.contains('hidden');
+                if (isHidden) {
+                    openDropdown();
+                } else {
+                    closeDropdown();
+                }
+            });
+
+            window.addEventListener('click', (event) => {
+                if (!dropdownContainer.contains(event.target)) {
+                    closeDropdown();
+                }
+            });
+
+            // --- Initialization ---
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+            });
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.classList.add('block', 'w-full', 'text-left', 'px-4', 'py-2', 'text-sm', 'text-primary', 'hover:bg-accent', 'hover:text-custom-bg', 'transition-colors', 'rounded-lg');
+            });
+
+            showPage('home'); // Show home page on initial load
+
+            // Chart rendering function for the infographic page
+            function renderInfographicCharts() {
+                // Utility function to wrap Chart.js labels
+                function wrapLabel(label, maxLength = 16) {
+                    if (label.length <= maxLength) {
+                        return label;
+                    }
+                    const words = label.split(' ');
+                    let lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + word).length > maxLength && currentLine.length > 0) {
+                            lines.push(currentLine.trim());
+                            currentLine = word + ' ';
+                        } else {
+                            currentLine += word + ' ';
+                        }
+                    });
+                    if (currentLine.length > 0) {
+                        lines.push(currentLine.trim());
+                    }
+                    return lines;
+                }
+
+                const tooltipConfig = {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function (tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                        return label.join(' ');
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: { // Also define legend callbacks for proper multi-line labels if needed
+                            labels: {
+                                color: '#BDC1C6', // Secondary text color for legend
+                                padding: 20,
+                                font: { family: 'Product Sans' }
+                            }
+                        }
+                    }
+                };
+
+                // Chart 2: Troubleshooting Hotspots (Doughnut Chart)
+                const troubleshootingCtx = document.getElementById('troubleshootingChart');
+                if (troubleshootingCtx) { // Check if canvas exists on the current page
+                    const existingChart = Chart.getChart(troubleshootingCtx);
+                    if (existingChart) existingChart.destroy(); // Destroy previous instance to prevent duplicates
+
+                    new Chart(troubleshootingCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: [
+                                wrapLabel('Wi-Fi / Network Connection'),
+                                wrapLabel('Code Logic & Syntax Errors'),
+                                wrapLabel('Upload / Port Issues'),
+                                wrapLabel('Physical Wiring Mistakes')
+                            ],
+                            datasets: [{
+                                label: 'Common Bug Hotspots',
+                                data: [40, 30, 20, 10], /* Example data distribution */
+                                backgroundColor: ['#8ab4f8', '#ef5350', '#ffb300', '#2196f3'], /* Accent, Error-Red, Warning-Yellow, Info-Blue */
+                                borderColor: 'transparent', /* Removed border */
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            ...tooltipConfig,
+                            maintainAspectRatio: false,
+                            cutout: '60%', /* Doughnut thickness */
+                            plugins: {
+                                ...tooltipConfig.plugins,
+                                legend: {
+                                    display: false /* Removed legend */
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
