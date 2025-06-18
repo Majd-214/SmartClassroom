@@ -2,39 +2,29 @@
 #include <SmartDevice.h>
 
 // 2. VARIABLE DEFINITIONS
-// EXAMPLE: #define MY_PIN PIN_D1
 
 
 // 3. CONFIGURATION
 const char* DEVICE_NAME = "My_Station_Device"; // <-- CHANGE THIS!
 const char* COMMAND_TOPIC = "classroom/some_device/command"; // <-- UPDATE THIS!
 const char* STATUS_TOPIC = "classroom/some_device/status";   // <-- UPDATE THIS!
-// Hint! "Topics" are like addresses for sending and receiving messages.
 
 // 4. DECLARATIONS
 SmartDevice myDevice;
 
 
 void setupMyHardware() { // Runs ONCE
-  // EXAMPLE: pinMode(PIN_D7, OUTPUT);
+  // ---> SETUP LOGIC GOES HERE <---
 
 }
 
 void loopMySensorLogic() { // Runs REPEATEDLY
   // ---> SENSOR LOGIC GOES HERE <---
-  // EXAMPLE:
-  // float temp = myTempSensor.read();
-  // myDevice.publishTo(STATUS_TOPIC, String(temp));
 
 }
 
 void handleMyActuatorLogic(String command) { // Executes ON_DEMAND
   // ---> ACTUATOR LOGIC GOES HERE <---
-  // EXAMPLE:
-  // if (command == "ON") {
-  //   digitalWrite(PIN_D7, HIGH);
-  //   myDevice.publishTo(STATUS_TOPIC, "ON"); // Always report back your status!
-  // }
 
 }
 
@@ -44,7 +34,7 @@ void handleMyActuatorLogic(String command) { // Executes ON_DEMAND
 |                                                             |
 |   +-----------------------------------------------------+   |
 |   |                                                     |   |
-|   |   --->>    DO NOT EDIT THE CODE BELOW!    <<---      |   |
+|   |   --->>    DO NOT EDIT THE CODE BELOW!    <<---     |   |
 |   |         (This is the system's engine)               |   |
 |   |                                                     |   |
 |   +-----------------------------------------------------+   |
