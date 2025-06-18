@@ -1,51 +1,41 @@
-/*
- =================================================================
-  McMaster Eng Camp - IoT Smart Classroom (Universal Template)
- =================================================================
-  Welcome! This is your starting point for ALL stations.
-  Your only job is to add code in the designated sections below.
-*/
-
-// Our custom library that handles all networking.
+// 1. LIBRARY INCLUSIONS
 #include <SmartDevice.h>
 
-// ===============================================================
-// 1. CONFIGURE YOUR DEVICE
-// ===============================================================
-// Give your device a unique name to identify it on the network.
+// 2. VARIABLE DEFINITIONS
+// EXAMPLE: #define MY_PIN PIN_D1
+
+
+// 3. CONFIGURATION
 const char* DEVICE_NAME = "My_Station_Device"; // <-- CHANGE THIS!
+const char* COMMAND_TOPIC = "classroom/some_device/command"; // <-- UPDATE THIS!
+const char* STATUS_TOPIC = "classroom/some_device/status";   // <-- UPDATE THIS!
+// Hint! "Topics" are like addresses for sending and receiving messages.
 
-// These "topics" are like addresses for sending and receiving messages.
-// Your instructor will provide the correct topics for your station from the config.yaml.
-const char* COMMAND_TOPIC = "classroom/some_device/command"; // <-- CHANGE for your station
-const char* STATUS_TOPIC = "classroom/some_device/status";   // <-- CHANGE for your station
-
-// Create an object for our library.
+// 4. DECLARATIONS
 SmartDevice myDevice;
 
-// This function is for setting up your hardware (e.g., pins, sensors). It runs once.
-void setupMyHardware() {
+
+void setupMyHardware() { // Runs ONCE
   // EXAMPLE: pinMode(PIN_D7, OUTPUT);
+
 }
 
-// This function runs over and over. It's perfect for SENSORS that need to
-// constantly check for new data and publish it to the cloud.
-void loopMySensorLogic() {
+void loopMySensorLogic() { // Runs REPEATEDLY
   // ---> SENSOR LOGIC GOES HERE <---
   // EXAMPLE:
   // float temp = myTempSensor.read();
   // myDevice.publishTo(STATUS_TOPIC, String(temp));
+
 }
 
-// This function ONLY runs when a command is received from the cloud. It's perfect
-// for ACTUATORS (lights, motors, etc.) that need to react to commands.
-void handleMyActuatorLogic(String command) {
+void handleMyActuatorLogic(String command) { // Executes ON_DEMAND
   // ---> ACTUATOR LOGIC GOES HERE <---
   // EXAMPLE:
   // if (command == "ON") {
   //   digitalWrite(PIN_D7, HIGH);
   //   myDevice.publishTo(STATUS_TOPIC, "ON"); // Always report back your status!
   // }
+
 }
 
 
