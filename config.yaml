@@ -1,11 +1,11 @@
 # ===================================================================
 # Dynamic Project Configuration File (config.yaml)
 # ===================================================================
-# This file is now the single source of truth for the entire hub.
+# This file is the single source of truth for the entire Smart Hub system.
 # The bridge script will dynamically build its logic based on this file.
 #
 # direction: TO_CLOUD (for sensors), FROM_CLOUD (for actuators), BIDIRECTIONAL (for both)
-# type: The data type expected (String, Float, Integer, Boolean, Color)
+# type: The data type expected (String, Float, Integer, Boolean, Dimmed, Color)
 # ===================================================================
 
 # --- Arduino Cloud Credentials (Account A: Environment) ---

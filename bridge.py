@@ -1,22 +1,29 @@
 # ====================================================================
 #   McMaster Engineering Summer Camp - Smart Classroom IoT Hub
 #   PRODUCTION VERSION 2.0 - FULLY DYNAMIC ENGINE - MAJD ABURAS 2025
-#   This library is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 
-#   4.0 International License. To view a copy of this license, visit
-#   https://creativecommons.org/licenses/by-nc-sa/4.0/
 #
-#   This script is now a generic engine. All logic for variable
+#   This script is a generic engine. All logic for variable
 #   mapping and message routing is loaded from config.yaml at runtime.
+#
+#   This script is licensed under the Creative Commons
+#   Attribution-NonCommercial-ShareAlike 4.0 International License. 
+#   To view a copy of this license, visit:
+#   https://creativecommons.org/licenses/by-nc-sa/4.0/
 # ====================================================================
 
-import paho.mqtt.client as mqtt
+# Import Communication Libraries
 from arduino_iot_cloud import ArduinoCloudClient
+import paho.mqtt.client as mqtt
+
+# Import System Libraries
+import sys
 import time
 import logging
-import yaml
 import threading
-import sys
-import json # Added for parsing Color/Dimmed JSON payloads from local devices
+
+# Import Data Libraries
+import yaml
+import json
 
 # --- 1. LOGGING & GLOBAL SETUP ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(threadName)s - %(message)s')
