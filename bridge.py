@@ -1,20 +1,22 @@
 # ====================================================================
-#  McMaster Engineering Summer Camp - Smart Classroom IoT Hub
-#  PRODUCTION VERSION 7.0 - DYNAMIC & CONFIG-DRIVEN
+#   McMaster Engineering Summer Camp - Smart Classroom IoT Hub
+#   PRODUCTION VERSION 2.0 - FULLY DYNAMIC ENGINE - MAJD ABURAS 2025
+#   This library is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 
+#   4.0 International License. To view a copy of this license, visit
+#   https://creativecommons.org/licenses/by-nc-sa/4.0/
 #
-#  This script is now a generic engine. All logic for variable
-#  mapping and message routing is loaded from config.yaml at runtime.
+#   This script is now a generic engine. All logic for variable
+#   mapping and message routing is loaded from config.yaml at runtime.
 # ====================================================================
 
 import paho.mqtt.client as mqtt
 from arduino_iot_cloud import ArduinoCloudClient
 import time
-import traceback
 import logging
 import yaml
 import threading
 import sys
-from datetime import datetime
+import json # Added for parsing Color/Dimmed JSON payloads from local devices
 
 # --- 1. LOGGING & GLOBAL SETUP ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(threadName)s - %(message)s')
@@ -28,8 +30,8 @@ class CloudWorker(threading.Thread):
     """A self-healing thread to manage a connection to the Arduino Cloud."""
 
     def __init__(self, account_name, client_instance):
-        super().__init__()
-        self.name = account_name
+        # Pass name to the super constructor for proper thread naming
+        super().__init__(name=account_name)
         self.client = client_instance
         self.daemon = True
 
@@ -61,35 +63,44 @@ def generic_on_write_callback(client, value, variable_config):
     payload = ""
     if var_type == "Boolean":
         payload = "ON" if value else "OFF"
-        # Special handling for lock:
-        if "lock" in cloud_var_name.lower():
-            payload = "LOCK" if value else "UNLOCK"
     elif var_type == "Color":
         try:
-            # Assuming 'value' for Color type is a dictionary like {'switch': True, 'brightness': 100, 'color': {'r': 255, 'g': 0, 'b': 0}}
-            cmd = f"SWITCH={'ON' if value.get('switch', False) else 'OFF'},BRIGHTNESS={value.get('brightness', 100)},R={value['color'].get('r',0)},G={value['color'].get('g',0)},B={value['color'].get('b',0)}"
+            # Assuming 'value' for Color type is a dictionary like {"bri":"43","hue":"355","sat":"74","swi":"true"}
+            # The 'swi' field indicates the switch state (on/off)
+            switch_state = "ON" if str(value.get('swi', 'false')).lower() == 'true' else "OFF"
+            brightness = str(value.get('bri', '100')) # Ensure string for payload
+            hue = str(value.get('hue', '0'))
+            saturation = str(value.get('sat', '0'))
+
+            cmd = f"SWITCH={switch_state},BRIGHTNESS={brightness},HUE={hue},SATURATION={saturation}"
             payload = cmd
         except Exception:
-            logging.error("Error parsing color command. Expected dictionary format.", exc_info=True)
+            logging.error("Error parsing color command. Expected dictionary format with 'bri', 'hue', 'sat', 'swi'.", exc_info=True)
+            return # Don't publish if payload formatting fails
+    elif var_type == "Dimmed":
+        try:
+            # Assuming 'value' for Dimmed type is a dictionary like {"bri":"37","swi":"true"}
+            switch_state = "ON" if str(value.get('swi', 'false')).lower() == 'true' else "OFF"
+            brightness = str(value.get('bri', '100')) # Ensure string for payload
+
+            cmd = f"SWITCH={switch_state},BRIGHTNESS={brightness}"
+            payload = cmd
+        except Exception:
+            logging.error("Error parsing dimmed command. Expected dictionary format with 'bri', 'swi'.", exc_info=True)
             return # Don't publish if payload formatting fails
     else:  # Default to sending the raw value as a string
         payload = str(value)
 
     if local_client and local_client.is_connected():
-        command_topic = ""
         # Determine the correct command topic based on direction
-        if direction == "FROM_CLOUD":
-            # For FROM_CLOUD, the topic in config.yaml IS the command topic (e.g., classroom/light/command)
-            command_topic = base_topic
-        elif direction == "BIDIRECTIONAL":
-            # For BIDIRECTIONAL, append /command to the base topic (e.g., classroom/curtain/command)
-            command_topic = f"{base_topic}/command"
+        if direction == "FROM_CLOUD" or direction == "BIDIRECTIONAL":
+            # For FROM_CLOUD, retrieve the base topic from config.yaml (e.g., classroom/curtain)
+            logging.info(f"Publishing to local topic: '{base_topic}' with payload: '{payload}'")
+            local_client.publish(base_topic, payload)
         else: # This callback should only be triggered for FROM_CLOUD or BIDIRECTIONAL variables
             logging.warning(f"Unexpected direction '{direction}' for cloud command callback for {cloud_var_name}. Not publishing.")
             return
 
-        logging.info(f"Publishing to local command topic: '{command_topic}' with payload: '{payload}'")
-        local_client.publish(command_topic, payload)
     else:
         logging.warning(f"Local MQTT client not connected. Could not send command for '{cloud_var_name}'.")
 
@@ -122,56 +133,28 @@ def on_message_local(client, userdata, msg):
                 try:
                     cloud_client = cloud_clients[rule['account']]
                     cloud_var_name = rule['name']
-                    key = rule.get('key_in_payload') # Key to look for within the payload if it's structured
                     var_type = rule['type']
 
                     value_to_send = None
 
-                    # If key_in_payload is defined, we need to parse the payload more carefully
-                    if key:
-                        # Check if the payload itself contains a colon, indicating a structured format
-                        if ':' in payload:
-                            # Parse structured payload like "temp:25.5,motion:true"
-                            parts = {}
-                            for p in payload.split(','):
-                                if ':' in p:
-                                    k, v = p.split(':', 1) # Split only on the first colon in case value has colons
-                                    parts[k.strip()] = v.strip()
-                                else:
-                                    # Handle cases like "motion:true,25.5" (unlikely but robust)
-                                    logging.warning(f"Part '{p}' in payload '{payload}' does not contain a colon. Skipping.")
-
-                            if key in parts:
-                                raw_value = parts[key]
-                                if var_type == "Boolean":
-                                    value_to_send = (raw_value.lower() == 'true')
-                                elif var_type == "Float":
-                                    value_to_send = float(raw_value)
-                                elif var_type == "Integer":
-                                    value_to_send = int(raw_value)
-                                else: # String or other type
-                                    value_to_send = raw_value
-                            else:
-                                logging.warning(f"Key '{key}' not found in structured payload for topic '{msg.topic}'. Payload: '{payload}'")
-                        else:
-                            # If key_in_payload is defined but payload is simple (e.g., just "25.5" for temperature)
-                            # Assume the entire payload is the value for the defined key
-                            raw_value = payload
-                            if var_type == "Boolean":
-                                # Allow both 'true'/'false' and 'ON'/'OFF' etc. for direct boolean payloads
-                                value_to_send = (raw_value.lower() == 'true' or raw_value.upper() in ["ON", "OPEN", "LOCKED"])
-                            elif var_type == "Float":
-                                value_to_send = float(raw_value)
-                            elif var_type == "Integer":
-                                value_to_send = int(raw_value)
-                            else: # String or other type
-                                value_to_send = raw_value
-                    else:
-                        # If no key_in_payload is defined (e.g., "OPEN" for a door status)
-                        if var_type == "Boolean":
-                            value_to_send = (payload.upper() in ["ON", "OPEN", "LOCKED"])
-                        else:
-                            value_to_send = payload
+                    # With structured payloads removed, the entire payload is the value
+                    # We just need to convert it based on the variable type
+                    if var_type == "Boolean":
+                        # Expecting "true" or "false" strings directly from Arduino
+                        value_to_send = (payload.lower() == 'true')
+                    elif var_type == "Float":
+                        value_to_send = float(payload)
+                    elif var_type == "Integer":
+                        value_to_send = int(payload)
+                    elif var_type == "Color" or var_type == "Dimmed":
+                        # For Color and Dimmed, expect the payload to be a JSON string
+                        try:
+                            value_to_send = json.loads(payload)
+                        except json.JSONDecodeError:
+                            logging.error(f"Failed to decode JSON for {var_type} type from payload '{payload}' on topic '{msg.topic}'. Expected JSON string.", exc_info=True)
+                            value_to_send = None # Or raise an error, depending on desired strictness
+                    else: # Default to sending the raw value as a string for other types
+                        value_to_send = payload
 
                     if value_to_send is not None:
                         logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}' for account '{rule['account']}'")
@@ -183,21 +166,6 @@ def on_message_local(client, userdata, msg):
                     logging.error(f"Data type conversion error for rule {rule} on topic {msg.topic}: {ve}. Payload: '{payload}'", exc_info=True)
                 except Exception as e:
                     logging.error(f"Error processing rule {rule} for topic {msg.topic}: {e}. Payload: '{payload}'", exc_info=True)
-        # --- Handle Special Kiosk Requests ---
-        elif msg.topic == "classroom/kiosk/request":
-            if payload == "CURRENT_TIME":
-                now = datetime.now().strftime("%I:%M %p")  # e.g., "02:30 PM"
-                # Ensure kiosk_display_line1 and kiosk_display_line2 are registered Arduino Cloud variables
-                # in config.yaml for account_b. If not, this will fail.
-                if 'account_b' in cloud_clients:
-                    if 'kiosk_display_line1' in cloud_clients['account_b'] and 'kiosk_display_line2' in cloud_clients['account_b']:
-                        cloud_clients['account_b']['kiosk_display_line1'] = "Current Time"
-                        cloud_clients['account_b']['kiosk_display_line2'] = now
-                    else:
-                        logging.warning("Kiosk display variables not registered in cloud_clients['account_b']. Check config.yaml.")
-                else:
-                    logging.warning("Account 'account_b' not initialized. Cannot update Kiosk display.")
-            # Add logic for other kiosk requests here...
         else:
             logging.info(f"No routing rule found for topic: {msg.topic}")
 
@@ -207,9 +175,9 @@ def on_message_local(client, userdata, msg):
 
 # --- 4. MAIN EXECUTION BLOCK ---
 if __name__ == "__main__":
-    logging.info("=====================================================")
-    logging.info("  McMaster Smart Classroom Hub (Dynamic) Starting  ")
-    logging.info("=====================================================")
+    logging.info("===================================================")
+    logging.info("   McMaster Smart Classroom Hub (Dynamic) Starting   ")
+    logging.info("===================================================")
 
     try:
         with open("config.yaml", 'r') as f:
@@ -245,25 +213,15 @@ if __name__ == "__main__":
                         # So, we register an on_write callback that calls our generic handler.
                         callback = lambda c, v, vc=var_config: generic_on_write_callback(c, v, vc)
                         client.register(var_name, on_write=callback)
-                        logging.info(f"  Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}) with on_write callback.")
+                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}) with on_write callback.")
                     else: # TO_CLOUD variables only send data, no cloud commands received
                         client.register(var_name)
-                        logging.info(f"  Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}).")
-
+                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}).")
 
                     # Build the MQTT routing map for messages coming FROM local devices TO the cloud
                     if direction in ["TO_CLOUD", "BIDIRECTIONAL"]:
                         topic = var_config['topic']
-                        # For BIDIRECTIONAL variables, the local device typically sends status updates
-                        # to a topic ending in "/status". Ensure this is consistent with Arduino code.
-                        if direction == "BIDIRECTIONAL":
-                            # Check if the topic already has /status. If not, append it.
-                            # This handles cases where user might have put full status topic in config already.
-                            if not topic.endswith("/status"):
-                                topic += "/status"
-                            logging.info(f"  Mapping local MQTT topic '{topic}' to cloud variable '{var_name}' for status updates.")
-                        else: # TO_CLOUD direction
-                            logging.info(f"  Mapping local MQTT topic '{topic}' to cloud variable '{var_name}' for sensor data.")
+                        logging.info(f"   Mapping local MQTT topic '{topic}' to cloud variable '{var_name}' for status updates.")
 
                         # Initialize list for topic if it doesn't exist
                         if topic not in mqtt_to_cloud_map:
@@ -303,13 +261,13 @@ if __name__ == "__main__":
     # Clean up on shutdown
     if local_client.is_connected():
         local_client.loop_stop() # Stop the MQTT client loop
-        local_client.disconnect() # Disconnect from Mosquitto
-        logging.info("Disconnected from local Mosquitto service.")
+    local_client.disconnect() # Disconnect from Mosquitto
+    logging.info("Disconnected from local Mosquitto service.")
 
-    # Stop all cloud client threads
+    # Stop all cloud client threads (though daemon threads will exit with main)
     for acc_name, client in cloud_clients.items():
         try:
-            client.stop()
+            client.stop() # Explicitly stop each Arduino Cloud client
             logging.info(f"Stopped cloud client for account '{acc_name}'.")
         except Exception as e:
             logging.error(f"Error stopping cloud client for '{acc_name}': {e}", exc_info=True)
