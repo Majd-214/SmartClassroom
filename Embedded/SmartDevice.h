@@ -1,15 +1,16 @@
 /*
 ====================================================================
-  The Library Header File (SmartDevice.h) - Version 3.0 (Beginner Focused)
+  The Library Header File (SmartDevice.h) - Version 3.1 (Robust Subscriptions)
 ====================================================================
-  - This version is simplified for clarity and ease of use.
-  - It removes all station-specific logic, making it truly universal.
+  - This version adds internal handling for re-subscribing to topics
+    after an MQTT client reconnection, ensuring reliable message reception.
 */
 
 #ifndef SmartDevice_h
 #define SmartDevice_h
 
 #include "Arduino.h"
+#include <vector> // Required for std::vector<String>
 
 // ===============================================================
 //  Safe Nodemcu ESP8266 GPIO Pin Definitions
@@ -39,13 +40,14 @@ public:
   // Initializes the device and connects to Wi-Fi and the Hub.
   void begin(const char* deviceName, const char* wifi_ssid, const char* wifi_pass, const char* mqtt_broker);
 
-  // Keeps the device connected. MUST be called in every loop().
+  // Keeps the device connected and processes incoming messages. MUST be called in every loop().
   void update();
 
   // Publishes a message to a specific topic path.
   void publishTo(String fullTopic, String payload);
 
   // Subscribes to a specific topic path to listen for messages.
+  // This version also stores the subscription for automatic re-subscription on reconnect.
   void subscribeTo(String fullTopic);
 
   // Registers a function to handle all incoming messages.
@@ -53,7 +55,12 @@ public:
 
 private:
   const char* _deviceName;
-  void reconnect();
+  void reconnect(); // Handles MQTT client reconnection.
+  
+  // New: Stores a list of topics this device is currently subscribed to.
+  std::vector<String> _subscribedTopics; 
+  // New: Private helper to re-subscribe to all stored topics after a connection is re-established.
+  void _resubscribe(); 
 };
 
 #endif

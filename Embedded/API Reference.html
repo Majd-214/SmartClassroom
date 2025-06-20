@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDevice Class API Reference</title>
+    <style>
+        /*
+        ====================================================================
+          Modern Dark Theme CSS for Markdown Documents v2.0
+        ====================================================================
+          - Font: Google Product Sans
+          - Style: Dark, pageless, Google Material Design inspired
+          - Added C++ Syntax Highlighting
+        ====================================================================
+        */
+
+        /* --- Import Google's Product Sans Font --- */
+        @import url('https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+
+        /* --- Main Body & Document Styling --- */
+        body {
+            font-family: 'Product Sans', sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #202124; /* Google's dark grey background */
+            color: #e8eaed;           /* Light grey text for readability */
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Main Content Container --- */
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px 40px;
+            background-color: #2d2e30;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+        }
+
+        /* --- Typography --- */
+        h1, h2, h3, h4 {
+            color: #f1f3f4;
+            font-weight: 700;
+            border-bottom: 1px solid #3c4043;
+            padding-bottom: 8px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        h1 { font-size: 2.5em; padding-bottom: 12px; text-align: center; }
+        h2 { font-size: 2em; }
+        h3 { font-size: 1.5em; border-bottom: none; }
+        h4 { font-size: 1.2em; color: #bdc1c6; border-bottom: none; margin-top: 32px; }
+        
+        h3 code { font-size: 0.8em; color: #8ab4f8; }
+        p { font-size: 1em; margin-bottom: 16px; }
+        strong { color: #e8eaed; font-weight: 700; }
+
+        /* --- Links --- */
+        a { color: #8ab4f8; text-decoration: none; transition: color 0.2s ease-in-out; }
+        a:hover { color: #a7c5f9; text-decoration: underline; }
+
+        /* --- Code Blocks (General) --- */
+        code {
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            background-color: #202124;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #bdc1c6;
+        }
+
+        pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #e8eaed;
+        }
+        
+        /* --- NEW: C++ Syntax Highlighting --- */
+        .sh-preprocessor { color: #c586c0; } /* #include */
+        .sh-keyword { color: #569cd6; }      /* void, if, else */
+        .sh-type { color: #4ec9b0; }         /* String, CommandCallback, SmartDevice */
+        .sh-function { color: #dcdcaa; }     /* myDevice.publish, pinMode */
+        .sh-variable { color: #9cdcfe; }     /* payload, command */
+        .sh-string { color: #ce9178; }       /* "Hello World" */
+        .sh-comment { color: #6a9955; }      /* // This is a comment */
+        .sh-literal { color: #b5cea8; }      /* HIGH, INPUT */
+
+        /* --- Other Elements --- */
+        ul, ol { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        li > p { margin-bottom: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+        th, td { border: 1px solid #3c4043; padding: 12px 15px; text-align: left; }
+        thead { background-color: #3c4043; color: #f1f3f4; font-weight: 700; }
+        tbody tr:nth-child(even) { background-color: #282a2c; }
+
+        hr { border: none; border-top: 1px solid #3c4043; margin: 40px 0; }
+        .license { text-align: center; font-style: italic; color: #9aa0a6; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>SmartDevice Class API Reference</h1>
+        <p class="license">McMaster Smart Classroom - Arduino IoT Library © 2025 by Majd Aburas</p>
+        
+        <h2>Introduction</h2>
+        <p>Welcome, McMaster Engineering campers!</p>
+        <p>The <code>SmartDevice</code> library is a custom tool designed to make connecting your ESP8266 projects to the central Smart Classroom Hub incredibly simple. It handles all the complex Wi-Fi and networking code for you, so you can focus on the fun part: writing the logic for your unique sensor or actuator.</p>
+        <p>This document is your guide to using the library.</p>
+        
+        <hr>
+        
+        <h2>Getting Started</h2>
+        <p>To use the library in your Arduino sketch, you need to do two simple things after installing it.</p>
+        <ol>
+            <li>
+                <p><strong>Include the library:</strong> At the top of your <code>.ino</code> file, add this line:</p>
+                <pre><code><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span></code></pre>
+            </li>
+            <li>
+                <p><strong>Create a device object:</strong> Just like you would for a sensor or servo, create a global object for your <code>SmartDevice</code>. You will use this object to access all of the library's functions.</p>
+                <pre><code><span class="sh-type">SmartDevice</span> <span class="sh-variable">myDevice</span>;</code></pre>
+            </li>
+        </ol>
+
+        <hr>
+
+        <h2>Safe Pin Definitions</h2>
+        <p>To prevent errors and make wiring easier, the <code>SmartDevice</code> library includes definitions for the safe-to-use GPIO pins on your ESP8266 NodeMCU board. You should use these names (e.g., <code>PIN_D1</code>) instead of raw numbers in your code.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Safe Name</th>
+                    <th>GPIO Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>PIN_D1</code></td><td><code>5</code></td></tr>
+                <tr><td><code>PIN_D2</code></td><td><code>4</code></td></tr>
+                <tr><td><code>PIN_D5</code></td><td><code>14</code></td></tr>
+                <tr><td><code>PIN_D6</code></td><td><code>12</code></td></tr>
+                <tr><td><code>PIN_D7</code></td><td><code>13</code></td></tr>
+            </tbody>
+        </table>
+        <p><strong>Example:</strong></p>
+        <pre><code><span class="sh-comment">// Correct way to set pin mode</span>
+<span class="sh-function">pinMode</span>(<span class="sh-variable">PIN_D5</span>, <span class="sh-literal">INPUT</span>);</code></pre>
+
+        <hr>
+        
+        <h2>Class Reference</h2>
+        <p>This section details every function you can use from the <code>SmartDevice</code> library.</p>
+        
+        <h3><code>void begin()</code></h3>
+        <p>The main setup function for your device. It connects to Wi-Fi and the classroom hub. Call this **once** in your <code>setup()</code> function.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">begin</span>(<span class="sh-keyword">const char*</span> <span class="sh-variable">deviceName</span>, <span class="sh-type">DeviceType</span> <span class="sh-variable">deviceType</span>, <span class="sh-keyword">const char*</span> <span class="sh-variable">wifi_ssid</span>, <span class="sh-keyword">const char*</span> <span class="sh-variable">wifi_pass</span>, <span class="sh-keyword">const char*</span> <span class="sh-variable">mqtt_broker</span>);</code></pre>
+        <ul>
+            <li><code>deviceName</code>: A unique name for your device (e.g., "Main_Door").</li>
+            <li><code>deviceType</code>: The type of station you are building (e.g., `STATION_DOOR`).</li>
+            <li><code>wifi_ssid</code>: The name of the Wi-Fi network.</li>
+            <li><code>wifi_pass</code>: The password for the Wi-Fi network.</li>
+            <li><code>mqtt_broker</code>: The IP address of the hub computer.</li>
+        </ul>
+        
+        <h3><code>void update()</code></h3>
+        <p>The heartbeat of the library. You **must** call this at the beginning of every `loop()` to keep the device connected and check for new messages.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">update</span>();</code></pre>
+        
+        <h3><code>void publish()</code></h3>
+        <p>Used by most stations to send data. It automatically builds the correct topic path based on your device's type.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">publish</span>(<span class="sh-type">String</span> <span class="sh-variable">subtopic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>);</code></pre>
+        <ul>
+            <li><code>subtopic</code>: The final part of the topic path (e.g., `"status"` or `"data"`).</li>
+            <li><code>payload</code>: The data you want to send (e.g., `"ON"` or `"temp:22.5"`).</li>
+        </ul>
+        <pre><code><span class="sh-comment">// If this is a STATION_DOOR device, this publishes to "classroom/door/status"</span>
+<span class="sh-variable">myDevice</span>.<span class="sh-function">publish</span>(<span class="sh-string">"status"</span>, <span class="sh-string">"LOCKED"</span>);</code></pre>
+        
+        <h3><code>void onCommand()</code></h3>
+        <p>For simple actuators. Registers a function that will be called only when a command is sent to your device's default command topic. Your function will receive the message payload as a `String`.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">onCommand</span>(<span class="sh-type">CommandCallback</span> <span class="sh-variable">callback</span>);</code></pre>
+        <pre><code><span class="sh-comment">// Define your handler function</span>
+<span class="sh-keyword">void</span> <span class="sh-function">handleHvacCommands</span>(<span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+  <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>) { <span class="sh-comment">/*...*/</span> }
+}
+
+<span class="sh-keyword">void</span> <span class="sh-function">setup</span>() {
+  <span class="sh-comment">// Register it</span>
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">onCommand</span>(handleHvacCommands);
+  <span class="sh-comment">// ...</span>
+}</code></pre>
+
+        <h4>Advanced Functions (For Master Control Panel)</h4>
+        <p>These functions give you more control and are essential for the Station 6 - Master Control Panel mission.</p>
+        
+        <h3><code>void publishTo()</code></h3>
+        <p>Publishes a message to any topic you specify manually. This is perfect for a control panel that needs to send commands to many different devices.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">publishTo</span>(<span class="sh-type">String</span> <span class="sh-variable">fullTopic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>);</code></pre>
+        <pre><code><span class="sh-comment">// Directly send a command to the curtain's command topic</span>
+<span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-string">"classroom/curtain/command"</span>, <span class="sh-string">"OPEN"</span>);</code></pre>
+        
+        <h3><code>void subscribeTo()</code></h3>
+        <p>Subscribes to any topic you specify manually. The control panel will use this to listen to the `status` topics of other devices to know their current state.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span> <span class="sh-variable">fullTopic</span>);</code></pre>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">setup</span>() {
+  <span class="sh-comment">// ...</span>
+  <span class="sh-comment">// Tell the hub we want to receive updates from the curtain</span>
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-string">"classroom/curtain/status"</span>);
+}</code></pre>
+        
+        <h3><code>void onMessage()</code></h3>
+        <p>An advanced callback for devices listening to multiple topics. Your function will receive both the `topic` and the `payload`, so you can write logic to handle messages from different sources.</p>
+        <pre><code><span class="sh-keyword">void</span> <span class="sh-function">onMessage</span>(<span class="sh-type">MessageCallback</span> <span class="sh-variable">callback</span>);</code></pre>
+        <pre><code><span class="sh-comment">// Define your advanced handler function</span>
+<span class="sh-keyword">void</span> <span class="sh-function">handlePanelMessages</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>) {
+  <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-string">"classroom/curtain/status"</span>) {
+    <span class="sh-comment">// Update the curtain's state variable and LED</span>
+  } <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-string">"classroom/hvac/status"</span>) {
+    <span class="sh-comment">// Update the HVAC's state variable and LED</span>
+  }
+}
+
+<span class="sh-keyword">void</span> <span class="sh-function">setup</span>() {
+  <span class="sh-comment">// Register the advanced handler</span>
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">onMessage</span>(handlePanelMessages);
+  <span class="sh-comment">// ...</span>
+}</code></pre>
+        
+        <hr>
+        
+        <h2>The <code>DeviceType</code> Enum</h2>
+        <p>When you call <code>myDevice.begin()</code>, you must specify your station's type.</p>
+        <h4>Available Types</h4>
+        <ul>
+            <li><code>STATION_LIGHTING</code></li>
+            <li><code>STATION_CURTAIN</code></li>
+            <li><code>STATION_ENVIRONMENT</code></li>
+            <li><code>STATION_APPLIANCE</code> (Note: The HVAC station should use `STATION_HVAC`)</li>
+            <li><code>STATION_DOOR</code></li>
+            <li><code>STATION_HVAC</code></li>
+            <li><code>STATION_PANEL</code></li>
+        </ul>
+        
+        <hr>
+        
+        <h2>Licensing</h2>
+        <p class="license">This library is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. To view a copy of this license, visit <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">https://creativecommons.org/licenses/by-nc-sa/4.0/</a></p>
+    
+    </main>
+</body>
+</html>
