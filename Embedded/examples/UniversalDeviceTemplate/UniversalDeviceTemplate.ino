@@ -1,33 +1,31 @@
 // 1. LIBRARY INCLUSIONS
-#include <SmartDevice.h>
+#include <SmartDevice.h> // This now includes the new structs and helpers
+
+using namespace SmartHome;
 
 // 2. VARIABLE DEFINITIONS
 
-
 // 3. CONFIGURATION
-const char* DEVICE_NAME = "My_Station_Device"; // <-- CHANGE THIS!
-const char* COMMAND_TOPIC = "classroom/some_device/command"; // <-- UPDATE THIS!
-const char* STATUS_TOPIC = "classroom/some_device/status";   // <-- UPDATE THIS!
+const char *DEVICE_NAME = "My_Station_Device";    // <-- CHANGE THIS!
+const char *BASE_TOPIC = "classroom/some_device"; // <-- UPDATE THIS! This single topic handles both commands and status
 
 // 4. DECLARATIONS
 SmartDevice myDevice;
 
-
-void setupMyHardware() { // Runs ONCE
-  // ---> SETUP LOGIC GOES HERE <---
-
+void setupDevice() // Runs ONCE at startup.
+{
+  // ---> INITIALIZE YOUR DEVICE HARDWARE HERE <---
 }
 
-void loopMySensorLogic() { // Runs REPEATEDLY
-  // ---> SENSOR LOGIC GOES HERE <---
-
+void readSensor() // Runs REPEATEDLY in the main loop.
+{
+  // ---> READ YOUR SENSORS AND PUBLISH DATA HERE <---
 }
 
-void handleMyActuatorLogic(String command) { // Executes ON_DEMAND
-  // ---> ACTUATOR LOGIC GOES HERE <---
-
+void triggerActuator(String topic, String command) // Runs ON_DEMAND when a command is received from the Smart Hub.
+{
+  // ---> PROCESS INCOMING COMMANDS AND CONTROL ACTUATORS HERE <---
 }
-
 
 /*
 ===============================================================
@@ -35,7 +33,7 @@ void handleMyActuatorLogic(String command) { // Executes ON_DEMAND
 |   +-----------------------------------------------------+   |
 |   |                                                     |   |
 |   |   --->>    DO NOT EDIT THE CODE BELOW!    <<---     |   |
-|   |         (This is the system's engine)               |   |
+|   |           (This is the system's engine)             |   |
 |   |                                                     |   |
 |   +-----------------------------------------------------+   |
 |                                                             |
@@ -44,24 +42,28 @@ void handleMyActuatorLogic(String command) { // Executes ON_DEMAND
 
 // ---- System Engine Below ----
 
-const char* WIFI_SSID = "McMasterIoT-Camp";
-const char* WIFI_PASSWORD = "Roomba2025";
-const char* MQTT_BROKER_IP = "192.168.0.147";
+const char *WIFI_SSID = "McMasterIoT-Camp";
+const char *WIFI_PASSWORD = "Roomba2025";
+const char *MQTT_BROKER_IP = "192.168.0.147";
 
 // System-level message handler that calls your actuator logic.
-void system_onMessage(String topic, String payload) {
-  Serial.print("System received command: ");
+void system_onMessage(String topic, String payload) // Signature matches MessageCallback
+{
+  Serial.print("System received command on topic: ");
+  Serial.print(topic);
+  Serial.print(". Payload: ");
   Serial.println(payload);
-  handleMyActuatorLogic(payload); // Calls your function above
+  triggerActuator(topic, payload); // Calls your function above with topic and payload
 }
 
 // Main setup function that initializes the entire system.
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.println("System Engine: Booting device...");
 
   // Call your custom hardware setup function
-  setupMyHardware();
+  setupDevice();
   Serial.println("System Engine: Custom hardware setup complete.");
 
   // Initialize the SmartDevice library and connect to the network.
@@ -70,14 +72,15 @@ void setup() {
   // Register the system-level message handler.
   myDevice.onMessage(system_onMessage);
 
-  // Subscribe to the command topic to receive instructions.
-  myDevice.subscribeTo(COMMAND_TOPIC);
+  // Subscribe to the base topic to receive commands for this device.
+  myDevice.subscribeTo(BASE_TOPIC); // Now subscribing to the base topic for commands
   Serial.println("System Engine: Boot sequence complete. System is online.");
 }
 
 // Main loop that keeps the system running.
-void loop() {
+void loop()
+{
   myDevice.update(); // MUST be here to keep connection alive.
-  loopMySensorLogic(); // Calls your custom sensor loop function.
-  delay(1000); // A 1-second delay to prevent spamming the network. Adjust if needed.
+  readSensor();      // Call your sensor reading and publishing logic.
+  delay(1000);       // A 1-second delay to prevent spamming the network. Adjust if needed.
 }

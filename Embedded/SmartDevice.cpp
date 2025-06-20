@@ -1,15 +1,14 @@
 /*
 ====================================================================
-  The Library Implementation (SmartDevice.cpp) - Version 3.1 (Robust Subscriptions)
+  The Library Implementation (SmartDevice.cpp) - Version 7.0
 ====================================================================
-  - Simplified logic to support the new universal, beginner-friendly header.
-  - Implements automatic re-subscription to topics after MQTT reconnection.
 */
+
+#include "SmartDevice.h"
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include "SmartDevice.h"
-#include <vector> // NEW: Required for std::vector
+#include <vector>
 
 // --- Global objects ---
 WiFiClient wifiClient;
@@ -38,7 +37,6 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 
 SmartDevice::SmartDevice()
 {
-  // Clear the list of subscribed topics upon object creation.
   _subscribedTopics.clear();
 }
 
@@ -64,7 +62,7 @@ void SmartDevice::begin(const char *deviceName, const char *wifi_ssid, const cha
   mqttClient.setCallback(mqttCallback); // Register the global callback function.
 }
 
-void SmartDevice::reconnect()
+void SmartDevice::_reconnect() // Private method with underscore
 {
   while (!mqttClient.connected())
   {
@@ -72,8 +70,7 @@ void SmartDevice::reconnect()
     if (mqttClient.connect(_deviceName))
     {
       Serial.println("connected!");
-      // NEW: Re-subscribe to all previously requested topics after a successful reconnection.
-      _resubscribe();
+      _resubscribe(); // Calls private method with underscore
     }
     else
     {
@@ -89,7 +86,7 @@ void SmartDevice::update()
 {
   if (!mqttClient.connected())
   {
-    reconnect();
+    _reconnect(); // Calls private method with underscore
   }
   mqttClient.loop(); // Process incoming MQTT messages and maintain connection.
 }
@@ -99,6 +96,7 @@ void SmartDevice::publishTo(String fullTopic, String payload)
   if (mqttClient.connected())
   {
     mqttClient.publish(fullTopic.c_str(), payload.c_str());
+    Serial.printf("Published to %s: %s\n", fullTopic.c_str(), payload.c_str());
   }
   else
   {
@@ -108,7 +106,6 @@ void SmartDevice::publishTo(String fullTopic, String payload)
 
 void SmartDevice::subscribeTo(String fullTopic)
 {
-  // Check if the topic is already in our list to avoid duplicates.
   bool found = false;
   for (const String &topic : _subscribedTopics)
   {
@@ -119,13 +116,11 @@ void SmartDevice::subscribeTo(String fullTopic)
     }
   }
 
-  // If not found, add it to our internal list of topics to subscribe to.
   if (!found)
   {
     _subscribedTopics.push_back(fullTopic);
   }
 
-  // Attempt to subscribe immediately if the MQTT client is currently connected.
   if (mqttClient.connected())
   {
     mqttClient.subscribe(fullTopic.c_str());
@@ -133,13 +128,11 @@ void SmartDevice::subscribeTo(String fullTopic)
   }
   else
   {
-    // If not connected, the topic is stored and will be subscribed upon reconnection.
     Serial.println("MQTT client not connected, added to queue for re-subscription on connect.");
   }
 }
 
-// NEW: Private helper method to re-subscribe to all stored topics.
-void SmartDevice::_resubscribe()
+void SmartDevice::_resubscribe() // Private method with underscore
 {
   Serial.println("Re-subscribing to topics...");
   if (_subscribedTopics.empty())
@@ -149,7 +142,6 @@ void SmartDevice::_resubscribe()
   }
   for (const String &topic : _subscribedTopics)
   {
-    // Attempt to subscribe with QoS 0 (most common for simple devices)
     if (mqttClient.subscribe(topic.c_str()))
     {
       Serial.printf("  Successfully re-subscribed to: %s\n", topic.c_str());
@@ -163,6 +155,89 @@ void SmartDevice::_resubscribe()
 
 void SmartDevice::onMessage(MessageCallback callback)
 {
-  // Set the global message callback function to the one provided by the sketch.
   global_message_callback = callback;
+}
+
+bool SmartDevice::isConnected()
+{
+  return mqttClient.connected();
+}
+
+// ===============================================================
+//  Static Command Parsing Helper Function
+//  Parses an incoming raw command string into a friendly Light struct.
+// ===============================================================
+
+// Helper to parse key-value pairs from command string (e.g., "KEY=VALUE")
+String getValueForKey(String data, String key, char separator = ',')
+{
+  int keyIndex = data.indexOf(key + "=");
+  if (keyIndex == -1)
+    return ""; // Key not found
+
+  int valueStart = keyIndex + key.length() + 1;
+  int valueEnd = data.indexOf(separator, valueStart);
+
+  if (valueEnd == -1)
+  { // If separator not found, it's the last value
+    return data.substring(valueStart);
+  }
+  else
+  {
+    return data.substring(valueStart, valueEnd);
+  }
+}
+
+SmartHome::Light SmartDevice::commandToLight(String command)
+{ // Renamed static method
+  SmartHome::Light light;
+
+  // Default values
+  light.isOn = false;
+  light.brightness = 0;
+  light.hue = 0;
+  light.saturation = 0;
+  light.type = SmartHome::DIMMABLE; // Assume dimmable unless color keys are found
+
+  // Parse ON/OFF state
+  String switchVal = getValueForKey(command, "SWITCH");
+  if (switchVal.isEmpty())
+  { // Handle SWI for Python's JSON-like output (if it uses that)
+    switchVal = getValueForKey(command, "SWI");
+  }
+  light.isOn = (switchVal.equalsIgnoreCase("ON") || switchVal.equalsIgnoreCase("true"));
+
+  // Check for Color parameters first
+  String hueVal = getValueForKey(command, "HUE");
+  String satVal = getValueForKey(command, "SATURATION");
+  String valVal = getValueForKey(command, "BRIGHTNESS"); // Python's 'BRIGHTNESS' maps to HSV 'V'
+
+  if (!hueVal.isEmpty() || !satVal.isEmpty())
+  { // If Hue or Saturation is explicitly in the command, it's a COLOR light
+    light.type = SmartHome::COLOR;
+    light.hue = hueVal.toInt();
+    light.saturation = satVal.toInt();
+    light.brightness = valVal.toInt(); // Brightness (V) for color comes from 'BRIGHTNESS' key
+
+    // Ensure HSV values are within their valid ranges
+    light.hue = constrain(light.hue, 0, 360);
+    light.saturation = constrain(light.saturation, 0, 100);
+    light.brightness = constrain(light.brightness, 0, 100);
+  }
+  else
+  {
+    // If no color parameters, treat as DIMMABLE
+    light.type = SmartHome::DIMMABLE;
+    // Brightness for dimmable also comes from 'BRIGHTNESS' key
+    String brightnessVal = getValueForKey(command, "BRIGHTNESS");
+    light.brightness = brightnessVal.toInt();
+    if (light.brightness == 0 && (brightnessVal != "0" && brightnessVal != ""))
+    {
+      // If toInt() returned 0 but string wasn't "0" or empty, parsing error, default to 100
+      light.brightness = 100;
+    }
+    light.brightness = constrain(light.brightness, 0, 100); // Ensure brightness is within 0-100
+  }
+
+  return light;
 }

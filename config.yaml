@@ -22,7 +22,7 @@ account_a:
   variables:
     - name: "lights" # Classroom lighting
       direction: "FROM_CLOUD" # Can be controlled by the cloud
-      topic: "classroom/lighting/command" # Base topic
+      topic: "classroom/lighting" # Base topic
       type: "Color" # Color custom data type for RGB values
 
     - name: "curtain"
@@ -32,7 +32,7 @@ account_a:
 
     - name: "thermostat"
       direction: "TO_CLOUD"
-      topic: "classroom/environment/data"
+      topic: "classroom/environment"
       key_in_payload: "temp"
       type: "Float"
 
@@ -67,23 +67,23 @@ account_b:
 
     - name: "light"
       direction: "FROM_CLOUD"  # Can be controlled by the cloud
-      topic: "classroom/light/command"
+      topic: "classroom/light"
       type: "Dimmed"
 
     - name: "door"
       direction: "TO_CLOUD"
-      topic: "classroom/door/status"
+      topic: "classroom/door"
       key_in_payload: "contact"
       type: "Boolean"
 
     - name: "lock"
       direction: "BIDIRECTIONAL"
-      topic: "classroom/door"
+      topic: "classroom/lock"
       key_in_payload: "lock"
       type: "Boolean"
 
     - name: "motion"
       direction: "TO_CLOUD"
-      topic: "classroom/environment/data"
+      topic: "classroom/environment"
       key_in_payload: "motion"
       type: "Boolean"
