@@ -7,7 +7,7 @@ using namespace SmartHome;
 
 // 3. CONFIGURATION
 const char *DEVICE_NAME = "My_Station_Device";    // <-- CHANGE THIS!
-const char *BASE_TOPIC = "classroom/some_device"; // <-- UPDATE THIS! This single topic handles both commands and status
+const char *BASE_TOPIC = "classroom/some_device"; // <-- UPDATE THIS!
 
 // 4. DECLARATIONS
 SmartDevice myDevice;
@@ -32,8 +32,8 @@ void triggerActuator(String topic, String command) // Runs ON_DEMAND when a comm
 |                                                             |
 |   +-----------------------------------------------------+   |
 |   |                                                     |   |
-|   |   --->>    DO NOT EDIT THE CODE BELOW!    <<---     |   |
-|   |           (This is the system's engine)             |   |
+|   |   -->>  IMPORTANT - PROCEED WITH CAUTION !   <<--   |   |
+|   |            (This is the primary engine)             |   |
 |   |                                                     |   |
 |   +-----------------------------------------------------+   |
 |                                                             |

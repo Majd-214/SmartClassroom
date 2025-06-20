@@ -9,6 +9,7 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <vector>
+#include <ArduinoJson.h>
 
 // --- Global objects ---
 WiFiClient wifiClient;
