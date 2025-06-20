@@ -36,18 +36,24 @@ class CloudWorker(threading.Thread):
     def run(self):
         while True:
             try:
-                logging.info(f"Starting connection loop...")
+                logging.info(f"Starting connection loop for account '{self.name}'...")
                 self.client.start()
             except Exception as e:
-                logging.error(f"Connection loop crashed: {e}")
+                logging.error(f"Connection loop for account '{self.name}' crashed: {e}", exc_info=True)
                 time.sleep(15)
 
 
 def generic_on_write_callback(client, value, variable_config):
-    """A generic callback factory for all actuator variables."""
+    """
+    A generic callback factory for all actuator variables.
+    This function is called when a command is received from the Arduino Cloud.
+    It formats the payload and publishes it to the local MQTT broker
+    for the student devices to receive.
+    """
     cloud_var_name = variable_config['name']
-    local_topic = variable_config['topic']
+    base_topic = variable_config['topic']  # This is the base topic from config.yaml
     var_type = variable_config['type']
+    direction = variable_config['direction'] # Get direction from config to determine correct command topic
 
     logging.info(f"Cloud command received for '{cloud_var_name}': {value}")
 
@@ -55,85 +61,148 @@ def generic_on_write_callback(client, value, variable_config):
     payload = ""
     if var_type == "Boolean":
         payload = "ON" if value else "OFF"
-        if "lock" in cloud_var_name: payload = "LOCK" if value else "UNLOCK"
+        # Special handling for lock:
+        if "lock" in cloud_var_name.lower():
+            payload = "LOCK" if value else "UNLOCK"
     elif var_type == "Color":
         try:
-            cmd = f"SWITCH={'ON' if value['switch'] else 'OFF'},BRIGHTNESS={value.get('brightness', 100)},R={value['color']['r']},G={value['color']['g']},B={value['color']['b']}"
+            # Assuming 'value' for Color type is a dictionary like {'switch': True, 'brightness': 100, 'color': {'r': 255, 'g': 0, 'b': 0}}
+            cmd = f"SWITCH={'ON' if value.get('switch', False) else 'OFF'},BRIGHTNESS={value.get('brightness', 100)},R={value['color'].get('r',0)},G={value['color'].get('g',0)},B={value['color'].get('b',0)}"
             payload = cmd
         except Exception:
-            logging.error("Error parsing color command", exc_info=True)
-    else:  # Default to sending the raw value
+            logging.error("Error parsing color command. Expected dictionary format.", exc_info=True)
+            return # Don't publish if payload formatting fails
+    else:  # Default to sending the raw value as a string
         payload = str(value)
 
     if local_client and local_client.is_connected():
-        command_topic = f"{local_topic}/command"
+        command_topic = ""
+        # Determine the correct command topic based on direction
+        if direction == "FROM_CLOUD":
+            # For FROM_CLOUD, the topic in config.yaml IS the command topic (e.g., classroom/light/command)
+            command_topic = base_topic
+        elif direction == "BIDIRECTIONAL":
+            # For BIDIRECTIONAL, append /command to the base topic (e.g., classroom/curtain/command)
+            command_topic = f"{base_topic}/command"
+        else: # This callback should only be triggered for FROM_CLOUD or BIDIRECTIONAL variables
+            logging.warning(f"Unexpected direction '{direction}' for cloud command callback for {cloud_var_name}. Not publishing.")
+            return
+
+        logging.info(f"Publishing to local command topic: '{command_topic}' with payload: '{payload}'")
         local_client.publish(command_topic, payload)
+    else:
+        logging.warning(f"Local MQTT client not connected. Could not send command for '{cloud_var_name}'.")
 
 
 # --- 3. LOCAL MQTT CLIENT SETUP ---
 def on_connect_local(client, userdata, flags, rc, properties=None):
+    """Callback for when the local MQTT client connects to Mosquitto."""
     if rc == 0:
         logging.info("Connection to Local Mosquitto Service SUCCEEDED.")
-        # Dynamically subscribe to all topics defined in the config
+        # Dynamically subscribe to all topics defined in the config that are TO_CLOUD or BIDIRECTIONAL
         for topic in mqtt_to_cloud_map.keys():
             logging.info(f"Subscribing to local topic: {topic}")
             client.subscribe(topic)
     else:
         logging.error(f"Failed to connect to local Mosquitto service, return code {rc}")
 
-
 def on_message_local(client, userdata, msg):
-    """Handles messages from student devices and routes them to the cloud."""
+    """
+    Handles messages from student devices (local MQTT) and routes them to the cloud.
+    This function parses the incoming payload based on the configuration.
+    """
     try:
         payload = msg.payload.decode()
         logging.info(f"Local message received: Topic: {msg.topic}, Payload: {payload}")
 
-        # Look up the routing rule in our map
+        # Look up the routing rule(s) in our map for this topic
         if msg.topic in mqtt_to_cloud_map:
             rules = mqtt_to_cloud_map[msg.topic]
             for rule in rules:
                 try:
                     cloud_client = cloud_clients[rule['account']]
                     cloud_var_name = rule['name']
-                    key = rule.get('key_in_payload')
+                    key = rule.get('key_in_payload') # Key to look for within the payload if it's structured
                     var_type = rule['type']
 
                     value_to_send = None
-                    if key:  # Payload is structured, e.g., "temp:25,motion:true"
-                        parts = {p.split(':')[0].strip(): p.split(':')[1].strip() for p in payload.split(',')}
-                        if key in parts:
-                            raw_value = parts[key]
+
+                    # If key_in_payload is defined, we need to parse the payload more carefully
+                    if key:
+                        # Check if the payload itself contains a colon, indicating a structured format
+                        if ':' in payload:
+                            # Parse structured payload like "temp:25.5,motion:true"
+                            parts = {}
+                            for p in payload.split(','):
+                                if ':' in p:
+                                    k, v = p.split(':', 1) # Split only on the first colon in case value has colons
+                                    parts[k.strip()] = v.strip()
+                                else:
+                                    # Handle cases like "motion:true,25.5" (unlikely but robust)
+                                    logging.warning(f"Part '{p}' in payload '{payload}' does not contain a colon. Skipping.")
+
+                            if key in parts:
+                                raw_value = parts[key]
+                                if var_type == "Boolean":
+                                    value_to_send = (raw_value.lower() == 'true')
+                                elif var_type == "Float":
+                                    value_to_send = float(raw_value)
+                                elif var_type == "Integer":
+                                    value_to_send = int(raw_value)
+                                else: # String or other type
+                                    value_to_send = raw_value
+                            else:
+                                logging.warning(f"Key '{key}' not found in structured payload for topic '{msg.topic}'. Payload: '{payload}'")
+                        else:
+                            # If key_in_payload is defined but payload is simple (e.g., just "25.5" for temperature)
+                            # Assume the entire payload is the value for the defined key
+                            raw_value = payload
                             if var_type == "Boolean":
-                                value_to_send = (raw_value.lower() == 'true')
+                                # Allow both 'true'/'false' and 'ON'/'OFF' etc. for direct boolean payloads
+                                value_to_send = (raw_value.lower() == 'true' or raw_value.upper() in ["ON", "OPEN", "LOCKED"])
                             elif var_type == "Float":
                                 value_to_send = float(raw_value)
                             elif var_type == "Integer":
                                 value_to_send = int(raw_value)
-                            else:
+                            else: # String or other type
                                 value_to_send = raw_value
-                    else:  # Payload is a simple value, e.g., "OPEN"
+                    else:
+                        # If no key_in_payload is defined (e.g., "OPEN" for a door status)
                         if var_type == "Boolean":
                             value_to_send = (payload.upper() in ["ON", "OPEN", "LOCKED"])
                         else:
                             value_to_send = payload
 
                     if value_to_send is not None:
-                        logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}'")
+                        logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}' for account '{rule['account']}'")
                         cloud_client[cloud_var_name] = value_to_send
+                    else:
+                        logging.warning(f"Could not determine value to send for '{cloud_var_name}' from payload '{payload}' on topic '{msg.topic}'.")
 
-                except Exception:
-                    logging.error(f"Error processing rule for {msg.topic}", exc_info=True)
-
+                except ValueError as ve:
+                    logging.error(f"Data type conversion error for rule {rule} on topic {msg.topic}: {ve}. Payload: '{payload}'", exc_info=True)
+                except Exception as e:
+                    logging.error(f"Error processing rule {rule} for topic {msg.topic}: {e}. Payload: '{payload}'", exc_info=True)
         # --- Handle Special Kiosk Requests ---
         elif msg.topic == "classroom/kiosk/request":
             if payload == "CURRENT_TIME":
                 now = datetime.now().strftime("%I:%M %p")  # e.g., "02:30 PM"
-                cloud_clients['account_b']['kiosk_display_line1'] = "Current Time"
-                cloud_clients['account_b']['kiosk_display_line2'] = now
+                # Ensure kiosk_display_line1 and kiosk_display_line2 are registered Arduino Cloud variables
+                # in config.yaml for account_b. If not, this will fail.
+                if 'account_b' in cloud_clients:
+                    if 'kiosk_display_line1' in cloud_clients['account_b'] and 'kiosk_display_line2' in cloud_clients['account_b']:
+                        cloud_clients['account_b']['kiosk_display_line1'] = "Current Time"
+                        cloud_clients['account_b']['kiosk_display_line2'] = now
+                    else:
+                        logging.warning("Kiosk display variables not registered in cloud_clients['account_b']. Check config.yaml.")
+                else:
+                    logging.warning("Account 'account_b' not initialized. Cannot update Kiosk display.")
             # Add logic for other kiosk requests here...
+        else:
+            logging.info(f"No routing rule found for topic: {msg.topic}")
 
-    except Exception:
-        logging.error(f"Error processing main local message from topic '{msg.topic}'", exc_info=True)
+    except Exception as e:
+        logging.error(f"Error processing main local message from topic '{msg.topic}': {e}", exc_info=True)
 
 
 # --- 4. MAIN EXECUTION BLOCK ---
@@ -143,70 +212,106 @@ if __name__ == "__main__":
     logging.info("=====================================================")
 
     try:
-        with open("dist/config.yaml", 'r') as f:
+        with open("config.yaml", 'r') as f:
             config = yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error("FATAL: config.yaml not found! Exiting.")
-        time.sleep(10);
+        logging.error("FATAL: config.yaml not found! Please ensure it's in the same directory. Exiting.")
+        time.sleep(10)
+        sys.exit(1)
+    except yaml.YAMLError as ye:
+        logging.error(f"FATAL: Error parsing config.yaml: {ye}. Please check YAML syntax. Exiting.")
+        time.sleep(10)
         sys.exit(1)
 
     # --- Dynamically Setup Cloud Clients from Config ---
     for acc_name, acc_config in config.items():
+        # Ensure it's a dictionary and enabled before processing as an account
         if isinstance(acc_config, dict) and acc_config.get('enabled', False):
             try:
-                logging.info(f"Initializing cloud client for '{acc_name}'...")
+                logging.info(f"Initializing cloud client for account '{acc_name}' (Device ID: {acc_config.get('device_id', 'N/A')})...")
                 client = ArduinoCloudClient(
                     device_id=acc_config['device_id'],
-                    username=acc_config['device_id'],
+                    username=acc_config['device_id'], # Username is typically the device_id
                     password=bytes(acc_config['secret_key'], 'utf-8')
                 )
 
                 for var_config in acc_config.get('variables', []):
-                    # Register the variable
+                    # Register the variable with the Arduino Cloud Client
                     var_name = var_config['name']
                     direction = var_config['direction']
-
+                    # Pass the full var_config to the callback factory so it has all necessary details
                     if direction in ["FROM_CLOUD", "BIDIRECTIONAL"]:
-                        # Create a callback with the specific variable config
+                        # When a variable is FROM_CLOUD or BIDIRECTIONAL, it means the cloud can WRITE to it.
+                        # So, we register an on_write callback that calls our generic handler.
                         callback = lambda c, v, vc=var_config: generic_on_write_callback(c, v, vc)
                         client.register(var_name, on_write=callback)
-                    else:
+                        logging.info(f"  Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}) with on_write callback.")
+                    else: # TO_CLOUD variables only send data, no cloud commands received
                         client.register(var_name)
+                        logging.info(f"  Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}).")
 
-                    # Build the MQTT routing map
+
+                    # Build the MQTT routing map for messages coming FROM local devices TO the cloud
                     if direction in ["TO_CLOUD", "BIDIRECTIONAL"]:
                         topic = var_config['topic']
-                        # For BIDIRECTIONAL, the status topic is topic + "/status"
-                        if direction == "BIDIRECTIONAL": topic += "/status"
+                        # For BIDIRECTIONAL variables, the local device typically sends status updates
+                        # to a topic ending in "/status". Ensure this is consistent with Arduino code.
+                        if direction == "BIDIRECTIONAL":
+                            # Check if the topic already has /status. If not, append it.
+                            # This handles cases where user might have put full status topic in config already.
+                            if not topic.endswith("/status"):
+                                topic += "/status"
+                            logging.info(f"  Mapping local MQTT topic '{topic}' to cloud variable '{var_name}' for status updates.")
+                        else: # TO_CLOUD direction
+                            logging.info(f"  Mapping local MQTT topic '{topic}' to cloud variable '{var_name}' for sensor data.")
 
-                        if topic not in mqtt_to_cloud_map: mqtt_to_cloud_map[topic] = []
+                        # Initialize list for topic if it doesn't exist
+                        if topic not in mqtt_to_cloud_map:
+                            mqtt_to_cloud_map[topic] = []
+                        # Create a copy of var_config and add account name for routing
                         rule = var_config.copy()
                         rule['account'] = acc_name
                         mqtt_to_cloud_map[topic].append(rule)
 
-                cloud_clients[acc_name] = client
-                CloudWorker(acc_name, client).start()
-            except Exception:
-                logging.error(f"Failed to initialize {acc_name} client.", exc_info=True)
+                cloud_clients[acc_name] = client # Store the initialized client instance
+                CloudWorker(acc_name, client).start() # Start a thread for each cloud client
+            except KeyError as ke:
+                logging.error(f"Configuration error for account '{acc_name}': Missing required key '{ke}'. Please check config.yaml.", exc_info=True)
+            except Exception as e:
+                logging.error(f"Failed to initialize cloud client for '{acc_name}': {e}", exc_info=True)
 
-    # --- Setup and connect the Local Client ---
+    # --- Setup and connect the Local MQTT Client (to Mosquitto) ---
     local_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="SmartClassroomHub")
     local_client.on_connect = on_connect_local
     local_client.on_message = on_message_local
 
+    # Main loop to keep the local MQTT client connected and running
     while True:
         try:
             if not local_client.is_connected():
                 logging.info("Attempting to connect to local Mosquitto service...")
-                local_client.connect("localhost", 1883, 60)
-                local_client.loop_start()
-            time.sleep(2)
+                local_client.connect("localhost", 1883, 60) # Connect to default Mosquitto port
+                local_client.loop_start() # Start the MQTT client loop in a non-blocking way
+            time.sleep(2) # Short delay before checking connection status again
         except KeyboardInterrupt:
-            logging.info("Shutdown initiated by user.")
-            break
-        except Exception:
-            logging.warning("Local Mosquitto connection failed. Retrying in 5s...", exc_info=True)
+            logging.info("Shutdown initiated by user. Exiting application.")
+            break # Exit loop on Ctrl+C
+        except Exception as e:
+            logging.warning(f"Local Mosquitto connection failed or encountered an error: {e}. Retrying in 5s...", exc_info=True)
             time.sleep(5)
 
-    if local_client.is_connected(): local_client.loop_stop()
-    logging.info("Hub application has stopped.")
+    # Clean up on shutdown
+    if local_client.is_connected():
+        local_client.loop_stop() # Stop the MQTT client loop
+        local_client.disconnect() # Disconnect from Mosquitto
+        logging.info("Disconnected from local Mosquitto service.")
+
+    # Stop all cloud client threads
+    for acc_name, client in cloud_clients.items():
+        try:
+            client.stop()
+            logging.info(f"Stopped cloud client for account '{acc_name}'.")
+        except Exception as e:
+            logging.error(f"Error stopping cloud client for '{acc_name}': {e}", exc_info=True)
+
+    logging.info("Hub application has stopped successfully.")

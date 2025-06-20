@@ -11,59 +11,79 @@
 # --- Arduino Cloud Credentials (Account A: Ambiance & Environment) ---
 account_a:
   # Variables for this account:
-  # - classroom_lights
-  # - classroom_curtain
-  # - classroom_motion
-  # - classroom_temperature
-  # - kettle
+  # - Light
+  # - Lights
+  # - Curtain
+  # - HVAC
+  # - Motion
   enabled: true
   device_id: "a5ae4bba-2de1-4550-a15a-ee4d37d8a75b"
   secret_key: "?bWig6rFqOJquyU@IgClVQeNL"
   variables:
-    - name: "classroom_lights"
+    - name: "light"
+      direction: "FROM_CLOUD"  # Can be controlled by the cloud
+      topic: "classroom/light/command"
+      type: "Dimmed"
+
+    - name: "lights"
       direction: "FROM_CLOUD"
       topic: "classroom/lighting/command"
       type: "Color"
 
-    - name: "classroom_curtain"
+    - name: "curtain"
       direction: "BIDIRECTIONAL"  # Can be controlled AND report status
       topic: "classroom/curtain"  # Base topic
       type: "Boolean"
 
-    - name: "classroom_temperature"
-      direction: "TO_CLOUD"
-      topic: "classroom/environment/data"
-      key_in_payload: "temp"  # The key to look for in the MQTT payload
-      type: "Float"
+    - name: "hVAC"
+      direction: "BIDIRECTIONAL"  # Can be controlled AND report status
+      topic: "classroom/hvac"  # Base topic
+      type: "Boolean"
 
-    - name: "classroom_motion"
+    - name: "motion"
       direction: "TO_CLOUD"
       topic: "classroom/environment/data"
       key_in_payload: "motion"
       type: "Boolean"
 
-    - name: "kettle"
-      direction: "BIDIRECTIONAL"
-      topic: "classroom/appliance"
-      type: "Boolean"
-
 # --- Arduino Cloud Credentials (Account B: Security & Access) ---
 account_b:
   # Variables for this account:
-  # - door_sensor (Contact Sensor)
-  # - door_lock (Smart Plug)
+  # - Lock
+  # - Door
+  # - Kettle
+  # - Thermostat
+  # - Window
   enabled: true
-  device_id: "PASTE_ACCOUNT_B_DEVICE_ID_HERE"
-  secret_key: "PASTE_ACCOUNT_B_SECRET_KEY_HERE"
+  device_id: "e6a92bb5-fd57-4251-aa15-346a3c988e1e"
+  secret_key: "2BVKUhsYLiUBcuynE?1r4lAiM"
   variables:
-    - name: "door_lock"
+    - name: "lock"
       direction: "BIDIRECTIONAL"
       topic: "classroom/door"
       key_in_payload: "lock"
       type: "Boolean"
 
-    - name: "door_sensor"
+    - name: "door"
       direction: "TO_CLOUD"
       topic: "classroom/door/status"
+      key_in_payload: "contact"
+      type: "Boolean"
+
+    - name: "kettle"
+      direction: "BIDIRECTIONAL"
+      topic: "classroom/kettle"
+      key_in_payload: "state"
+      type: "Boolean"
+
+    - name: "thermostat"
+      direction: "TO_CLOUD"
+      topic: "classroom/environment/data"
+      key_in_payload: "temp"
+      type: "Float"
+
+    - name: "window"
+      direction: "TO_CLOUD"
+      topic: "classroom/window"
       key_in_payload: "contact"
       type: "Boolean"
