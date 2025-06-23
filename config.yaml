@@ -28,11 +28,11 @@ account_a:
     - name: "curtain"
       direction: "FROM_CLOUD"  # Can be controlled AND report status
       topic: "classroom/curtain"  # Base topic
-      type: "Dimmed"
+      type: "Boolean"
 
     - name: "thermostat"
       direction: "TO_CLOUD"
-      topic: "classroom/environment"
+      topic: "classroom/thermostat"
       key_in_payload: "temp"
       type: "Float"
 
@@ -84,6 +84,6 @@ account_b:
 
     - name: "motion"
       direction: "TO_CLOUD"
-      topic: "classroom/environment"
+      topic: "classroom/motion"
       key_in_payload: "motion"
       type: "Boolean"
