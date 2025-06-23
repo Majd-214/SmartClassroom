@@ -11,7 +11,6 @@
 #include <vector>
 #include <ArduinoJson.h>
 
-// ===============================================================
 //  Safe Nodemcu ESP8266 GPIO Pin Definitions
 // ===============================================================
 // Use these friendly pin names in your sketch to avoid using essential pins.
@@ -25,7 +24,6 @@
 #define PIN_D7 13 // GPIO - Safe to use
 #define PIN_D8 15 // GPIO ~ Required for boot, boot fails if pulled HIGH
 
-// ===============================================================
 //  Structs for IoT Variable Types (No Objects, Only Data Structures)
 // ===============================================================
 namespace SmartHome
@@ -75,14 +73,12 @@ namespace SmartHome
 
 } // End namespace SmartHome
 
-// ===============================================================
 //  Type Definition for the Universal Message Callback
 // ===============================================================
 // Your sketch will use this to react to any message from the cloud.
 // It receives the topic the message came on and the message content (payload).
 typedef void (*MessageCallback)(String topic, String payload);
 
-// ===============================================================
 //  SmartDevice Class Definition
 // ===============================================================
 class SmartDevice
@@ -110,7 +106,6 @@ public:
   // Checks if the MQTT client is currently connected.
   bool isConnected();
 
-  // ===============================================================
   //  Command Parsing Helper Function (Static - accessible via SmartDevice::)
   //  Parses an incoming raw command string into a friendly Light struct.
   // ===============================================================

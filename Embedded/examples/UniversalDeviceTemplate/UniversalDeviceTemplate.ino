@@ -1,17 +1,18 @@
 // 1. LIBRARY INCLUSIONS
-#include <SmartDevice.h> // This now includes the new structs and helpers
+#include <SmartDevice.h>
 
-using namespace SmartHome;
+using namespace SmartHome; // NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE
 
 // 2. VARIABLE DEFINITIONS
 
-// 3. CONFIGURATION
+// 3. SERVER CONFIGURATION
 const char *DEVICE_NAME = "My_Station_Device";    // <-- CHANGE THIS!
-const char *BASE_TOPIC = "classroom/some_device"; // <-- UPDATE THIS!
+const char *BASE_TOPIC = "classroom/some_device"; // <-- CHANGE THIS!
 
-// 4. DECLARATIONS
+// 4. CLASS DECLARATIONS
 SmartDevice myDevice;
 
+// 5. DEVICE FUNCTIONS
 void setupDevice() // Runs ONCE at startup.
 {
   // ---> INITIALIZE YOUR DEVICE HARDWARE HERE <---
@@ -74,6 +75,11 @@ void setup()
 
   // Subscribe to the base topic to receive commands for this device.
   myDevice.subscribeTo(BASE_TOPIC); // Now subscribing to the base topic for commands
+  // SUBSCRIBE TO ADDITIONAL TOPICS HERE IF NEEDED.
+  // YOUR CODE GOES BETWEEN THESE LINES:
+  // -------------------------------
+
+  // -------------------------------
   Serial.println("System Engine: Boot sequence complete. System is online.");
 }
 
