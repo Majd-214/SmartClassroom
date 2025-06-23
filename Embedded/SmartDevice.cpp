@@ -1,15 +1,16 @@
 /*
 ====================================================================
-  The Library Implementation (SmartDevice.cpp) - Version 7.0
+  The Library Implementation (SmartDevice.cpp) - Version 7.0 (Modified for JSON)
 ====================================================================
 */
 
-#include "SmartDevice.h"
+#include "SmartDevice.h" // Assuming SmartDevice.h now includes ArduinoJson.h and defines SmartHome::Light with payload()
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <vector>
-#include <ArduinoJson.h>
+// ArduinoJson.h is typically included in SmartDevice.h, but including here won't hurt.
+// #include <ArduinoJson.h>
 
 // --- Global objects ---
 WiFiClient wifiClient;
@@ -68,6 +69,7 @@ void SmartDevice::_reconnect() // Private method with underscore
   while (!mqttClient.connected())
   {
     Serial.print("Attempting MQTT connection...");
+    // Attempt to connect with a client ID that includes the device name
     if (mqttClient.connect(_deviceName))
     {
       Serial.println("connected!");
@@ -166,31 +168,11 @@ bool SmartDevice::isConnected()
 
 // ===============================================================
 //  Static Command Parsing Helper Function
-//  Parses an incoming raw command string into a friendly Light struct.
+//  Parses an incoming raw command string (now JSON) into a friendly Light struct.
 // ===============================================================
 
-// Helper to parse key-value pairs from command string (e.g., "KEY=VALUE")
-String getValueForKey(String data, String key, char separator = ',')
-{
-  int keyIndex = data.indexOf(key + "=");
-  if (keyIndex == -1)
-    return ""; // Key not found
-
-  int valueStart = keyIndex + key.length() + 1;
-  int valueEnd = data.indexOf(separator, valueStart);
-
-  if (valueEnd == -1)
-  { // If separator not found, it's the last value
-    return data.substring(valueStart);
-  }
-  else
-  {
-    return data.substring(valueStart, valueEnd);
-  }
-}
-
 SmartHome::Light SmartDevice::commandToLight(String command)
-{ // Renamed static method
+{
   SmartHome::Light light;
 
   // Default values
@@ -200,25 +182,38 @@ SmartHome::Light SmartDevice::commandToLight(String command)
   light.saturation = 0;
   light.type = SmartHome::DIMMABLE; // Assume dimmable unless color keys are found
 
-  // Parse ON/OFF state
-  String switchVal = getValueForKey(command, "SWITCH");
-  if (switchVal.isEmpty())
-  { // Handle SWI for Python's JSON-like output (if it uses that)
-    switchVal = getValueForKey(command, "SWI");
+  // Use DynamicJsonDocument to parse the incoming command string
+  // A capacity of 256 bytes should be sufficient for these light commands
+  DynamicJsonDocument doc(256);
+  DeserializationError error = deserializeJson(doc, command);
+
+  if (error)
+  {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    // Return a default or error state light if parsing fails
+    return light;
   }
-  light.isOn = (switchVal.equalsIgnoreCase("ON") || switchVal.equalsIgnoreCase("true"));
 
-  // Check for Color parameters first
-  String hueVal = getValueForKey(command, "HUE");
-  String satVal = getValueForKey(command, "SATURATION");
-  String valVal = getValueForKey(command, "BRIGHTNESS"); // Python's 'BRIGHTNESS' maps to HSV 'V'
+  // Parse ON/OFF state
+  // Check for "swi" (Arduino Cloud naming convention) or "SWITCH" (your original)
+  if (doc.containsKey("swi")) {
+    light.isOn = doc["swi"].as<bool>();
+  } else if (doc.containsKey("SWITCH")) { // Fallback for old "SWITCH" key if it exists
+    light.isOn = doc["SWITCH"].as<String>().equalsIgnoreCase("ON") || doc["SWITCH"].as<String>().equalsIgnoreCase("true");
+  }
 
-  if (!hueVal.isEmpty() || !satVal.isEmpty())
+
+  // Check for Color parameters first (hue or sat)
+  bool hasHue = doc.containsKey("hue");
+  bool hasSaturation = doc.containsKey("sat");
+
+  if (hasHue || hasSaturation)
   { // If Hue or Saturation is explicitly in the command, it's a COLOR light
     light.type = SmartHome::COLOR;
-    light.hue = hueVal.toInt();
-    light.saturation = satVal.toInt();
-    light.brightness = valVal.toInt(); // Brightness (V) for color comes from 'BRIGHTNESS' key
+    light.hue = doc["hue"].as<int>();
+    light.saturation = doc["sat"].as<int>();
+    light.brightness = doc["bri"].as<int>(); // Brightness (V) for color also comes from 'bri' key
 
     // Ensure HSV values are within their valid ranges
     light.hue = constrain(light.hue, 0, 360);
@@ -229,13 +224,11 @@ SmartHome::Light SmartDevice::commandToLight(String command)
   {
     // If no color parameters, treat as DIMMABLE
     light.type = SmartHome::DIMMABLE;
-    // Brightness for dimmable also comes from 'BRIGHTNESS' key
-    String brightnessVal = getValueForKey(command, "BRIGHTNESS");
-    light.brightness = brightnessVal.toInt();
-    if (light.brightness == 0 && (brightnessVal != "0" && brightnessVal != ""))
-    {
-      // If toInt() returned 0 but string wasn't "0" or empty, parsing error, default to 100
-      light.brightness = 100;
+    // Brightness for dimmable also comes from 'bri' key
+    if (doc.containsKey("bri")) {
+        light.brightness = doc["bri"].as<int>();
+    } else {
+        light.brightness = 0; // Default brightness if not found
     }
     light.brightness = constrain(light.brightness, 0, 100); // Ensure brightness is within 0-100
   }

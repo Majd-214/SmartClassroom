@@ -1,15 +1,15 @@
 /*
 ====================================================================
-  The Library Header File (SmartDevice.h) - Version 7.0
+  The Library Header (SmartDevice.h) - Version 7.0 (Modified for JSON)
 ====================================================================
 */
 
-#ifndef SmartDevice_h
-#define SmartDevice_h
+#ifndef SMARTDEVICE_H
+#define SMARTDEVICE_H
 
-#include "Arduino.h"
-#include <vector>
-#include <ArduinoJson.h>
+#include <Arduino.h> // For String, Serial, etc.
+#include <vector>    // For std::vector
+#include <ArduinoJson.h> // IMPORTANT: Include the ArduinoJson library!
 
 //  Safe Nodemcu ESP8266 GPIO Pin Definitions
 // ===============================================================
@@ -24,99 +24,93 @@
 #define PIN_D7 13 // GPIO - Safe to use
 #define PIN_D8 15 // GPIO ~ Required for boot, boot fails if pulled HIGH
 
-//  Structs for IoT Variable Types (No Objects, Only Data Structures)
-// ===============================================================
-namespace SmartHome
-{ // All new structs will live in this namespace
+// Define a type for the message callback function
+// This function will be called when an MQTT message is received
+using MessageCallback = void (*)(String topic, String message);
 
-  // Defines the type of light being represented (dimmable white or full color)
-  enum LightType
-  {
-    DIMMABLE,
-    COLOR
-  };
+// Declare the global callback function. This will be set by SmartDevice::onMessage
+extern MessageCallback global_message_callback;
 
-  // Represents the full state of a light device.
-  struct Light
-  {
-    bool isOn;      // true for ON, false for OFF
-    int brightness; // 0-100% (This is also the 'V' component for COLOR)
-    int hue;        // 0-360 degrees (only relevant if type is COLOR)
-    int saturation; // 0-100% (only relevant if type is COLOR)
-    LightType type; // Indicates if this Light struct represents a DIMMABLE or COLOR light
+// --- MQTT Callback Function (Forward Declaration) ---
+void mqttCallback(char *topic, byte *payload, unsigned int length);
 
-    // Method to generate the string payload for this Light state
-    // This generates JSON to be 100% compatible with bridge.py status expectations.
-    String payload() const
-    {
-      // Determine the buffer size based on whether it's a color light or just dimmable
-      const size_t CAPACITY = (type == COLOR)
-                                  ? JSON_OBJECT_SIZE(4)  // swi, bri, hue, sat
-                                  : JSON_OBJECT_SIZE(2); // swi, bri
+// --- SmartHome Namespace for Light Struct ---
+namespace SmartHome {
 
-      StaticJsonDocument<CAPACITY> doc;
+// Enum to define light types
+enum LightType {
+  DIMMABLE, // Only brightness control
+  COLOR     // Brightness, Hue, Saturation control
+};
 
-      doc["swi"] = isOn;       // "swi" for switch (on/off)
-      doc["bri"] = brightness; // "bri" for brightness (0-100)
+// Struct to represent a light's state and type
+struct Light {
+  bool isOn;
+  int brightness; // 0-100
+  int hue;        // 0-360
+  int saturation; // 0-100
+  LightType type;
 
-      if (type == COLOR)
-      {
-        doc["hue"] = hue;        // "hue" for hue (0-360)
-        doc["sat"] = saturation; // "sat" for saturation (0-100)
-      }
+  // Method to generate a JSON payload string from the Light's state
+  // IMPORTANT: Removed 'const' qualifier to allow modification of the JsonDocument
+  String payload() {
+    // Use DynamicJsonDocument for flexibility.
+    // 128 bytes should be ample for a light's state (swi, bri, hue, sat).
+    DynamicJsonDocument doc(128);
 
-      String output;
-      serializeJson(doc, output);
-      return output;
+    doc["swi"] = isOn;
+    doc["bri"] = brightness;
+
+    if (type == COLOR) {
+      doc["hue"] = hue;
+      doc["sat"] = saturation;
     }
-  };
 
-} // End namespace SmartHome
+    String output;
+    // serializeJson writes the JSON object to the output String
+    serializeJson(doc, output);
+    return output;
+  }
+};
 
-//  Type Definition for the Universal Message Callback
-// ===============================================================
-// Your sketch will use this to react to any message from the cloud.
-// It receives the topic the message came on and the message content (payload).
-typedef void (*MessageCallback)(String topic, String payload);
+} // namespace SmartHome
 
-//  SmartDevice Class Definition
-// ===============================================================
-class SmartDevice
-{
+
+// --- SmartDevice Class Definition ---
+class SmartDevice {
 public:
+  // Constructor
   SmartDevice();
 
-  // Initializes the device and connects to Wi-Fi and the Hub.
+  // Initialize the device (Wi-Fi, MQTT)
   void begin(const char *deviceName, const char *wifi_ssid, const char *wifi_pass, const char *mqtt_broker);
 
-  // Keeps the device connected and processes incoming messages. MUST be called in every loop().
+  // Call this in your Arduino loop() function to maintain connection and process messages
   void update();
 
-  // Publishes a raw string message to a specific topic path.
-  // For Light messages, use Light.payload() as the 'payload' parameter.
+  // Publish a message to an MQTT topic
   void publishTo(String fullTopic, String payload);
 
-  // Subscribes to a specific topic path to listen for messages.
-  // This version also stores the subscription for automatic re-subscription on reconnect.
+  // Subscribe to an MQTT topic
   void subscribeTo(String fullTopic);
 
-  // Registers a function to handle all incoming messages.
+  // Register a callback function to handle incoming MQTT messages
   void onMessage(MessageCallback callback);
 
-  // Checks if the MQTT client is currently connected.
+  // Check if MQTT client is connected
   bool isConnected();
 
-  //  Command Parsing Helper Function (Static - accessible via SmartDevice::)
-  //  Parses an incoming raw command string into a friendly Light struct.
-  // ===============================================================
+  // Static helper function to convert an incoming command string (now JSON) to a Light struct
   static SmartHome::Light commandToLight(String command);
 
 private:
   const char *_deviceName;
-  void _reconnect(); // Private method with underscore
-
   std::vector<String> _subscribedTopics;
-  void _resubscribe(); // Private method with underscore
+
+  // Private helper to reconnect to MQTT broker
+  void _reconnect();
+  // Private helper to resubscribe to topics after reconnection
+  void _resubscribe();
 };
 
-#endif
+#endif // SMARTDEVICE_H
