@@ -1,12 +1,12 @@
 # ====================================================================
 #   McMaster Engineering Summer Camp - Smart Classroom IoT Hub
-#   PRODUCTION VERSION 2.0 - FULLY DYNAMIC ENGINE - MAJD ABURAS 2025
+#   PRODUCTION VERSION 2.4.0 - FULLY DYNAMIC ENGINE - MAJD ABURAS 2025
 #
 #   This script is a generic engine. All logic for variable
 #   mapping and message routing is loaded from config.yaml at runtime.
 #
 #   This script is licensed under the Creative Commons
-#   Attribution-NonCommercial-ShareAlike 4.0 International License. 
+#   Attribution-NonCommercial-ShareAlike 4.0 International License.
 #   To view a copy of this license, visit:
 #   https://creativecommons.org/licenses/by-nc-sa/4.0/
 # ====================================================================
@@ -31,6 +31,14 @@ local_client = None
 cloud_clients = {}  # Dictionary to hold all cloud clients
 mqtt_to_cloud_map = {}  # Our dynamic routing table
 
+# Default MQTT Broker Configuration (can be overridden by config.yaml)
+DEFAULT_MQTT_BROKER_HOST = "localhost"
+DEFAULT_MQTT_BROKER_PORT = 1883
+
+# Valid variable types and directions for configuration validation
+VALID_VAR_TYPES = ["String", "Float", "Integer", "Boolean", "Dimmed", "Color"]
+VALID_DIRECTIONS = ["TO_CLOUD", "FROM_CLOUD", "BIDIRECTIONAL"]
+
 
 # --- 2. DYNAMIC CALLBACK & WORKER CLASSES ---
 class CloudWorker(threading.Thread):
@@ -40,16 +48,16 @@ class CloudWorker(threading.Thread):
         # Pass name to the super constructor for proper thread naming
         super().__init__(name=account_name)
         self.client = client_instance
-        self.daemon = True
+        self.daemon = True # Daemon threads exit automatically when the main program exits
 
     def run(self):
         while True:
             try:
                 logging.info(f"Starting connection loop for account '{self.name}'...")
-                self.client.start()
+                self.client.start() # This blocks until client.stop() is called or connection fails
             except Exception as e:
                 logging.error(f"Connection loop for account '{self.name}' crashed: {e}", exc_info=True)
-                time.sleep(15)
+                time.sleep(15) # Wait before attempting to restart connection
 
 
 def generic_on_write_callback(client, value, variable_config):
@@ -60,54 +68,35 @@ def generic_on_write_callback(client, value, variable_config):
     for the student devices to receive.
     """
     cloud_var_name = variable_config['name']
-    base_topic = variable_config['topic']  # This is the base topic from config.yaml
+    base_topic = variable_config['topic'] # This is the base topic from config.yaml
     var_type = variable_config['type']
     direction = variable_config['direction'] # Get direction from config to determine correct command topic
 
-    logging.info(f"Cloud command received for '{cloud_var_name}': {value}")
+    logging.info(f"Cloud command received for '{cloud_var_name}': {value} (Type: {var_type})")
 
-    # Format payload based on variable type
     payload = ""
+    # Format payload based on the variable type expected by the local device
     if var_type == "Boolean":
-        payload = "ON" if value else "OFF"
-    elif var_type == "Color":
+        payload = "true" if value else "false" # Send "true"/"false" strings for C++ bool parsing
+    elif var_type == "Color" or var_type == "Dimmed":
+        # For Color and Dimmed, 'value' from Arduino Cloud is already a Python dictionary.
+        # Serialize this dictionary to a JSON string.
         try:
-            # Assuming 'value' for Color type is a dictionary like {"bri":"43","hue":"355","sat":"74","swi":"true"}
-            # The 'swi' field indicates the switch state (on/off)
-            switch_state = "ON" if str(value.get('swi', 'false')).lower() == 'true' else "OFF"
-            brightness = str(value.get('bri', '100')) # Ensure string for payload
-            hue = str(value.get('hue', '0'))
-            saturation = str(value.get('sat', '0'))
-
-            cmd = f"SWITCH={switch_state},BRIGHTNESS={brightness},HUE={hue},SATURATION={saturation}"
-            payload = cmd
-        except Exception:
-            logging.error("Error parsing color command. Expected dictionary format with 'bri', 'hue', 'sat', 'swi'.", exc_info=True)
-            return # Don't publish if payload formatting fails
-    elif var_type == "Dimmed":
-        try:
-            # Assuming 'value' for Dimmed type is a dictionary like {"bri":"37","swi":"true"}
-            switch_state = "ON" if str(value.get('swi', 'false')).lower() == 'true' else "OFF"
-            brightness = str(value.get('bri', '100')) # Ensure string for payload
-
-            cmd = f"SWITCH={switch_state},BRIGHTNESS={brightness}"
-            payload = cmd
-        except Exception:
-            logging.error("Error parsing dimmed command. Expected dictionary format with 'bri', 'swi'.", exc_info=True)
-            return # Don't publish if payload formatting fails
-    else:  # Default to sending the raw value as a string
+            payload = json.dumps(value)
+        except TypeError:
+            logging.error(f"Error serializing {var_type} command to JSON. Expected dictionary, got {type(value)}: {value}", exc_info=True)
+            return # Abort publishing if payload formatting fails
+    else:  # Default to sending the raw value as a string for other types (Float, Integer, String)
         payload = str(value)
 
+    # Publish to local MQTT if connected and direction allows
     if local_client and local_client.is_connected():
-        # Determine the correct command topic based on direction
-        if direction == "FROM_CLOUD" or direction == "BIDIRECTIONAL":
-            # For FROM_CLOUD, retrieve the base topic from config.yaml (e.g., classroom/curtain)
+        if direction in ["FROM_CLOUD", "BIDIRECTIONAL"]:
             logging.info(f"Publishing to local topic: '{base_topic}' with payload: '{payload}'")
             local_client.publish(base_topic, payload)
         else: # This callback should only be triggered for FROM_CLOUD or BIDIRECTIONAL variables
-            logging.warning(f"Unexpected direction '{direction}' for cloud command callback for {cloud_var_name}. Not publishing.")
+            logging.warning(f"Unexpected direction '{direction}' for cloud command callback for {cloud_var_name}. Not publishing to local MQTT.")
             return
-
     else:
         logging.warning(f"Local MQTT client not connected. Could not send command for '{cloud_var_name}'.")
 
@@ -118,11 +107,20 @@ def on_connect_local(client, userdata, flags, rc, properties=None):
     if rc == 0:
         logging.info("Connection to Local Mosquitto Service SUCCEEDED.")
         # Dynamically subscribe to all topics defined in the config that are TO_CLOUD or BIDIRECTIONAL
+        # These are topics the bridge needs to listen to for incoming device data.
         for topic in mqtt_to_cloud_map.keys():
             logging.info(f"Subscribing to local topic: {topic}")
             client.subscribe(topic)
     else:
         logging.error(f"Failed to connect to local Mosquitto service, return code {rc}")
+
+def on_disconnect_local(client, userdata, rc):
+    """Callback for when the local MQTT client disconnects from Mosquitto."""
+    if rc == 0:
+        logging.info("Disconnected from local Mosquitto service cleanly.")
+    else:
+        logging.warning(f"Local MQTT client disconnected unexpectedly (RC: {rc}).")
+        # The loop_start() method will automatically attempt to reconnect
 
 def on_message_local(client, userdata, msg):
     """
@@ -144,10 +142,8 @@ def on_message_local(client, userdata, msg):
 
                     value_to_send = None
 
-                    # With structured payloads removed, the entire payload is the value
-                    # We just need to convert it based on the variable type
+                    # Convert the incoming payload based on the variable type defined in config.yaml
                     if var_type == "Boolean":
-                        # Expecting "true" or "false" strings directly from Arduino
                         value_to_send = (payload.lower() == 'true')
                     elif var_type == "Float":
                         value_to_send = float(payload)
@@ -159,22 +155,26 @@ def on_message_local(client, userdata, msg):
                             value_to_send = json.loads(payload)
                         except json.JSONDecodeError:
                             logging.error(f"Failed to decode JSON for {var_type} type from payload '{payload}' on topic '{msg.topic}'. Expected JSON string.", exc_info=True)
-                            value_to_send = None # Or raise an error, depending on desired strictness
-                    else: # Default to sending the raw value as a string for other types
+                            value_to_send = None # Set to None to prevent pushing invalid data
+                    elif var_type == "String": # Explicitly handle String type
                         value_to_send = payload
+                    else: # Fallback for unknown/unhandled types, log a warning
+                        logging.warning(f"Unsupported variable type '{var_type}' for cloud variable '{cloud_var_name}'. Sending raw payload as string.")
+                        value_to_send = payload
+
 
                     if value_to_send is not None:
                         logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}' for account '{rule['account']}'")
                         cloud_client[cloud_var_name] = value_to_send
                     else:
-                        logging.warning(f"Could not determine value to send for '{cloud_var_name}' from payload '{payload}' on topic '{msg.topic}'.")
+                        logging.warning(f"Could not determine valid value to send for '{cloud_var_name}' from payload '{payload}' on topic '{msg.topic}'.")
 
                 except ValueError as ve:
                     logging.error(f"Data type conversion error for rule {rule} on topic {msg.topic}: {ve}. Payload: '{payload}'", exc_info=True)
                 except Exception as e:
                     logging.error(f"Error processing rule {rule} for topic {msg.topic}: {e}. Payload: '{payload}'", exc_info=True)
         else:
-            logging.info(f"No routing rule found for topic: {msg.topic}")
+            logging.debug(f"No routing rule found for topic: {msg.topic}. Message ignored.") # Changed to debug
 
     except Exception as e:
         logging.error(f"Error processing main local message from topic '{msg.topic}': {e}", exc_info=True)
@@ -186,9 +186,12 @@ if __name__ == "__main__":
     logging.info("   McMaster Smart Classroom Hub (Dynamic) Starting   ")
     logging.info("===================================================")
 
+    # --- Load Configuration ---
     try:
         with open("config.yaml", 'r') as f:
-            config = yaml.safe_load(f)
+            full_config = yaml.safe_load(f)
+            if not isinstance(full_config, dict):
+                raise ValueError("Config file content is not a valid dictionary.")
     except FileNotFoundError:
         logging.error("FATAL: config.yaml not found! Please ensure it's in the same directory. Exiting.")
         time.sleep(10)
@@ -197,12 +200,33 @@ if __name__ == "__main__":
         logging.error(f"FATAL: Error parsing config.yaml: {ye}. Please check YAML syntax. Exiting.")
         time.sleep(10)
         sys.exit(1)
+    except ValueError as ve:
+        logging.error(f"FATAL: Invalid config.yaml format: {ve}. Exiting.")
+        time.sleep(10)
+        sys.exit(1)
+
+
+    # --- Get Local MQTT Broker Configuration ---
+    mqtt_broker_host = full_config.get('local_mqtt_broker', {}).get('host', DEFAULT_MQTT_BROKER_HOST)
+    mqtt_broker_port = full_config.get('local_mqtt_broker', {}).get('port', DEFAULT_MQTT_BROKER_PORT)
+    logging.info(f"Local MQTT Broker configured as: {mqtt_broker_host}:{mqtt_broker_port}")
+
 
     # --- Dynamically Setup Cloud Clients from Config ---
-    for acc_name, acc_config in config.items():
+    # Iterate through all top-level keys in the config, treating them as accounts
+    for acc_name, acc_config in full_config.items():
+        # Skip the 'local_mqtt_broker' key as it's not an account configuration
+        if acc_name == 'local_mqtt_broker':
+            continue
+
         # Ensure it's a dictionary and enabled before processing as an account
         if isinstance(acc_config, dict) and acc_config.get('enabled', False):
             try:
+                # Basic validation for essential keys
+                if not acc_config.get('device_id') or not acc_config.get('secret_key'):
+                    logging.error(f"Skipping account '{acc_name}': 'device_id' or 'secret_key' is missing or empty in config.yaml. Please provide both for enabled accounts.")
+                    continue
+
                 logging.info(f"Initializing cloud client for account '{acc_name}' (Device ID: {acc_config.get('device_id', 'N/A')})...")
                 client = ArduinoCloudClient(
                     device_id=acc_config['device_id'],
@@ -211,25 +235,36 @@ if __name__ == "__main__":
                 )
 
                 for var_config in acc_config.get('variables', []):
+                    var_name = var_config.get('name')
+                    direction = var_config.get('direction')
+                    var_type = var_config.get('type')
+                    topic = var_config.get('topic')
+
+                    # Validate critical variable configuration parameters
+                    if not all([var_name, direction, var_type, topic]):
+                        logging.error(f"Skipping variable in account '{acc_name}': Missing 'name', 'direction', 'type', or 'topic' in variable config: {var_config}")
+                        continue
+                    if direction not in VALID_DIRECTIONS:
+                        logging.error(f"Skipping variable '{var_name}' in account '{acc_name}': Invalid 'direction' '{direction}'. Must be one of {VALID_DIRECTIONS}.")
+                        continue
+                    if var_type not in VALID_VAR_TYPES:
+                        logging.error(f"Skipping variable '{var_name}' in account '{acc_name}': Invalid 'type' '{var_type}'. Must be one of {VALID_VAR_TYPES}.")
+                        continue
+
                     # Register the variable with the Arduino Cloud Client
-                    var_name = var_config['name']
-                    direction = var_config['direction']
-                    # Pass the full var_config to the callback factory so it has all necessary details
                     if direction in ["FROM_CLOUD", "BIDIRECTIONAL"]:
                         # When a variable is FROM_CLOUD or BIDIRECTIONAL, it means the cloud can WRITE to it.
                         # So, we register an on_write callback that calls our generic handler.
                         callback = lambda c, v, vc=var_config: generic_on_write_callback(c, v, vc)
                         client.register(var_name, on_write=callback)
-                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}) with on_write callback.")
+                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_type}) with on_write callback.")
                     else: # TO_CLOUD variables only send data, no cloud commands received
                         client.register(var_name)
-                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_config['type']}).")
+                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_type}).")
 
                     # Build the MQTT routing map for messages coming FROM local devices TO the cloud
                     if direction in ["TO_CLOUD", "BIDIRECTIONAL"]:
-                        topic = var_config['topic']
                         logging.info(f"   Mapping local MQTT topic '{topic}' to cloud variable '{var_name}' for status updates.")
-
                         # Initialize list for topic if it doesn't exist
                         if topic not in mqtt_to_cloud_map:
                             mqtt_to_cloud_map[topic] = []
@@ -241,7 +276,7 @@ if __name__ == "__main__":
                 cloud_clients[acc_name] = client # Store the initialized client instance
                 CloudWorker(acc_name, client).start() # Start a thread for each cloud client
             except KeyError as ke:
-                logging.error(f"Configuration error for account '{acc_name}': Missing required key '{ke}'. Please check config.yaml.", exc_info=True)
+                logging.error(f"Configuration error for account '{acc_name}': Missing required key '{ke}'. Please check config.yaml syntax.", exc_info=True)
             except Exception as e:
                 logging.error(f"Failed to initialize cloud client for '{acc_name}': {e}", exc_info=True)
 
@@ -249,13 +284,14 @@ if __name__ == "__main__":
     local_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="SmartClassroomHub")
     local_client.on_connect = on_connect_local
     local_client.on_message = on_message_local
+    local_client.on_disconnect = on_disconnect_local # Add the disconnect callback
 
     # Main loop to keep the local MQTT client connected and running
     while True:
         try:
             if not local_client.is_connected():
-                logging.info("Attempting to connect to local Mosquitto service...")
-                local_client.connect("localhost", 1883, 60) # Connect to default Mosquitto port
+                logging.info(f"Attempting to connect to local Mosquitto service at {mqtt_broker_host}:{mqtt_broker_port}...")
+                local_client.connect(mqtt_broker_host, mqtt_broker_port, 60) # Connect using dynamic host/port
                 local_client.loop_start() # Start the MQTT client loop in a non-blocking way
             time.sleep(2) # Short delay before checking connection status again
         except KeyboardInterrupt:

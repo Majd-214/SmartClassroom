@@ -7,15 +7,17 @@ using namespace SmartHome; // NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE
 
 // 3. SERVER CONFIGURATION
 const char *DEVICE_NAME = "My_Station_Device";    // <-- CHANGE THIS!
-const char *BASE_TOPIC = "classroom/some_device"; // <-- CHANGE THIS!
+const char *SOME_TOPIC = "classroom/some_device"; // <-- CHANGE THIS!
 
-// 4. CLASS DECLARATIONS
+// 4. OBJECT DECLARATIONS
 SmartDevice myDevice;
 
 // 5. DEVICE FUNCTIONS
 void setupDevice() // Runs ONCE at startup.
 {
   // ---> INITIALIZE YOUR DEVICE HARDWARE HERE <---
+
+  myDevice.subscribeTo(SOME_TOPIC); // Subscribe to the topics
 }
 
 void readSensor() // Runs REPEATEDLY in the main loop.
@@ -33,8 +35,8 @@ void triggerActuator(String topic, String command) // Runs ON_DEMAND when a comm
 |                                                             |
 |   +-----------------------------------------------------+   |
 |   |                                                     |   |
-|   |   -->>  IMPORTANT - PROCEED WITH CAUTION !   <<--   |   |
-|   |            (This is the primary engine)             |   |
+|   |    --->>    DO NOT EDIT THE CODE BELOW!    <<---    |   |
+|   |            (This is the system's engine)            |   |
 |   |                                                     |   |
 |   +-----------------------------------------------------+   |
 |                                                             |
@@ -63,23 +65,16 @@ void setup()
   Serial.begin(115200);
   Serial.println("System Engine: Booting device...");
 
-  // Call your custom hardware setup function
-  setupDevice();
-  Serial.println("System Engine: Custom hardware setup complete.");
-
   // Initialize the SmartDevice library and connect to the network.
   myDevice.begin(DEVICE_NAME, WIFI_SSID, WIFI_PASSWORD, MQTT_BROKER_IP);
 
   // Register the system-level message handler.
   myDevice.onMessage(system_onMessage);
 
-  // Subscribe to the base topic to receive commands for this device.
-  myDevice.subscribeTo(BASE_TOPIC); // Now subscribing to the base topic for commands
-  // SUBSCRIBE TO ADDITIONAL TOPICS HERE IF NEEDED.
-  // YOUR CODE GOES BETWEEN THESE LINES:
-  // -------------------------------
+  // Call your custom hardware setup function
+  setupDevice();
+  Serial.println("System Engine: Custom hardware setup complete.");
 
-  // -------------------------------
   Serial.println("System Engine: Boot sequence complete. System is online.");
 }
 

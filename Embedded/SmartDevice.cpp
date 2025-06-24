@@ -1,16 +1,14 @@
 /*
 ====================================================================
-  The Library Implementation (SmartDevice.cpp) - Version 7.0 (Modified for JSON)
+  Smart Device Library Implementation (SmartDevice.cpp) - Version 2.4.0
 ====================================================================
 */
 
-#include "SmartDevice.h" // Assuming SmartDevice.h now includes ArduinoJson.h and defines SmartHome::Light with payload()
+#include "SmartDevice.h"
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <vector>
-// ArduinoJson.h is typically included in SmartDevice.h, but including here won't hurt.
-// #include <ArduinoJson.h>
 
 // --- Global objects ---
 WiFiClient wifiClient;
@@ -196,24 +194,29 @@ SmartHome::Light SmartDevice::commandToLight(String command)
   }
 
   // Parse ON/OFF state
-  // Check for "swi" (Arduino Cloud naming convention) or "SWITCH" (your original)
-  if (doc.containsKey("swi")) {
+  // Check for "swi" (Arduino Cloud naming convention)
+  if (doc.containsKey("swi"))
+  {
     light.isOn = doc["swi"].as<bool>();
-  } else if (doc.containsKey("SWITCH")) { // Fallback for old "SWITCH" key if it exists
-    light.isOn = doc["SWITCH"].as<String>().equalsIgnoreCase("ON") || doc["SWITCH"].as<String>().equalsIgnoreCase("true");
   }
-
+  else
+  {
+    // If "swi" is not present, assume it's off or determine based on brightness
+    light.isOn = false;
+  }
 
   // Check for Color parameters first (hue or sat)
   bool hasHue = doc.containsKey("hue");
   bool hasSaturation = doc.containsKey("sat");
 
   if (hasHue || hasSaturation)
-  { // If Hue or Saturation is explicitly in the command, it's a COLOR light
+  {
+    // If Hue or Saturation is explicitly in the command, it's a COLOR light
     light.type = SmartHome::COLOR;
-    light.hue = doc["hue"].as<int>();
-    light.saturation = doc["sat"].as<int>();
-    light.brightness = doc["bri"].as<int>(); // Brightness (V) for color also comes from 'bri' key
+    // Safely get values with default fallbacks
+    light.hue = doc["hue"] | 0;        // default to 0 if 'hue' is not present
+    light.saturation = doc["sat"] | 0; // default to 0 if 'sat' is not present
+    light.brightness = doc["bri"] | 0; // default to 0 if 'bri' is not present
 
     // Ensure HSV values are within their valid ranges
     light.hue = constrain(light.hue, 0, 360);
@@ -224,14 +227,45 @@ SmartHome::Light SmartDevice::commandToLight(String command)
   {
     // If no color parameters, treat as DIMMABLE
     light.type = SmartHome::DIMMABLE;
-    // Brightness for dimmable also comes from 'bri' key
-    if (doc.containsKey("bri")) {
-        light.brightness = doc["bri"].as<int>();
-    } else {
-        light.brightness = 0; // Default brightness if not found
-    }
+    // Brightness for dimmable also comes from 'bri' key.
+    light.brightness = doc["bri"] | 0;                      // default to 0 if 'bri' is not present
     light.brightness = constrain(light.brightness, 0, 100); // Ensure brightness is within 0-100
   }
 
   return light;
+}
+
+// ===============================================================
+//  New Abstraction Helpers for SmartDevice Users
+// ===============================================================
+
+// Helper function to convert Light struct (HSV) to NeoPixel compatible RGB (uint32_t)
+// Assumes Adafruit_NeoPixel library's ColorHSV function is available.
+// This function must be placed in SmartDevice.cpp (or a separate helper.cpp)
+// and its prototype in SmartDevice.h
+uint32_t SmartDevice::getRGB(SmartHome::Light lightCommand)
+{
+  if (lightCommand.type == SmartHome::COLOR)
+  {
+    // Map Arduino Cloud's HSV ranges to NeoPixel's ColorHSV ranges
+    // Hue: 0-360 -> 0-65535
+    // Saturation: 0-100 -> 0-255
+    // Brightness (Value): 0-100 -> 0-255
+    return Adafruit_NeoPixel::ColorHSV(
+        map(lightCommand.hue, 0, 360, 0, 65535),
+        map(lightCommand.saturation, 0, 100, 0, 255),
+        map(lightCommand.brightness, 0, 100, 0, 255));
+  }
+  else
+  {
+    // For DIMMABLE, return grayscale based on brightness
+    uint8_t dim_val = map(lightCommand.brightness, 0, 100, 0, 255);
+    return Adafruit_NeoPixel::Color(dim_val, dim_val, dim_val);
+  }
+}
+
+// You might also want a helper for direct grayscale brightness for dimmable lights if not using getRGB
+uint8_t SmartDevice::getBrightnessValue(SmartHome::Light lightCommand)
+{
+  return map(lightCommand.brightness, 0, 100, 0, 255);
 }

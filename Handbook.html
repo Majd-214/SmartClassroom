@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McMaster Smart Classroom - Student Handbook</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/product-sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* ====================================================================
+      McMaster Smart Classroom - Consolidated Stylesheet
+    ====================================================================
+    */
+
+        /* --- Global & Foundational Styles --- */
+        body {
+            font-family: 'Product Sans', sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #202124;
+            color: #e8eaed;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.7;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+        }
+
+        /* --- Functional CSS (Animations, Scrollbar) --- */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #202124;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #3c4043;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #5f6368;
+        }
+
+        /* --- Content-Area Styling (Scoped to '.page') --- */
+        .page h1,
+        .page h2,
+        .page h3,
+        .page h4 {
+            color: #f1f3f4;
+            font-weight: 700;
+            border-bottom: 1px solid #3c4043;
+            padding-bottom: 8px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        .page h1 {
+            font-size: 2.5em;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        .page h2 {
+            font-size: 2em;
+        }
+
+        .page h3 {
+            font-size: 1.5em;
+            border-bottom: none;
+        }
+
+        .page h4 {
+            font-size: 1.2em;
+            color: #bdc1c6;
+            border-bottom: none;
+            margin-top: 32px;
+        }
+
+        .page p {
+            font-size: 1em;
+            margin-bottom: 16px;
+        }
+
+        .page strong,
+        .page b {
+            color: #e8eaed;
+            font-weight: 700;
+        }
+
+        .page a {
+            color: #8ab4f8;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .page a:hover {
+            color: #a7c5f9;
+            text-decoration: underline;
+        }
+
+        .page ul,
+        .page ol {
+            padding-left: 20px;
+        }
+
+        .page li {
+            margin-bottom: 8px;
+        }
+
+        .page li>p {
+            margin-bottom: 0;
+        }
+
+        .page table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin: 24px 0;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .page th,
+        .page td {
+            border-bottom: 1px solid #3c4043;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .page td {
+            border-right: 1px solid #3c4043;
+        }
+
+        .page th:last-child,
+        .page td:last-child {
+            border-right: none;
+        }
+
+        .page tbody tr:last-child th,
+        .page tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .page thead {
+            background-color: #3c4043;
+            color: #f1f3f4;
+            font-weight: 700;
+        }
+
+        .page tbody tr:nth-child(even) {
+            background-color: #282a2c;
+        }
+
+        .page hr {
+            border: none;
+            border-top: 1px solid #3c4043;
+            margin: 40px 0;
+        }
+
+        /* --- Code Block & Syntax Highlighting --- */
+
+        .page :not(pre)>code {
+            background-color: #2d2e30;
+            border: 1px solid #3c4043;
+            padding: 2px 5px;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+
+        .page pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .page pre code {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #e8eaed;
+        }
+
+        /* Specific syntax highlighting colors */
+        .sh-preprocessor {
+            color: #c586c0;
+        }
+
+        .sh-keyword {
+            color: #569cd6;
+        }
+
+        .sh-type {
+            color: #4ec9b0;
+        }
+
+        .sh-function {
+            color: #dcdcaa;
+        }
+
+        .sh-variable {
+            color: #9cdcfe;
+        }
+
+        .sh-string {
+            color: #ce9178;
+        }
+
+        .sh-comment {
+            color: #6a9955;
+        }
+
+        .sh-literal {
+            color: #b5cea8;
+        }
+
+        .sh-info {
+            color: #4ec9b0;
+        }
+
+        .sh-class {
+            color: #4ec9b0;
+        }
+
+        .sh-operator {
+            color: #d4d4d4;
+        }
+
+        .sh-number {
+            color: #b5cea8;
+        }
+
+        /* Custom styles for the Overview (Instructor Briefing) page */
+        .overview-section-header {
+            font-family: 'Product Sans', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+        }
+
+        .overview-card {
+            background-color: #2D2E30;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .overview-gradient-heading {
+            background: linear-gradient(90deg, #8ab4f8, #c1d9fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .flow-step-border-accent {
+            border-left-color: #8ab4f8;
+        }
+
+        .flow-step-border-primary {
+            border-left-color: #e8eaed;
+        }
+
+        .flow-step-border-secondary {
+            border-left-color: #bdc1c6;
+        }
+
+        /* New pastel colors for warnings */
+        .flow-step-border-warning {
+            border-left-color: #ffb300;
+            /* Softer amber for border */
+        }
+
+        .bg-warning-tint {
+            background-color: rgba(255, 179, 0, 0.08);
+            /* Very light amber tint */
+        }
+
+        .text-error-red-soft {
+            color: #ef5350;
+            /* A standard Material Design red, kept for strong warning */
+        }
+
+        .flow-arrow {
+            color: #8ab4f8;
+        }
+
+        /* Chart container styling as per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Styles for code blocks within the infographic, to ensure consistency */
+        .infographic-code-block pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .infographic-code-block pre code {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #e8eaed;
+        }
+
+        /* New styles for modern design elements */
+        .highlight-box {
+            background-color: rgba(138, 180, 248, 0.08);
+            /* Light accent blue with transparency */
+            border-left: 4px solid #8ab4f8;
+            /* Accent blue border */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            /* Adjust spacing */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .highlight-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon-large {
+            font-size: 3rem;
+            /* Larger icons for impact */
+            color: #8ab4f8;
+            /* Accent color for icons */
+            margin-bottom: 0.5rem;
+        }
+    </style>
+    <script>
+        // Customizing Tailwind with the color scheme from the handbook
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-bg': '#202124',
+                        /* Original handbook background */
+                        'surface': '#2d2e30',
+                        /* Original handbook surface */
+                        'primary': '#e8eaed',
+                        /* Original handbook primary text */
+                        'secondary': '#bdc1c6',
+                        /* Original handbook secondary text */
+                        'accent': '#8ab4f8',
+                        /* Original handbook accent blue */
+                        'custom-border': '#3c4043',
+                        /* Original handbook border */
+
+                        /* New colors for errors/warnings and additional blue accents */
+                        'error-red': '#ef5350',
+                        /* A standard Material Design red */
+                        'warning-yellow': '#ffeb3b',
+                        /* A standard Material Design yellow */
+                        'info-blue': '#2196f3',
+                        /* A standard Material Design blue */
+                        'light-blue-accent': '#c1d9fd',
+                        /* Lighter shade of accent */
+
+                        /* Specific colors for the warning box */
+                        'warning-tint': 'rgba(255, 179, 0, 0.08)', /* Softer amber tint for background */
+                        'warning-border-color': '#FFB300', /* Softer amber for border */
+
+                        'background-dark': '#202124',
+                        'card-bg': '#2D2E30',
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                    },
+                    fontFamily: {
+                        product: ['Product Sans', 'sans-serif'],
+                        /* Only Product Sans for main text */
+                        fira: ['Fira Code', 'monospace'],
+                        /* Only Fira Code for code */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-custom-bg text-primary font-product">
+
+    <nav class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-custom-border">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex items-center justify-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="#" data-page="home"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Home</a>
+                    <a href="#" data-page="overview"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Overview</a>
+                    <div class="relative" id="dropdown-container">
+                        <button id="nav-missions-btn" type="button"
+                            class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-colors focus:outline-none">
+                            <span>Mission Briefings</span>
+                            <svg class="ml-2 h-4 w-4 transition-transform duration-200" id="dropdown-arrow"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div id="dropdown-menu"
+                            class="hidden absolute mt-2 w-64 bg-surface border border-custom-border rounded-xl shadow-lg py-1">
+                            <a href="#" class="dropdown-item" data-page="station1">Station 1: HVAC & Appliance</a>
+                            <a href="#" class="dropdown-item" data-page="station2">Station 2: Environmental Sensors</a>
+                            <a href="#" class="dropdown-item" data-page="station3">Station 3: Smart Lighting</a>
+                            <a href="#" class="dropdown-item" data-page="station4">Station 4: Door Security</a>
+                            <a href="#" class="dropdown-item" data-page="station5">Station 5: Automated Curtain</a>
+                            <a href="#" class="dropdown-item" data-page="station6">Station 6: Master Control Panel</a>
+                        </div>
+                    </div>
+                    <a href="#" data-page="api-reference"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">API Reference</a>
+                    <a href="#" data-page="upload-troubleshoot"
+                        class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Upload &
+                        Troubleshoot</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-8">
+        <div id="home" class="page">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">McMaster Smart Classroom</h1>
+            <p class="text-center text-secondary text-lg mb-8">Welcome, Future Engineers! Your exciting mission at the
+                McMaster Summer Camp is to work as a team of specialists to bring this Smart Classroom to life. Each
+                group has been assigned a critical station. This handbook will guide you through your specific mission
+                briefing and provide a detailed reference for the powerful <code>SmartDevice</code> library you'll be
+                using.</p>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Getting Started: The
+                Universal Template</h2>
+            <p class="text-secondary">For all stations, your journey begins with the
+                <b><code>UniversalDeviceTemplate.ino</code></b> file. This template is designed to give you a clear,
+                structured starting point by handling all the complex networking behind the scenes. Your main job is to
+                "fill in the blanks" in the designated sections with your station's specific code.
+            </p>
+
+            <h3 class="text-xl font-bold text-primary mb-3">Understanding Your Template</h3>
+            <p class="text-secondary">Open the template in your Arduino IDE:
+                </v><code>File &gt; Examples &gt; SmartDevice &gt; UniversalDeviceTemplate</code>. <br>You will see
+                <b>5</b> distinct sections you need to interact with:
+            </p>
+
+            <ol class="list-decimal list-inside pl-4 space-y-4">
+                <li>
+                    <b>Library Inclusions:</b>
+                    <p class="text-secondary mt-2">At the very top of the file, you'll find an import statement which
+                        tells the program to refer to our Custom <code>&lt;SmartDevice.h&gt;</code> Library. Here is
+                        where you would include any libraries you might need for your stations. <br>For example,
+                        <code>&lt;Servo.h&gt;</code>, or <code>&lt;DHT.h&gt;.</code>
+                    </p>
+                    <pre><code><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span><span class="sh-comment"> // &lt;-- EXAMPLE IMPORT!</span></code></pre>
+                </li>
+                <li>
+                    <b>Variable Definitions:</b>
+                    <p class="text-secondary mt-2">Right below the <code>#include</code> statements, you will find the
+                        variable definitions section. Here is where you define new variables for your
+                        program, like sensor pins, state flags, or other quantities that might need tracking.</p>
+                    <pre><code><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">sensorPin</span> = <span class="sh-keyword">PIN_D1</span>; <span class="sh-comment">// EXAMPLE variable for a sensor pin</span>
+<span class="sh-keyword">bool</span> <span class="sh-variable">buttonState</span> = <span class="sh-keyword">false</span>; <span class="sh-comment">// EXAMPLE variable to track button state</span></code></pre>
+                </li>
+                <li>
+                    <b>Server Configuration:</b>
+                    <p class="text-secondary mt-2">After defining your project variables, you'll find parameters to
+                        identify your
+                        device and its communication channels. You <b>must</b> change these to match your station's
+                        assignment. If your device needs access to more topics or addresses, feel free to add more topic
+                        definitions.</p>
+                    <pre><code><span class="sh-comment">// 3. CONFIGURATION</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"My_Station_Device"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "Sarah_Door_Lock"</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/some_device"</span>; <span class="sh-comment">// &lt;-- CHANGE for your station</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">SOME_OTHER_TOPIC</span> = <span class="sh-string">"classroom/some_other_device"</span>; <span class="sh-comment">// EXAMPLE Second Topic</span></code></pre>
+                </li>
+                <li>
+                    <b>Object Declarations:</b>
+                    <p class="text-secondary mt-2">The final configuration section involves setting up any library
+                        objects your project requires. Objects are a library's anchor in your program and allows it to
+                        use behind-the-scenes features that drastically simplify your code. You will find a pre-defined
+                        <code>SmartDevice</code> object that is used to communicate with the central hub. This is
+                        pre-configured for you and you don't need to modify it. Feel free to add whatever other objects
+                        your program may require.
+                    </p>
+                    <pre><code><span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
+<span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;
+<span class="sh-class">Servo</span> <span class="sh-variable">myServo</span>; <span class="sh-comment">// EXAMPLE class object to utilize servo motor</span></code></pre>
+                </li>
+                <li>
+                    <b>Device Functions:</b>
+                    <p class="text-secondary mt-2">Finally, you'll find the core functions that define your
+                        device's behavior. These functions are where you will write the logic for your station. The
+                        template provides three key functions that you will modify:
+                    </p>
+                    <br>
+                    <ol class="list-none list-inside pl-4 space-y-4">
+                        <li>
+                            <b><code>setupDevice()</code>:</b>
+                            <p class="text-secondary mt-2">This function runs <b>only once</b> when your ESP8266 first
+                                starts
+                                up. It's the perfect place to:</p>
+                            <ul class="list-disc list-inside ml-4 mt-2">
+                                <li>Initialize your hardware components (e.g., set pin modes, start sensors, attach
+                                    servos).
+                                </li>
+                                <li>Prepare any libraries your sensors or actuators need.</li>
+                            </ul>
+                            <p class="text-secondary mt-2">Think of it as setting up your workstation before you begin
+                                your main
+                                project.</p>
+                            <pre><code><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+  <span class="sh-comment">// Your hardware setup code goes here.</span>
+  <span class="sh-function">pinMode(</span><span class="sh-variable">sensorPin</span>, <span class="sh-keyword">INPUT</span>); <span class="sh-comment">// EXAMPLE Configure sensorPin variable as an input</span>
+  <span class="sh-function">pinMode(</span><span class="sh-variable">ledPin</span>, <span class="sh-keyword">OUTPUT</span>); <span class="sh-comment">// EXAMPLE Configure ledPin variable as an output</span>
+}</code></pre>
+                        </li>
+                        <li>
+                            <b><code>readSensor()</code>:</b>
+                            <p class="text-secondary mt-2">This function runs <b>repeatedly, many times per second</b>,
+                                after
+                                <code>setupDevice()</code> is complete. It's ideal for:
+                            </p>
+                            <ul class="list-disc list-inside ml-4 mt-2">
+                                <li>Continuously reading data from sensors.</li>
+                                <li>Sending periodic updates or sensor readings to the cloud.</li>
+                                <li>Any tasks that need to happen over and over again.</li>
+                            </ul>
+                            <p class="text-secondary mt-2">This is where you'll tell your device to keep an eye on
+                                things.</p>
+                            <pre><code><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
+  <span class="sh-comment">// Your sensor reading and data publishing logic goes here.</span>
+  <span class="sh-keyword">int</span> <span class="sh-variable">buttonState</span> = <span class="sh-function">digitalRead</span>(<span class="sh-keyword">PIN_D1</span>);</span> <span class="sh-comment">// EXAMPLE Read a button</span>
+  <span class="sh-variable">myDevice</span>.(<span class="sh-keyword">BASE_TOPIC</span>, <span class="sh-function">String</span>(<span class="sh-variable">buttonState</span>));</span> <span class="sh-comment">// EXAMPLE Send button state</span>
+}</code></pre>
+                        </li>
+                        <li>
+                            <b><code>triggerActuator(String topic, String command)</code>:</b>
+                            <p class="text-secondary mt-2">This function runs <b>only when your device receives a
+                                    command</b>
+                                from the central hub (e.g., "turn light on"). It's perfect for:</p>
+                            <ul class="list-disc list-inside ml-4 mt-2">
+                                <li>Controlling actuators (like lights, motors, relays) based on incoming instructions.
+                                </li>
+                                <li>Responding to specific commands with actions.</li>
+                                <li>(For Station 6 - Master Control Panel: You will replace the default use of this
+                                    function
+                                    with a more advanced callback as explained in your mission briefing).</li>
+                            </ul>
+                            <p class="text-secondary mt-2">This is where your device takes action based on external
+                                instructions.</p>
+                            <pre><code><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+  <span class="sh-comment">// Your actuator control logic goes here.</span>
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>) { <span class="sh-variable">digitalWrite</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">HIGH</span>); } <span class="sh-comment">// EXAMPLE Actuation Sequence</span>
+}</code></pre>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Core Networking: The
+                "System Engine"</h2>
+            <p class="text-secondary">Below the sections you will modify, you'll find the "System Engine" code. This
+                part handles all the behind-the-scenes magic of connecting to Wi-Fi, managing communication with the
+                central hub, and ensuring your device stays online. <b>You should NOT modify this section.</b> It's the
+                robust foundation for your project!</p>
+            <p class="text-secondary">Key elements handled by the System Engine include:</p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li>Initializing the <code>SmartDevice</code> library.</li>
+                <li>Connecting to the Wi-Fi network using the provided credentials.</li>
+                <li>Establishing and maintaining the connection to the MQTT broker (the central message server).</li>
+                <li>Subscribing to your device's specific command topic.</li>
+                <li>Calling your <code>setupDevice()</code>, <code>readSensor()</code>, and
+                    <code>triggerActuator()</code> functions at the appropriate times.
+                </li>
+            </ul>
+
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h4 class="font-bold text-lg text-accent mb-2">Common Network Information</h4>
+                <p class="text-sm text-accent/80 mb-3">You will need this information for the configuration section of
+                    your code. It should also be on the main whiteboard.</p>
+                <ul class="list-disc list-inside text-sm space-y-2">
+                    <li><b>Wi-Fi Network (SSID):</b> <code>McMasterIoT-Camp</code></li>
+                    <li><b>Wi-Fi Password:</b> <code>Roomba2025</code></li>
+                    <li><b>Hub IP Address:</b> <code>192.168.0.147</code> (confirm with instructor)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="overview" class="page">
+            <!-- Palette: Original Handbook Theme -->
+            <!-- Background: #202124, Surface: #2d2e30, Primary: #e8eaed, Secondary: #bdc1c6, Accent: #8ab4f8, Border: #3c4043 -->
+            <!-- NEITHER Mermaid JS NOR SVG were used in this output. -->
+
+            <!-- Section 1: The Mission - Introduction -->
+            <section class="text-center py-12">
+                <h1 class="text-4xl md:text-6xl overview-section-header overview-gradient-heading">Instructor Briefing
+                </h1>
+                <p class="mt-4 text-lg md:text-xl text-secondary max-w-3xl mx-auto">Welcome, Future Engineers! Your
+                    mission is to build a living, intelligent classroom system, piece by piece.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="overview-card p-6 rounded-2xl">
+                        <p class="text-6xl font-extrabold text-accent"><span
+                                class="material-icons text-7xl align-middle">system_update_alt</span></p>
+                        <p class="mt-2 text-xl font-bold">Integrated System</p>
+                    </div>
+                    <div class="overview-card p-6 rounded-2xl">
+                        <p class="text-6xl font-extrabold text-accent"><span
+                                class="material-icons text-7xl align-middle">handyman</span></p>
+                        <p class="mt-2 text-xl font-bold">Specialized Stations</p>
+                    </div>
+                    <div class="overview-card p-6 rounded-2xl">
+                        <p class="text-6xl font-extrabold text-accent"><span
+                                class="material-icons text-7xl align-middle">rocket_launch</span></p>
+                        <p class="mt-2 text-xl font-bold">Limitless Innovation</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Your Core Toolkit -->
+            <section class="py-12">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-center text-primary">Your <span
+                        class="text-accent">Core Toolkit</span></h2>
+                <p class="mt-4 text-lg text-secondary text-center max-w-3xl mx-auto">You'll harness the power of a tiny
+                    computer and a versatile programming environment.</p>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="overview-card p-8 rounded-2xl text-center">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">memory</span></p>
+                        <h3 class="mt-4 text-2xl font-bold text-primary">ESP8266</h3>
+                        <p class="text-secondary">The compact, Wi-Fi-enabled microcontroller that acts as the brain for
+                            your IoT device.</p>
+                    </div>
+                    <div class="overview-card p-8 rounded-2xl text-center">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">code</span></p>
+                        <h3 class="mt-4 text-2xl font-bold text-primary">Arduino IDE</h3>
+                        <p class="text-secondary">Your integrated development environment for writing, compiling, and
+                            uploading C++ code to the ESP8266.</p>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Section 3: The Universal Template Workflow -->
+            <section class="py-12">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-center text-primary">Your Workflow: The
+                    <span class="text-accent">Universal Template</span>
+                </h2>
+                <p class="mt-4 text-lg text-secondary text-center max-w-3xl mx-auto">Every station begins with the same
+                    <code>UniversalDeviceTemplate.ino</code>. We've pre-configured the complex networking, so you can
+                    focus on your unique hardware logic.
+                </p>
+
+                <div class="mt-12 grid grid-cols-1 gap-8">
+                    <!-- Step 1: Configure -->
+                    <div
+                        class="overview-card p-6 rounded-2xl flex items-start gap-4 border-l-4 flow-step-border-accent">
+                        <div class="flex-shrink-0 text-3xl font-bold text-accent">1</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary">Configure Device Identity</h3>
+                            <p class="text-secondary mt-2">Locate the "Configuration Section" at the top of your
+                                <code>UniversalDeviceTemplate.ino</code>. You <b>must</b> update
+                                <code>DEVICE_NAME</code>, <code>COMMAND_TOPIC</code>, and <code>STATUS_TOPIC</code> with
+                                the unique values provided by your instructor. This tells the network who your device is
+                                and how it communicates.
+                            </p>
+                            <div
+                                class="infographic-code-block mt-4 p-3 bg-background-dark rounded-lg font-mono text-sm text-secondary">
+                                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"My_Station_Device"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code><br />
+                                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">COMMAND_TOPIC</span> = <span class="sh-string">"classroom/your"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code><br />
+                                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">STATUS_TOPIC</span> = <span class="sh-string">"classroom/your"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center text-4xl py-4 flow-arrow">↓</div>
+
+                    <!-- Step 2: Write Code in Functions - REVISED DISPLAY -->
+                    <div
+                        class="overview-card p-6 rounded-2xl flex items-start gap-4 border-l-4 flow-step-border-accent">
+                        <div class="flex-shrink-0 text-3xl font-bold text-accent">2</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary">Write Your Logic in Core Functions</h3>
+                            <p class="text-secondary mt-2">Your specific hardware logic goes into three dedicated
+                                functions.
+                                Understanding when each runs is crucial:</p>
+
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="highlight-box">
+                                    <span class="material-icons icon-large">build_circle</span>
+                                    <h4 class="font-bold text-accent"><code>setupDevice()</code></h4>
+                                    <p class="text-sm text-secondary">Executes <b>ONCE</b> at startup. Ideal for pin
+                                        configuration (<code>pinMode</code>), sensor initialization, and attaching
+                                        components like servos.</p>
+                                </div>
+                                <div class="highlight-box">
+                                    <span class="material-icons icon-large">autorenew</span>
+                                    <h4 class="font-bold text-accent"><code>readSensor()</code></h4>
+                                    <p class="text-sm text-secondary">Runs <b>REPEATEDLY</b> (many times/sec). Use for
+                                        continuous sensor readings and periodically publishing data to the cloud
+                                        (<code>myDevice.publishTo()</code>).</p>
+                                </div>
+                                <div class="highlight-box">
+                                    <span class="material-icons icon-large">bolt</span>
+                                    <h4 class="font-bold text-accent">
+                                        <code>triggerActuator<br>(String command)</code>
+                                    </h4>
+                                    <p class="text-sm text-secondary">Executes <b>ON-DEMAND</b> when your device
+                                        receives a
+                                        command. Perfect for controlling actuators (lights, motors) and reporting their
+                                        new
+                                        status.</p>
+                                </div>
+                            </div>
+                            <p class="text-secondary text-center mt-4 text-sm">The functions above run in different
+                                frequencies. <code>setupDevice()</code> runs once, while
+                                <code>readSensor()</code> runs continuously. <code>triggerActuator()</code>
+                                runs only when a command is received.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-center text-4xl py-4 flow-arrow">↓</div>
+
+                    <!-- Step 3: The System Engine - WARNING REVISED -->
+                    <div
+                        class="overview-card p-6 rounded-2xl flex items-start gap-4 border-l-4 flow-step-border-warning bg-warning-tint">
+                        <div class="flex-shrink-0 text-3xl font-bold text-warning-border-color">3</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary">The "System Engine": Hands-Off Zone!</h3>
+                            <p class="text-secondary mt-2">Below your code sections lies the critical "System Engine".
+                                This automatically handles all Wi-Fi and MQTT connections, ensuring your device stays
+                                online and communicates. <b class="text-error-red-soft">DO NOT EDIT THIS SECTION.</b>
+                                Any changes here could prevent
+                                your device from connecting.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Going Live & Troubleshooting -->
+            <section class="py-12">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-center text-primary">Going <span
+                        class="text-accent">Live</span> & Debugging</h2>
+                <p class="mt-4 text-lg text-secondary text-center max-w-3xl mx-auto">Even experts hit roadblocks. This
+                    guide will help you upload your code and tackle common issues.</p>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="overview-card p-6 rounded-2xl h-full">
+                        <h3 class="text-2xl font-bold text-primary">4-Step Code Upload</h3>
+                        <ol class="mt-4 list-decimal list-inside space-y-3 text-secondary">
+                            <li><b>Select Board:</b> In Arduino IDE, go to
+                                <code>Tools &gt; Board &gt; ESP8266 Boards</code> and choose
+                                <code>Generic ESP8266 Module</code>.
+                            </li>
+                            <li><b>Select Port:</b> Go to <code>Tools &gt; Port</code> and select the serial port
+                                connected to your ESP8266. Unplug and replug to identify it if needed.</li>
+                            <li><b>Enter Flash Mode (If necessary):</b>
+                                <p class="mt-2 text-sm">If your board doesn't automatically upload, manually trigger
+                                    flash mode:</p>
+                                <ol class="list-[lower-alpha] list-inside ml-4 mt-1 space-y-1">
+                                    <li><b>Unplug</b> your ESP8266 board.</li>
+                                    <li><b>Hold down the "FLASH" or "BOOT" button</b> on the board.</li>
+                                    <li>While holding the button, <b>plug the USB cable back in</b>.</li>
+                                    <li>Release the button after 1-2 seconds.</li>
+                                </ol>
+                            </li>
+                            <li><b>Upload & Monitor:</b> Click the "Upload" (right-arrow) button. Once uploaded, open
+                                the "Serial Monitor" (magnifying glass icon) and set baud rate to <code>115200</code>.
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="overview-card p-6 rounded-2xl h-full flex flex-col justify-between">
+                        <h3 class="text-2xl font-bold text-primary text-center">Common Bug Hotspots</h3>
+                        <p class="text-secondary text-center mt-2">Where engineers spend most of their time! Know these
+                            common issues.</p>
+                        <div class="chart-container flex-grow pt-4">
+                            <canvas id="troubleshootingChart"></canvas>
+                        </div>
+                        <p class="text-sm text-secondary text-center mt-4">Proportion of common troubleshooting areas.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 p-6 overview-card rounded-2xl border-l-4 border-accent">
+                    <h4 class="text-xl font-bold text-accent">Debugging with <code>Serial.println()</code></h4>
+                    <p class="text-secondary mt-2">Your best debugging tool! Use
+                        <code>Serial.println("Your message here");</code> to print values, check logic paths, and see
+                        what your device is doing in real-time in the Serial Monitor. This is invaluable for pinpointing
+                        problems!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 5: The 6 Stations -->
+            <section class="py-12 text-center">
+                <h2 class="text-3xl md:text-4xl overview-section-header text-primary">One Team, <span
+                        class="overview-gradient-heading">Six Missions</span></h2>
+                <p class="mt-4 text-lg text-secondary max-w-3xl mx-auto">Each station plays a vital role. Together, your
+                    devices form the complete Smart Classroom system!</p>
+                <div class="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">ac_unit</span></p>
+                        <p class="font-bold mt-2">HVAC</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">thermostat</span></p>
+                        <p class="font-bold mt-2">Sensors</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">lightbulb</span></p>
+                        <p class="font-bold mt-2">Lighting</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">lock</span></p>
+                        <p class="font-bold mt-2">Security</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">blinds_closed</span></p>
+                        <p class="font-bold mt-2">Curtain</p>
+                    </div>
+                    <div class="overview-card p-4 rounded-2xl">
+                        <p class="text-4xl"><span class="material-icons text-5xl align-middle">tune</span></p>
+                        <p class="font-bold mt-2">Panel</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="station1" class="page">
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 1: HVAC &amp;
+                Kettle Control</h2>
+            <h3 class="text-xl font-bold text-primary mb-3">Your Mission: Climate &amp; Convenience Commanders</h3>
+            <p class="text-secondary">You are the <b>Climate &amp; Appliance Team</b>. Your mission is to give the
+                central hub remote control over two high-power devices: a fan (simulating an HVAC system) and an
+                electric kettle. You'll use special, pre-wired relay modules that act like smart switches, allowing your
+                low-power ESP8266 to safely turn these devices on and off. This station is crucial for maintaining a
+                comfortable and convenient smart home environment!</p>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+            <p class="text-secondary">Think about smart thermostats like Nest or Ecobee that learn your preferences, or
+                smart plugs that let you control any appliance from your phone. You're building the core intelligence
+                behind such systems, enabling energy efficiency and automated comfort.</p>
+
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>1x ESP8266 Board &amp; Breadboard</li>
+                <li>1x Custom HVAC Power Plug (Relay)</li>
+                <li>1x Custom Kettle Power Plug (Relay)</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+            <p class="text-secondary mb-4">Relays are essentially remote-controlled switches. They have a signal pin
+                that connects to your ESP8266. When your ESP sends a <code>HIGH</code> signal to this pin, the relay
+                closes an internal switch, allowing power to flow to the connected device (turning it ON). A
+                <code>LOW</code> signal opens the switch, turning the device OFF. Always ensure you connect the grounds
+                of your ESP and relays together!
+            </p>
+            <img src="https://miro.medium.com/v2/resize:fit:860/0*a5aOqIFrD3mirbyw.png"
+                alt="Wiring Diagram for Station 1" class="w-full rounded-2xl my-4 border border-custom-border"
+                onerror="this.onerror=null; this.src='https://placehold.co/860x484/2d2e30/e8eaed?text=Wiring+Diagram+Placeholder';">
+            <ol class="list-decimal list-inside pl-4 space-y-2">
+                <li><b>HVAC Relay:</b> Connect its <b>Signal</b> wire to pin <code>PIN_D7</code>. Connect its
+                    <b>Ground</b> wire to a <code>GND</code> pin on your ESP8266.
+                </li>
+                <li><b>Kettle Relay:</b> Connect its <b>Signal</b> wire to pin <code>PIN_D6</code>. Connect its
+                    <b>Ground</b> wire to another <code>GND</code> pin on your ESP8266.
+                </li>
+            </ol>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+            <p class="text-secondary">Your station acts as an actuator&mdash;it reacts to commands. You will primarily
+                write code in the <code>setupDevice()</code> and <code>triggerActuator()</code> functions
+                within your <code>UniversalDeviceTemplate.ino</code>.</p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Configuration:</b> Update the <code>DEVICE_NAME</code> and <code>BASE_TOPIC</code> in your
+                    template.
+                    Then, subscribe to the specific command topics for HVAC and Kettle.
+                    <pre><code class="language-cpp"><span class="sh-comment">// 3. SERVER CONFIGURATION</span>
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_HVAC_Kettle"</span>; <span class="sh-comment">// e.g., "Sarah_HVAC_Kettle"</span>
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/hvac_kettle"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span></code></pre>
+                </li>
+                <li><b>Define Pins (Recommended):</b> After the <code>#include &lt;SmartDevice.h&gt;</code> line, define
+                    constants for your pins to make your code more readable:
+                    <pre><code class="language-cpp"><span class="sh-preprocessor">#define</span> <span class="sh-variable">HVAC_RELAY_PIN</span> <span class="sh-variable">PIN_D7</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">KETTLE_RELAY_PIN</span> <span class="sh-variable">PIN_D6</span></code></pre>
+                </li>
+                <li><b><code>setupDevice()</code>:</b> In this function, you'll configure your relay pins as outputs
+                    and ensure they start in a safe (OFF) state. Also, subscribe to the command topics.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+          <span class="sh-comment">// Configure both relay pins as outputs</span>
+          <span class="sh-function">pinMode</span>(HVAC_RELAY_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-function">pinMode</span>(KETTLE_RELAY_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-comment">// Ensure both relays start OFF to prevent unexpected activations</span>
+          <span class="sh-function">digitalWrite</span>(HVAC_RELAY_PIN, <span class="sh-literal">LOW</span>);
+          <span class="sh-function">digitalWrite</span>(KETTLE_RELAY_PIN, <span class="sh-literal">LOW</span>);
+        
+          <span class="sh-comment">// Subscribe to the command topics for HVAC and Kettle</span>
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/hvac"</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/kettle"</span>);
+        }</code></pre>
+                </li>
+                <li><b><code>triggerActuator(String topic, String command)</code>:</b> This is where you'll write the
+                    logic to control your relays based on the incoming <code>topic</code> and <code>command</code>
+                    string.
+                    Remember to report the status back to the cloud using <code>myDevice.publishTo()</code>.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">command</span>);
+        
+          <span class="sh-comment">// Handle HVAC commands based on its topic</span>
+          <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/hvac"</span>) {
+            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>) {
+              <span class="sh-function">digitalWrite</span>(HVAC_RELAY_PIN, <span class="sh-literal">HIGH</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/hvac"</span>, <span class="sh-string">"ON"</span>);
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"HVAC ON"</span>);
+            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"OFF"</span>) {
+              <span class="sh-function">digitalWrite</span>(HVAC_RELAY_PIN, <span class="sh-literal">LOW</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/hvac"</span>, <span class="sh-string">"OFF"</span>);
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"HVAC OFF"</span>);
+            }
+          }
+          <span class="sh-comment">// Handle Kettle commands based on its topic</span>
+          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/kettle"</span>) {
+            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>) {
+              <span class="sh-function">digitalWrite</span>(KETTLE_RELAY_PIN, <span class="sh-literal">HIGH</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/kettle"</span>, <span class="sh-string">"ON"</span>);
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Kettle ON"</span>);
+            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"OFF"</span>) {
+              <span class="sh-function">digitalWrite</span>(KETTLE_RELAY_PIN, <span class="sh-literal">LOW</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/kettle"</span>, <span class="sh-string">"OFF"</span>);
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Kettle OFF"</span>);
+            }
+          }
+        }</code></pre>
+                </li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+            <p class="text-secondary">Your mission is a success when you can independently control both the fan (HVAC)
+                and the kettle from the central dashboard or via voice commands, and their ON/OFF status updates
+                correctly on the dashboard. Ask your instructor to test it!</p>
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+                <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
+                    <li><b>Initial State:</b> Ensure your relays are OFF when the device first starts to prevent
+                        unexpected appliance activation. You can do this in <code>setupDevice()</code>.</li>
+                    <li><b>Debugging:</b> Use <code>Serial.println()</code> statements in your
+                        <code>triggerActuator</code> function to see what payloads you're receiving and confirm
+                        your logic is being executed.
+                    </li>
+                    <li><b>Power Considerations:</b> Relays can sometimes draw a bit more current than regular LEDs.
+                        Make sure your ESP8266 is powered correctly (usually via USB).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="station2" class="page">
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 2: Environmental
+                &amp; Security Sensors</h2>
+            <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Classroom's Senses</h3>
+            <p class="text-secondary">You are the <b>Sensor Integration Team</b>. Your task is to become the "eyes and
+                ears" of the Smart Classroom by continuously monitoring three different types of sensors: a DHT11 for
+                precise temperature readings, a PIR sensor for motion detection, and a magnetic contact switch to detect
+                if a window is open or closed. Your data will provide the hub with crucial information for automated
+                responses!</p>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+            <p class="text-secondary">This is how smart homes know what's going on! Think about intelligent climate
+                control that reacts to temperature changes, security systems that detect intruders with motion and door
+                sensors, or even smart ventilation systems. Your work here is fundamental to an intelligent building.
+            </p>
+
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>1x ESP8266 Board</li>
+                <li>1x DHT11 Temperature</li>
+                <li>1x PIR Motion Sensor</li>
+                <li>1x Magnetic Contact Switch (for window)</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+            <p class="text-secondary mb-4">Each sensor connects slightly differently, but the principles of power,
+                ground, and a signal pin remain. The DHT11 needs power and a single data line. The PIR sensor is
+                similar. The contact switch is the simplest; it's just a switch that completes a circuit when open or
+                closed.</p>
+            <img src="https://cherryelectronics.in/wp-content/uploads/2024/06/DHT11.png"
+                alt="Wiring Diagram for Station 2 (Example for DHT11/22)"
+                class="w-full rounded-2xl my-4 border border-custom-border"
+                onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=DHT11+Wiring+Diagram+Placeholder';">
+            <ol class="list-decimal list-inside pl-4 space-y-2">
+                <li><b>DHT11:</b> Connect its <b>Data</b> pin to <code>PIN_D2</code>, <b>VCC/Vin</b> (positive power) to
+                    <code>3V3</code>, and <b>GND</b> (ground) to <code>GND</code> on your ESP8266.
+                </li>
+                <li><b>PIR Sensor:</b> Connect its <b>OUT</b> (signal) pin to <code>PIN_D5</code>, <b>VCC</b> to
+                    <code>3V3</code>, and <b>GND</b> to <code>GND</code>.
+                </li>
+                <li><b>Window Sensor (Magnetic Contact Switch):</b> This is a simple switch. Connect one wire of the
+                    switch to <code>PIN_D1</code> and the other wire to <code>GND</code>. We will use the ESP's special
+                    internal pull-up resistor for this.</li>
+            </ol>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+            <p class="text-secondary">Your station uses sensors&mdash;it senses the world and reports data. You will
+                primarily write code in the <code>setupDevice()</code> and <code>readSensor()</code>
+                functions within your <code>UniversalDeviceTemplate.ino</code>. The <code>triggerActuator()</code>
+                will not be used by this station.</p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Configuration &amp; Libraries:</b> Update the <code>DEVICE_NAME</code> and `BASE_TOPIC`. Also,
+                    add the DHT library and define your
+                    sensor objects and pins:
+                    <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;DHT.h&gt;</span>
+        
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_EnviroSensor"</span>; <span class="sh-comment">// e.g., "Alex_EnviroSensor"</span>
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/environment"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+        
+        <span class="sh-comment">// DHT sensor setup</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">DHTPIN</span> <span class="sh-variable">PIN_D2</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">DHTTYPE</span> <span class="sh-variable">DHT11</span>
+        <span class="sh-class">DHT</span> dht(DHTPIN, DHTTYPE);
+        
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">PIR_PIN</span> <span class="sh-variable">PIN_D5</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">WINDOW_PIN</span> <span class="sh-variable">PIN_D1</span></code></pre>
+                </li>
+                <li><b><code>setupDevice()</code>:</b> Initialize your DHT sensor and set pin modes for the PIR and
+                    window sensors.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+          dht.<span class="sh-function">begin</span>(); <span class="sh-comment">// Start the DHT sensor.</span>
+          <span class="sh-function">pinMode</span>(PIR_PIN, <span class="sh-literal">INPUT</span>); <span class="sh-comment">// PIR sensor output is an input to the ESP.</span>
+          <span class="sh-function">pinMode</span>(WINDOW_PIN, <span class="sh-literal">INPUT_PULLUP</span>); <span class="sh-comment">// Use internal pull-up resistor for window sensor.</span>
+        }</code></pre>
+                </li>
+                <li><b><code>readSensor()</code>:</b> This is where you will continuously read all your sensors,
+                    combine the data into the required string formats, and publish them to the cloud.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
+          <span class="sh-comment">// This function runs repeatedly to read sensors and send data.</span>
+          <span class="sh-comment">// Read temperature from DHT11.</span>
+          <span class="sh-type">float</span> temperatureC = dht.<span class="sh-function">readTemperature</span>();
+        
+          <span class="sh-comment">// Read motion detection from PIR sensor.</span>
+          <span class="sh-type">bool</span> motionDetected = (<span class="sh-function">digitalRead</span>(PIR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">HIGH</span>);
+        
+          <span class="sh-comment">// Only publish if DHT readings are valid.</span>
+          <span class="sh-keyword">if</span> (<span class="sh-operator">!</span><span class="sh-function">isnan</span>(temperatureC)) {
+            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/temperature"</span>, <span class="sh-type">String</span>(temperatureC));
+            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Temperature sent: "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(temperatureC);
+          } <span class="sh-keyword">else</span> {
+            <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Failed to read from DHT sensor!"</span>);
+          }
+        
+          <span class="sh-comment">// Publish motion status.</span>
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/motion"</span>, motionDetected <span class="sh-operator">?</span> <span class="sh-string">"MOTION_DETECTED"</span> <span class="sh-operator">:</span> <span class="sh-string">"NO_MOTION"</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Motion status sent: "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(motionDetected <span class="sh-operator">?</span> <span class="sh-string">"MOTION_DETECTED"</span> <span class="sh-operator">:</span> <span class="sh-string">"NO_MOTION"</span>);
+        
+          <span class="sh-comment">// Read window sensor status and publish separately.</span>
+          <span class="sh-comment">// LOW means the switch is closed (magnet is near), indicating the window is CLOSED.</span>
+          <span class="sh-type">bool</span> isWindowClosed = (<span class="sh-function">digitalRead</span>(WINDOW_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/window"</span>, isWindowClosed <span class="sh-operator">?</span> <span class="sh-string">"CLOSED"</span> <span class="sh-operator">:</span> <span class="sh-string">"OPEN"</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Window status sent: "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(isWindowClosed <span class="sh-operator">?</span> <span class="sh-string">"CLOSED"</span> <span class="sh-operator">:</span> <span class="sh-string">"OPEN"</span>);
+        }</code></pre>
+                </li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+            <p class="text-secondary">Your mission is a success when the central dashboard shows live, updating values
+                for temperature, motion detection, and the window's open/closed status. You can even ask Google
+                Assistant, "Hey Google, what's the temperature in the classroom?"</p>
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+                <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
+                    <li><b>DHT Errors:</b> Sometimes, DHT sensors can give <code>NaN</code> (Not a Number) if they fail
+                        to read. Add <code>if (isnan(temp))</code> checks and skip publishing if data is bad.</li>
+                    <li><b>String Concatenation:</b> Building topics like `String(BASE_TOPIC) + "/temperature"`
+                        is important. Practice converting
+                        numbers and booleans into text using `String()` and combining them with `+`.
+                    </li>
+                    <li><b>Efficiency:</b> Avoid sending data too frequently. The <code>delay(1000)</code> in the main
+                        loop (handled by the template's "System Engine") helps, but be mindful of how often you read and
+                        publish.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="station3" class="page">
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 3: Smart
+                Lighting System</h2>
+            <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Light Engineers</h3>
+            <p class="text-secondary">You are the <b>Lighting Engineering Team</b>. Your challenge is to control two
+                different lights: a powerful, multi-color RGB LED strip for the main room lighting, and a simple LED for
+                an outdoor "porch light." This mission involves not just turning lights on and off, but also parsing
+                complex commands from the hub to control colors and brightness!</p>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+            <p class="text-secondary">This is the heart of modern smart lighting, like Philips Hue or LIFX systems!
+                You're learning how to create dynamic lighting scenes, adjust ambiance, and even potentially automate
+                lighting based on time of day or occupancy, contributing to energy savings and user comfort.</p>
+
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>1x ESP8266 Board</li>
+                <li>1x Addressable RGB LED Strip (NeoPixel or WS2812B compatible)</li>
+                <li>1x Regular LED &amp; 1x 220 Ohm Resistor (to protect the LED)</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+            <p class="text-secondary mb-4">The RGB Strip (NeoPixel) requires its own external power source because it
+                can draw a lot of current (ask your instructor for guidance on connecting this!). However, it receives
+                its data signal from one of your ESP8266 pins. The simple LED for the porch light is powered directly
+                from an ESP pin, but <i>always</i> use a resistor to limit the current and protect both the LED and your
+                ESP!</p>
+            <img src="https://lastminuteengineers.com/wp-content/uploads/iot/Connecting-WS2812B-Addressable-LED-Strip-to-ESP8266-5V-External-Power.png"
+                alt="Wiring Diagram for Station 3 (Example for NeoPixel)"
+                class="w-full rounded-2xl my-4 border border-custom-border"
+                onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=NeoPixel+Wiring+Diagram+Placeholder';">
+            <ol class="list-decimal list-inside pl-4 space-y-2">
+                <li><b>RGB Strip (NeoPixel):</b> Connect the strip's <b>Data In</b> (often labeled <code>DIN</code> or
+                    <code>DI</code>) to pin <code>PIN_D4</code>. Connect the strip's 5V (positive power) and GND
+                    (ground) to the separate external power supply as directed by your instructor. <b>CRITICAL:</b> You
+                    MUST also connect the strip's GND to a <code>GND</code> pin on your ESP8266 to ensure both devices
+                    share a common ground reference.
+                </li>
+                <li><b>Porch Light LED:</b> Connect the long leg (anode, positive) of the LED to one end of the
+                    220&Omega; resistor. Connect the other end of the resistor to pin <code>PIN_D7</code>. Connect the
+                    short leg (cathode, negative) of the LED to a <code>GND</code> pin on your ESP8266.</li>
+            </ol>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+            <p class="text-secondary">Your station acts as an actuator&mdash;it reacts to commands. You will primarily
+                write code in the <code>setupDevice()</code> and <code>triggerActuator()</code> functions
+                within your <code>UniversalDeviceTemplate.ino</code>. The <code>readSensor()</code> will not be
+                used by this station.</p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Configuration &amp; Libraries:</b> Update the <code>DEVICE_NAME</code> and `BASE_TOPIC`. Also,
+                    include the Adafruit NeoPixel
+                    library and define your NeoPixel object and pins:
+                    <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Adafruit_NeoPixel.h&gt;</span>
+        
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Lighting"</span>; <span class="sh-comment">// e.g., "Chris_Lighting"</span>
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/lighting"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+        
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">NEOPIXEL_PIN</span> <span class="sh-variable">PIN_D4</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">NUM_PIXELS</span> <span class="sh-number">12</span> <span class="sh-comment">// Adjust based on your strip's actual length</span>
+        
+        <span class="sh-class">Adafruit_NeoPixel</span> strip(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800); <span class="sh-comment">// Correct constructor order</span>
+        
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">PORCH_LIGHT_PIN</span> <span class="sh-variable">PIN_D7</span></code></pre>
+                </li>
+                <li><b><code>setupDevice()</code>:</b> Initialize the NeoPixel strip, set its initial state, and
+                    configure the porch light pin. Subscribe to the command topics.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+          strip.<span class="sh-function">begin</span>();
+          strip.<span class="sh-function">show</span>(); <span class="sh-comment">// Initialize all pixels to 'off'</span>
+          strip.<span class="sh-function">setBrightness</span>(<span class="sh-number">50</span>); <span class="sh-comment">// Start with a moderate brightness
+        
+          // Configure porch light pin
+          </span><span class="sh-function">pinMode</span>(PORCH_LIGHT_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-function">digitalWrite</span>(PORCH_LIGHT_PIN, <span class="sh-literal">LOW</span>); <span class="sh-comment">// Ensure porch light starts OFF
+        
+          // Subscribe to command topics for RGB strip and porch light
+          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/rgb"</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/porch_light"</span>);
+        }</code></pre>
+                </li>
+                <li><b><code>triggerActuator(String topic, String command)</code>:</b> This is the core of your lighting
+                    control. You'll need to parse commands for both the simple porch light and the more complex RGB
+                    strip.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">command</span>);
+        
+          <span class="sh-comment">// Handle Porch Light commands (simple ON/OFF)</span>
+          <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/porch_light"</span>) {
+            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>) {
+              <span class="sh-function">digitalWrite</span>(PORCH_LIGHT_PIN, <span class="sh-literal">HIGH</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/porch_light"</span>, <span class="sh-string">"ON"</span>);
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Porch Light ON"</span>);
+            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"OFF"</span>) {
+              <span class="sh-function">digitalWrite</span>(PORCH_LIGHT_PIN, <span class="sh-literal">LOW</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/porch_light"</span>, <span class="sh-string">"OFF"</span>);
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Porch Light OFF"</span>);
+            }
+          }
+          <span class="sh-comment">// Handle Main RGB Strip commands. Utilize SmartDevice::commandToLight for parsing.
+          </span><span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/rgb"</span>) {
+            <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">lightState</span> = <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
+            
+            <span class="sh-keyword">if</span> (<span class="sh-variable">lightState</span>.<span class="sh-variable">isOn</span>) {
+              <span class="sh-comment">// Set brightness for the strip (0-255 scaling)
+              </span>strip.<span class="sh-function">setBrightness</span>(<span class="sh-function">map</span>(<span class="sh-variable">lightState</span>.<span class="sh-variable">brightness</span>, <span class="sh-number">0</span>, <span class="sh-number">100</span>, <span class="sh-number">0</span>, <span class="sh-number">255</span>));
+              <span class="sh-comment">// Set color for all pixels on the strip
+              </span><span class="sh-keyword">for</span>(<span class="sh-type">int</span> <span class="sh-variable">i</span>=<span class="sh-number">0</span>; <span class="sh-variable">i</span> &lt; NUM_PIXELS; <span class="sh-variable">i</span>++) {
+                <span class="sh-keyword">if</span> (<span class="sh-variable">lightState</span>.<span class="sh-variable">type</span> == <span class="sh-class">SmartHome::COLOR</span>) {
+                  <span class="sh-comment">// Convert HSL to RGB for NeoPixel, example requires custom function or library
+                  </span><span class="sh-comment">// For simplicity, direct RGB values are often sent, but this structure uses HSL
+                  // For now, if COLOR type, we'll assume a default color or implement HSL->RGB conversion.
+                  // Example: pixels.setPixelColor(i, pixels.ColorHSV(lightState.hue * 182, lightState.saturation * 255 / 100, lightState.brightness * 255 / 100));
+                  </span>strip.<span class="sh-function">setPixelColor</span>(<span class="sh-variable">i</span>, <span class="sh-number">255</span>, <span class="sh-number">255</span>, <span class="sh-number">255</span>); <span class="sh-comment">// Placeholder: set white if color command is complex
+                </span>} <span class="sh-keyword">else</span> {
+                  strip.<span class="sh-function">setPixelColor</span>(<span class="sh-variable">i</span>, <span class="sh-number">255</span>, <span class="sh-number">255</span>, <span class="sh-number">255</span>); <span class="sh-comment">// Default white for dimmable
+                </span>}
+              }
+              strip.<span class="sh-function">show</span>();
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"RGB Strip ON"</span>);
+            } <span class="sh-keyword">else</span> {
+              strip.<span class="sh-function">clear</span>(); <span class="sh-comment">// Turn all pixels off
+              </span>strip.<span class="sh-function">show</span>();
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"RGB Strip OFF"</span>);
+            }
+            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/rgb"</span>, <span class="sh-variable">lightState</span>.<span class="sh-function">payload</span>());
+          }
+        }</code></pre>
+                </li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+            <p class="text-secondary">You've succeeded when you can ask Google Assistant to change the main room light's
+                color (e.g., "turn main light blue"), adjust its brightness, and separately turn the porch light on and
+                off, with all commands responding reliably!</p>
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+                <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
+                    <li><b>NeoPixel Library:</b> Make sure you install the `Adafruit NeoPixel` library via the Arduino
+                        IDE's Library Manager.
+                        The `SmartDevice::commandToLight` function returns a `SmartHome::Light` struct with `hue`,
+                        `saturation`, and `brightness`
+                        values. You'll need to convert these to `Adafruit_NeoPixel`'s `pixels.Color()` or
+                        `pixels.ColorHSV()` format.
+                    </li>
+                    <li><b>Powering NeoPixels:</b> If your NeoPixels behave erratically or show wrong colors, it's often
+                        a power issue. Ensure your external power supply is sufficient and grounds are properly
+                        connected.</li>
+                    <li><b>Serial Debugging:</b> Print the `topic` and `command` in `triggerActuator` to verify you are
+                        receiving
+                        the correct instructions from the hub.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="station4" class="page">
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 4: Smart Door
+                Security</h2>
+            <h3 class="text-xl font-bold text-primary mb-3">Your Mission: Guardians of the Gateway</h3>
+            <p class="text-secondary">You are the <b>Security &amp; Access Team</b>. Your critical mission is to build a
+                complete smart door system. You'll use two servo motors (inverted to each other to simulate a robust
+                locking mechanism) and a magnetic contact switch
+                to detect if the door is open or closed. You must constantly report the complete status of both the door
+                (open/closed) and the lock (locked/unlocked) to the central hub.</p>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+            <p class="text-secondary">This is exactly how smart locks (like August or Yale Smart Lock) work! You're
+                building the core components of a sophisticated access control system that can be remotely managed and
+                provide real-time security alerts. Imagine integrating this with security cameras or smart alarms!</p>
+
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>1x ESP8266 Board</li>
+                <li>2x Servo Motor (e.g., SG90 or similar, often miniature)</li>
+                <li>1x Magnetic Contact Switch</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+            <p class="text-secondary mb-4">Servos can draw more power than a digital pin can directly supply, so we
+                power them from the <code>VIN</code> pin on your ESP8266 board, which provides a steady 5V directly from
+                the USB connection. The magnetic contact switch works just like the one in Station 2, using the ESP's
+                internal pull-up resistor.</p>
+            <img src="https://hackster.imgix.net/uploads/attachments/1112773/image_mYrTQym88w.png?auto=compress%2Cformat&w=1280&h=960&fit=max"
+                alt="Wiring Diagram for Station 4 (Example for Servo)"
+                class="w-full rounded-2xl my-4 border border-custom-border"
+                onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=Servo+Wiring+Diagram+Placeholder';">
+            <ol class="list-decimal list-inside pl-4 space-y-2">
+                <li><b>Servo 1 (Lock Mechanism):</b> Connect its <b>Power</b> (red wire, usually) to the
+                    <code>VIN</code>
+                    pin on your ESP8266. Connect its <b>Ground</b> (brown/black wire) to a <code>GND</code> pin. Connect
+                    its <b>Signal</b> (orange/yellow wire) to <code>PIN_D6</code>.
+                </li>
+                <li><b>Servo 2 (Inverted Lock Mechanism):</b> Connect its <b>Power</b> to <code>VIN</code> and
+                    <b>Ground</b> to <code>GND</code>. Connect its <b>Signal</b> to <code>PIN_D5</code>. This servo will
+                    move in the opposite direction of Servo 1 to ensure a robust lock/unlock action.
+                </li>
+                <li><b>Door Sensor (Magnetic Contact Switch):</b> Connect one wire of the switch to <code>PIN_D1</code>
+                    and the other wire to <code>GND</code>. We will configure this pin with <code>INPUT_PULLUP</code>
+                    mode in your code.</li>
+            </ol>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+            <p class="text-secondary">Your station acts as both an actuator (lock) and a sensor (door state). You will
+                primarily write code in the <code>setupDevice()</code>, <code>readSensor()</code> and
+                <code>triggerActuator()</code> functions within your <code>UniversalDeviceTemplate.ino</code>.
+            </p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Configuration &amp; Libraries:</b> Update the <code>DEVICE_NAME</code> and `BASE_TOPIC`. Also,
+                    include the Servo library, define
+                    your servo objects and pins, and declare a global variable to track the lock state:
+                    <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
+        
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Door"</span>; <span class="sh-comment">// e.g., "Emily_Door"</span>
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/door_security"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+        
+        <span class="sh-class">Servo</span> lockServo1;
+        <span class="sh-class">Servo</span> lockServo2;
+        
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN_1</span> <span class="sh-variable">PIN_D6</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN_2</span> <span class="sh-variable">PIN_D5</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">DOOR_SENSOR_PIN</span> <span class="sh-variable">PIN_D1</span>
+        
+        <span class="sh-type">bool</span> isLocked = <span class="sh-literal">false</span>; <span class="sh-comment">// Global variable to track the current lock state</span></code></pre>
+                </li>
+                <li><b><code>setupDevice()</code>:</b> Initialize your servos and set the pin mode for the door
+                    sensor. Subscribe to the command topic.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+          lockServo1.<span class="sh-function">attach</span>(SERVO_PIN_1);
+          lockServo2.<span class="sh-function">attach</span>(SERVO_PIN_2);
+        
+          <span class="sh-comment">// Set initial position (e.g., unlocked). Adjust angles for your physical setup.</span>
+          lockServo1.<span class="sh-function">write</span>(<span class="sh-number">90</span>); <span class="sh-comment">// Example angle for unlocked state for servo 1</span>
+          lockServo2.<span class="sh-function">write</span>(<span class="sh-number">90</span>); <span class="sh-comment">// Example angle for unlocked state for servo 2 (inverted action)</span>
+          isLocked = <span class="sh-literal">false</span>; <span class="sh-comment">// Reflect initial unlocked state
+        
+          // Configure door sensor pin
+          </span><span class="sh-function">pinMode</span>(DOOR_SENSOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
+        
+          <span class="sh-comment">// Subscribe to the command topic for the door lock
+          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/lock"</span>);
+        }</code></pre>
+                </li>
+                <li><b><code>triggerActuator(String topic, String command)</code>:</b> This function will receive
+                    <code>"LOCK"</code> and <code>"UNLOCK"</code> commands. You'll move the servos to their respective
+                    positions and update your global
+                    <code>isLocked</code> variable.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">command</span>);
+        
+          <span class="sh-comment">// Handle commands for the door lock
+          </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/lock"</span>) {
+            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"LOCK"</span>) {
+              lockServo1.<span class="sh-function">write</span>(<span class="sh-number">0</span>);   <span class="sh-comment">// Adjust angles for locked state for servo 1</span>
+              lockServo2.<span class="sh-function">write</span>(<span class="sh-number">180</span>); <span class="sh-comment">// Adjust angles for locked state for servo 2 (inverted)</span>
+              isLocked = <span class="sh-literal">true</span>;
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Door LOCKED"</span>);
+            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"UNLOCK"</span>) {
+              lockServo1.<span class="sh-function">write</span>(<span class="sh-number">90</span>);  <span class="sh-comment">// Adjust angles for unlocked state for servo 1</span>
+              lockServo2.<span class="sh-function">write</span>(<span class="sh-number">90</span>);  <span class="sh-comment">// Adjust angles for unlocked state for servo 2 (inverted)</span>
+              isLocked = <span class="sh-literal">false</span>;
+              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Door UNLOCKED"</span>);
+            }
+            <span class="sh-comment">// Publish the updated lock status
+            </span><span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/lock"</span>, isLocked <span class="sh-operator">?</span> <span class="sh-string">"LOCKED"</span> <span class="sh-operator">:</span> <span class="sh-string">"UNLOCKED"</span>);
+          }
+        }</code></pre>
+                </li>
+                <li><b><code>readSensor()</code>:</b> This is where you'll continuously read the door sensor and
+                    combine its state with the lock's state (from <code>isLocked</code>) into a single status string,
+                    then publish it.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
+          <span class="sh-comment">// This function runs repeatedly to monitor the door sensor and publish status.</span>
+          <span class="sh-comment">// Read the magnetic contact switch. LOW means the switch is closed (door closed).</span>
+          <span class="sh-type">bool</span> doorIsClosed = (<span class="sh-function">digitalRead</span>(DOOR_SENSOR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
+        
+          <span class="sh-comment">// Determine the string representation for door state.</span>
+          <span class="sh-type">String</span> doorStatus = doorIsClosed <span class="sh-operator">?</span> <span class="sh-string">"CLOSED"</span> <span class="sh-operator">:</span> <span class="sh-string">"OPEN"</span>;
+        
+          <span class="sh-comment">// Combine into the required format: "DOOR_STATE,LOCK_STATE".
+          </span><span class="sh-type">String</span> payload = doorStatus + <span class="sh-string">","</span> + (isLocked ? <span class="sh-string">"LOCKED"</span> : <span class="sh-string">"UNLOCKED"</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/door_state"</span>, payload); <span class="sh-comment">// Publish to "classroom/door_security/door_state".
+          </span><span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Door status sent: "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(payload);
+        }</code></pre>
+                </li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+            <p class="text-secondary">You succeed when the central dashboard correctly shows the door's state (e.g.,
+                "CLOSED,LOCKED" or "OPEN,UNLOCKED") in real-time, and you can reliably lock and unlock the door using
+                voice commands via Google Assistant!</p>
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+                <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
+                    <li><b>Servo Angles:</b> Experiment with <code>myServo.write(angle);</code> to find the precise
+                        angles that fully lock and unlock your physical mechanism. Servos operate between 0 and 180
+                        degrees. Remember to adjust both servos for inverted action.</li>
+                    <li><b>Power for Servo:</b> If your servo jitters or doesn't move smoothly, it might not be getting
+                        enough power. The <code>VIN</code> pin is usually good, but large servos might need a dedicated
+                        external power supply (ask instructor if needed).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="station5" class="page">
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Automated
+                Curtain</h2>
+            <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Mechatronics Maestros</h3>
+            <p class="text-secondary">You are the <b>Mechatronics Team</b>. This is a low-level control challenge that
+                combines mechanical movement with smart logic! You'll program the intelligence for a motorized smart
+                curtain. You will use a positional servo as the motor and two photo-interrupter switches to detect when
+                the
+                curtain is fully open or fully closed. This mission requires understanding and implementing a "state
+                machine" to ensure smooth and reliable operation!</p>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+            <p class="text-secondary">Think about automated window shades in smart homes or offices that can adjust
+                based on sunlight, time of day, or privacy needs. You're building the core control system for such
+                convenience, integrating mechanical components with intelligent software.</p>
+
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>1x ESP8266 Board</li>
+                <li>1x Positional Servo Motor (to simulate curtain movement)</li>
+                <li>2x Photo-interrupter Switches (one for "fully open", one for "fully closed")</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+            <p class="text-secondary mb-4">A positional servo is wired just like a standard servo. The photo-interrupter
+                switches are sensors that detect when something breaks a light beam; they will be physically triggered
+                when the curtain reaches its fully open or closed position.</p>
+            <img src="https://hackster.imgix.net/uploads/attachments/1112773/image_mYrTQym88w.png?auto=compress%2Cformat&w=1280&h=960&fit=max"
+                alt="Wiring Diagram for Station 5 (Example for Servo &amp; Switches)"
+                class="w-full rounded-2xl my-4 border border-custom-border"
+                onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=Servo+Switch+Wiring+Diagram+Placeholder';">
+            <ol class="list-decimal list-inside pl-4 space-y-2">
+                <li><b>Positional Servo:</b> Connect its <b>Power</b> (red wire) to <code>VIN</code> (5V from
+                    USB), its <b>Ground</b> (black/brown wire) to <code>GND</code>, and its <b>Signal</b> (yellow/orange
+                    wire) to <code>PIN_D6</code>.</li>
+                <li><b>Photo-interrupter Switches:</b> These switches have a signal output. Connect the signal pin of
+                    the "Fully Open" switch to <code>PIN_D1</code> and the "Fully Closed" switch to <code>PIN_D2</code>.
+                    You will likely need to supply 3.3V and GND to these sensors as well (check datasheet).</li>
+            </ol>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+            <p class="text-secondary">This station involves controlling a motor and reading sensors to manage the
+                curtain's movement. You will primarily write code in the <code>setupDevice()</code>,
+                <code>readSensor()</code> and <code>triggerActuator()</code> functions within your
+                <code>UniversalDeviceTemplate.ino</code>.
+            </p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Configuration &amp; Libraries:</b> Update the <code>DEVICE_NAME</code> and `BASE_TOPIC`. Also,
+                    include the Servo library, define
+                    your servo object and pins, and declare a global variable for the curtain's state:
+                    <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
+        
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Curtain"</span>; <span class="sh-comment">// e.g., "Omar_Curtain"</span>
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+        
+        <span class="sh-class">Servo</span> myCurtainMotor;
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN</span> <span class="sh-variable">PIN_D6</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">OPEN_SENSOR_PIN</span> <span class="sh-variable">PIN_D1</span>  <span class="sh-comment">// Photo-interrupter for fully open</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">CLOSED_SENSOR_PIN</span> <span class="sh-variable">PIN_D2</span> <span class="sh-comment">// Photo-interrupter for fully closed
+        
+        </span><span class="sh-type">String</span> currentCurtainState = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Global variable to track the curtain's state: "OPEN", "CLOSED", "MOVING"</span></code></pre>
+                </li>
+                <li><b><code>setupDevice()</code>:</b> Initialize your servo and set the pin
+                    modes for the photo-interrupter switches. Subscribe to the command topic.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+          myCurtainMotor.<span class="sh-function">attach</span>(SERVO_PIN);
+          myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-number">0</span>); <span class="sh-comment">// Set initial curtain position (e.g., closed). Adjust for your setup.
+          </span>currentCurtainState = <span class="sh-string">"CLOSED"</span>; <span class="sh-comment">// Assume initial closed state or add calibration logic
+        
+          </span><span class="sh-function">pinMode</span>(OPEN_SENSOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>); <span class="sh-comment">// Use INPUT_PULLUP for the sensors
+          </span><span class="sh-function">pinMode</span>(CLOSED_SENSOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
+        
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/position"</span>);
+        }</code></pre>
+                </li>
+                <li><b><code>triggerActuator(String topic, String command)</code>:</b> This function will
+                    control the servo based on incoming commands to open or close the curtain.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">command</span>);
+        
+          <span class="sh-comment">// Handle commands for the curtain position
+          </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/position"</span>) {
+            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"OPEN"</span>) {
+              myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-number">180</span>); <span class="sh-comment">// Adjust angle for fully open position
+              </span>currentCurtainState = <span class="sh-string">"MOVING"</span>; <span class="sh-comment">// Set state to moving
+              </span><span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Curtain OPENING"</span>);
+            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"CLOSE"</span>) {
+              myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-number">0</span>); <span class="sh-comment">// Adjust angle for fully closed position
+              </span>currentCurtainState = <span class="sh-string">"MOVING"</span>; <span class="sh-comment">// Set state to moving
+              </span><span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Curtain CLOSING"</span>);
+            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"STOP"</span>) {
+              myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-variable">myCurtainMotor</span>.<span class="sh-function">read</span>()); <span class="sh-comment">// Stop at current position (requires a servo that holds position)
+              </span>currentCurtainState = <span class="sh-string">"STOPPED"</span>; <span class="sh-comment">// Indicate stopped state
+              </span><span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Curtain STOPPED"</span>);
+              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/state"</span>, <span class="sh-string">"STOPPED"</span>);
+            }
+          }
+        }</code></pre>
+                </li>
+                <li><b><code>readSensor()</code>:</b> This is where the state machine logic lives. It will
+                    continuously check the current state (from the switches) and publish status updates. You might also
+                    want to
+                    stop the servo once a limit switch is hit.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
+          <span class="sh-comment">// Read the state of the open and closed photo-interrupter switches.
+          // Assuming LOW means the beam is interrupted (curtain is at that position).
+          </span><span class="sh-type">bool</span> openSensorActive = (<span class="sh-function">digitalRead</span>(OPEN_SENSOR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
+          <span class="sh-type">bool</span> closedSensorActive = (<span class="sh-function">digitalRead</span>(CLOSED_SENSOR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
+        
+          <span class="sh-comment">// Update internal state and publish if state changes
+          </span><span class="sh-type">String</span> newCurtainState = currentCurtainState;
+        
+          <span class="sh-keyword">if</span> (openSensorActive &amp;&amp; newCurtainState != <span class="sh-string">"OPEN"</span>) {
+            newCurtainState = <span class="sh-string">"OPEN"</span>;
+            myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-variable">myCurtainMotor</span>.<span class="sh-function">read</span>()); <span class="sh-comment">// Stop the servo if it hits open limit
+          </span>} <span class="sh-keyword">else if</span> (closedSensorActive &amp;&amp; newCurtainState != <span class="sh-string">"CLOSED"</span>) {
+            newCurtainState = <span class="sh-string">"CLOSED"</span>;
+            myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-variable">myCurtainMotor</span>.<span class="sh-function">read</span>()); <span class="sh-comment">// Stop the servo if it hits closed limit
+          </span>} <span class="sh-keyword">else if</span> (!openSensorActive &amp;&amp; !closedSensorActive &amp;&amp; (currentCurtainState == <span class="sh-string">"OPEN"</span> || currentCurtainState == <span class="sh-string">"CLOSED"</span>)) {
+            <span class="sh-comment">// If it was open/closed but now neither sensor is active, it must be moving (unless commanded STOPPED).
+            // This is a simplified state; for robust systems, manage this with command.
+            </span>newCurtainState = <span class="sh-string">"MOVING"</span>;
+          }
+        
+          <span class="sh-keyword">if</span> (newCurtainState != currentCurtainState) {
+            currentCurtainState = newCurtainState;
+            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/state"</span>, currentCurtainState);
+            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Curtain status updated: "</span>);
+            <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(currentCurtainState);
+          }
+        }</code></pre>
+                </li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+            <p class="text-secondary">Success is when the curtain opens and closes fully via voice commands, stopping
+                automatically and reliably when it hits the respective photo-interrupter switches (both open and
+                closed). The central
+                dashboard should also accurately reflect the curtain's state as "OPEN" or "CLOSED" when it reaches an
+                end point, or "STOPPED" if you manually stop it.</p>
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+                <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
+                    <li><b>Photo-interrupter Logic:</b> Understand if your photo-interrupter outputs HIGH or LOW when
+                        the beam
+                        is broken, and adjust your `digitalRead` checks accordingly. `INPUT_PULLUP` will make the pin
+                        HIGH when
+                        the beam is NOT broken, and LOW when it IS broken (which is often what you want for limit
+                        switches).</li>
+                    <li><b>Positional Servo:</b> Unlike continuous rotation, a positional servo moves to a specific
+                        angle and
+                        stops. You'll need to map your "OPEN" and "CLOSE" commands to specific angles (0-180 degrees)
+                        for your
+                        servo and physical curtain setup.
+                    </li>
+                    <li><b>Robustness:</b> Consider what happens if a photo-interrupter fails. How can you add a timeout
+                        to prevent
+                        the motor from running indefinitely? (These are advanced questions for later!)</li>
+                    <li><b>Debugging States:</b> Print the `currentCurtainState` variable to your
+                        `Serial Monitor` in the `loop()` to observe how your state machine is
+                        transitioning. This is a powerful debugging technique.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="station6" class="page">
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 6: Master
+                Control Panel</h2>
+            <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The System Integrators</h3>
+            <p class="text-secondary">You are the <b>System Integration Team</b>. You have the most complex and exciting
+                task: building the master physical controller for the entire Smart Classroom! You will program four push
+                buttons, each designed to toggle the state of another specific device in the room (like the HVAC,
+                lights, or door). Crucially, your panel's LEDs must always show the <i>real</i>, live state of those
+                other devices, making your panel a true command and feedback center.</p>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+            <p class="text-secondary">You're building the physical equivalent of a smart home hub or a building
+                management system dashboard! This is how users interact directly with complex IoT setups, providing a
+                tangible interface that reflects the system's current status and allows for immediate control. This
+                involves deep understanding of how different smart devices communicate.</p>
+
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+            <ul class="list-disc list-inside pl-4 space-y-1">
+                <li>1x ESP8266 Board</li>
+                <li>1x Pre-wired Panel with 4 Push Buttons</li>
+                <li>1x 4-channel Relay Module (to control the panel's indicator LEDs)</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+            <p class="text-secondary mb-4">This station is largely pre-wired for convenience, but it's important to
+                understand the connections so you can use the correct pins in your code. The buttons are connected as
+                inputs, and the relay module controls the indicator LEDs on your panel.</p>
+            <img src="https://diyables.io/images/products/button-esp8266.jpg"
+                alt="Wiring Diagram for Station 6 (Example for Buttons)"
+                class="w-full rounded-2xl my-4 border border-custom-border"
+                onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=Button+Wiring+Diagram+Placeholder';">
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Buttons:</b> These are typically wired to pins like <code>PIN_D1, PIN_D2, PIN_D5, PIN_D6</code>.
+                    They will be configured with <code>INPUT_PULLUP</code> mode, meaning they read <code>LOW</code> when
+                    pressed. Your instructor will confirm exact pin assignments.</li>
+                <li><b>Relays (for LEDs):</b> The input pins of the 4-channel relay module that control your panel's
+                    indicator LEDs will be wired to other digital output pins on your ESP8266. Your instructor will
+                    confirm the exact pins.</li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+            <p class="text-secondary">Your mission is to integrate multiple devices. This station is unique as it will
+                heavily utilize the advanced <code>SmartDevice</code> functions. You will primarily write code in the
+                <code>setupDevice()</code> and <code>readSensor()</code> functions. You will also create a
+                custom <code>handlePanelMessages()</code> function that will be registered with
+                <code>onMessage()</code>.
+            </p>
+            <ul class="list-disc list-inside pl-4 space-y-2">
+                <li><b>Configuration &amp; Global Variables:</b> Update the <code>DEVICE_NAME</code>. You will create
+                    many global variables to track the state of other devices and define your button and LED pins. Also,
+                    add a forward declaration for your custom message handler.
+                    <pre><code class="language-cpp"><span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_ControlPanel"</span>; <span class="sh-comment">// e.g., "Sarah_Panel"
+        
+        // Define the BASE_TOPIC for each system you will control/monitor
+        </span><span class="sh-keyword">const char*</span> <span class="sh-variable">PORCH_LIGHT_BASE_TOPIC</span> = <span class="sh-string">"classroom/lighting"</span>;
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">HVAC_BASE_TOPIC</span> = <span class="sh-string">"classroom/hvac_kettle"</span>;
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">DOOR_LOCK_BASE_TOPIC</span> = <span class="sh-string">"classroom/door_security"</span>;
+        <span class="sh-keyword">const char*</span> <span class="sh-variable">CURTAIN_BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>;
+        
+        <span class="sh-comment">// Global state variables to track the status of other devices
+        </span><span class="sh-type">String</span> porchLightStatus = <span class="sh-string">"OFF"</span>;
+        <span class="sh-type">String</span> hvacStatus = <span class="sh-string">"OFF"</span>;
+        <span class="sh-type">String</span> doorLockStatus = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Will be like "CLOSED,LOCKED"
+        </span><span class="sh-type">String</span> curtainStatus = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Will be like "OPEN" or "CLOSED"
+        
+        // Define your button and LED pins here (confirm with instructor for exact pins)
+        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_PORCH_PIN</span> <span class="sh-variable">PIN_D1</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_HVAC_PIN</span> <span class="sh-variable">PIN_D2</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_DOOR_PIN</span> <span class="sh-variable">PIN_D5</span>
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_CURTAIN_PIN</span> <span class="sh-variable">PIN_D6</span>
+        
+        <span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_PORCH_PIN</span> <span class="sh-variable">PIN_D7</span> <span class="sh-comment">// Example pin for Porch Light status LED
+        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_HVAC_PIN</span> <span class="sh-variable">PIN_D8</span>  <span class="sh-comment">// Example pin for HVAC status LED
+        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_DOOR_PIN</span> <span class="sh-variable">PIN_D0</span>  <span class="sh-comment">// Example pin for Door Lock status LED
+        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_CURTAIN_PIN</span> <span class="sh-variable">PIN_D4</span> <span class="sh-comment">// Example pin for Curtain status LED
+        
+        // Forward declaration for the custom message handler.
+        </span><span class="sh-keyword">void</span> handlePanelMessages(<span class="sh-type">String</span> topic, <span class="sh-type">String</span> payload);</code></pre>
+                </li>
+                <li><b><code>setupDevice()</code>:</b> Set up your button inputs and LED outputs. Crucially,
+                    subscribe to all the status topics you need to listen to from other devices, and register your
+                    custom <code>handlePanelMessages()</code> function with <code>myDevice.onMessage()</code>.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+          <span class="sh-comment">// Set up button pins as INPUT_PULLUP.
+          </span><span class="sh-function">pinMode</span>(BUTTON_PORCH_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
+          <span class="sh-function">pinMode</span>(BUTTON_HVAC_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
+          <span class="sh-function">pinMode</span>(BUTTON_DOOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
+          <span class="sh-function">pinMode</span>(BUTTON_CURTAIN_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
+        
+          <span class="sh-comment">// Set up LED pins as OUTPUT and ensure they are initially OFF.
+          </span><span class="sh-function">pinMode</span>(LED_PORCH_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-function">pinMode</span>(LED_HVAC_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-function">pinMode</span>(LED_DOOR_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-function">pinMode</span>(LED_CURTAIN_PIN, <span class="sh-literal">OUTPUT</span>);
+          <span class="sh-function">digitalWrite</span>(LED_PORCH_PIN, <span class="sh-literal">LOW</span>);
+          <span class="sh-function">digitalWrite</span>(LED_HVAC_PIN, <span class="sh-literal">LOW</span>);
+          <span class="sh-function">digitalWrite</span>(LED_DOOR_PIN, <span class="sh-literal">LOW</span>);
+          <span class="sh-function">digitalWrite</span>(LED_CURTAIN_PIN, <span class="sh-literal">LOW</span>);
+        
+          <span class="sh-comment">// Subscribe to status topics of the controlled devices.
+          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/door_state"</span>);
+          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(CURTAIN_BASE_TOPIC) + <span class="sh-string">"/state"</span>);
+        
+          <span class="sh-comment">// Register your custom advanced message handler.
+          // This replaces the default triggerActuator routing, allowing you to handle all messages.
+          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">onMessage</span>(handlePanelMessages);
+        }</code></pre>
+                </li>
+                <li><b><code>handlePanelMessages(String topic, String payload)</code>:</b> Create this function. It will
+                    be called every time any message is received on any topic your panel is subscribed to. Use
+                    <code>if/else if</code> statements to determine which device sent the message and update your global
+                    state variables and corresponding LEDs.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">handlePanelMessages</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>) {
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Rx: Topic: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">", Payload: "</span>);
+          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">payload</span>);
+        
+          <span class="sh-comment">// Update global state variables and LEDs based on the 'topic' and 'payload'.
+          </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>) {
+            porchLightStatus = payload;
+            <span class="sh-function">digitalWrite</span>(LED_PORCH_PIN, (porchLightStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
+          }
+          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>) {
+            hvacStatus = payload;
+            <span class="sh-function">digitalWrite</span>(LED_HVAC_PIN, (hvacStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
+          }
+          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/door_state"</span>) {
+            doorLockStatus = payload; <span class="sh-comment">// This payload will be like "CLOSED,LOCKED"
+            // Extract lock status (second part of the string after comma)
+            </span><span class="sh-type">int</span> commaIndex = payload.<span class="sh-function">indexOf</span>(<span class="sh-string">","</span>);
+            <span class="sh-keyword">if</span> (commaIndex != -1) {
+              <span class="sh-type">String</span> lockPart = payload.<span class="sh-function">substring</span>(commaIndex + <span class="sh-number">1</span>);
+              <span class="sh-function">digitalWrite</span>(LED_DOOR_PIN, (lockPart == <span class="sh-string">"LOCKED"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
+            }
+          }
+          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(CURTAIN_BASE_TOPIC) + <span class="sh-string">"/state"</span>) {
+            curtainStatus = payload;
+            <span class="sh-function">digitalWrite</span>(LED_CURTAIN_PIN, (curtainStatus == <span class="sh-string">"OPEN"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
+          }
+          <span class="sh-comment">// Add more conditions for other stations' status topics if needed for future expansion.
+          </span>
+          <span class="sh-comment">// (Optional) Update an OLED/LCD display here based on the updated statuses
+          // display.clearDisplay();
+          // display.setTextSize(1);
+          // display.setTextColor(SSD1306_WHITE);
+          // display.setCursor(0,0);
+          // display.println("P: " + porchLightStatus);
+          // display.println("H: " + hvacStatus);
+          // display.println("D: " + doorLockStatus.substring(doorLockStatus.indexOf(',') + 1)); // Show only lock part
+          // display.println("C: " + curtainStatus);
+          // display.display();
+        }</code></pre>
+                </li>
+                <li><b><code>readSensor()</code>:</b> This is where you will check for button presses and publish
+                    commands to other devices. Remember to use <code>publishTo()</code> and include debouncing.
+                    <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
+          <span class="sh-comment">// This function handles checking button presses and sending commands.
+          // It runs repeatedly. Add simple debouncing (delay) after a press.
+        
+          // Handle Porch Light Button: Toggle ON/OFF for porch light.
+          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_PORCH_PIN) == <span class="sh-literal">LOW</span>) { <span class="sh-comment">// Button pressed (LOW because of INPUT_PULLUP)
+            </span><span class="sh-comment">// Use the global 'porchLightStatus' state variable to decide which command to send.
+            </span><span class="sh-type">String</span> command = (porchLightStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-string">"OFF"</span> : <span class="sh-string">"ON"</span>;
+            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>, command);
+            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Porch Light "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
+            <span class="sh-function">delay</span>(<span class="sh-number">250</span>); <span class="sh-comment">// Simple debounce to prevent multiple presses.
+          </span>}
+        
+          <span class="sh-comment">// Handle HVAC Button: Toggle ON/OFF for HVAC.
+          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_HVAC_PIN) == <span class="sh-literal">LOW</span>) {
+            <span class="sh-type">String</span> command = (hvacStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-string">"OFF"</span> : <span class="sh-string">"ON"</span>;
+            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>, command);
+            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: HVAC "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
+            <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
+          }
+        
+          <span class="sh-comment">// Handle Door Lock Button: Toggle LOCK/UNLOCK for the door.
+          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_DOOR_PIN) == <span class="sh-literal">LOW</span>) {
+            <span class="sh-comment">// Parse the current lock state from the combined doorLockStatus string
+            </span><span class="sh-type">int</span> commaIndex = doorLockStatus.<span class="sh-function">indexOf</span>(<span class="sh-string">","</span>);
+            <span class="sh-type">String</span> currentLockPart = (commaIndex != -1) ? doorLockStatus.<span class="sh-function">substring</span>(commaIndex + <span class="sh-number">1</span>) : <span class="sh-string">"UNKNOWN"</span>;
+        
+            <span class="sh-type">String</span> command = (currentLockPart == <span class="sh-string">"LOCKED"</span>) ? <span class="sh-string">"UNLOCK"</span> : <span class="sh-string">"LOCK"</span>;
+            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/lock"</span>, command);
+            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Door "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
+            <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
+          }
+        
+          <span class="sh-comment">// Handle Curtain Button: Toggle OPEN/CLOSE for the curtain.
+          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_CURTAIN_PIN) == <span class="sh-literal">LOW</span>) {
+            <span class="sh-type">String</span> command = (curtainStatus == <span class="sh-string">"OPEN"</span>) ? <span class="sh-string">"CLOSE"</span> : <span class="sh-string">"OPEN"</span>; <span class="sh-comment">// Toggle based on current OPEN/CLOSED status
+            </span><span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(CURTAIN_BASE_TOPIC) + <span class="sh-string">"/position"</span>, command);
+            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Curtain "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
+            <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
+          }
+        }</code></pre>
+                </li>
+            </ul>
+            <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+            <p class="text-secondary">You've succeeded when pressing a button on your panel reliably toggles the state
+                of its corresponding device elsewhere in the room (e.g., press HVAC button, the fan turns on/off). Most
+                importantly, your panel's indicator LED for each function <i>always</i> shows the correct, real-time
+                status of that device, even if the device was controlled by voice or another panel!</p>
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+                <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
+                    <li><b>Full Topic Paths:</b> Double-check that you are using the <i>exact</i> full topic paths for
+                        both subscribing to status updates AND publishing commands (e.g.,
+                        `classroom/hvac_kettle/hvac` vs. `classroom/hvac_kettle/hvac`).
+                    </li>
+                    <li><b>State Synchronization:</b> The biggest challenge is ensuring your panel's LEDs accurately
+                        reflect the real state of the other devices. This requires the `onMessage` callback
+                        (`handlePanelMessages` in this case)
+                        to <i>immediately</i> update your global state variables and LEDs whenever a status message
+                        comes in.</li>
+                    <li><b>Debouncing Explained:</b> A physical button "bounces" when pressed, sending many rapid
+                        HIGH/LOW signals. The `delay(250)` after a press is a simple "debounce" mechanism.
+                        For more advanced projects, you'd use a timer-based approach.</li>
+                    <li><b>Start-up State:</b> When your panel first turns on, it might not know the state of other
+                        devices. It will learn their states as soon as they publish their next status update.</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div id="api-reference" class="page">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">API Reference: SmartDevice Library
+            </h1>
+            <p class="text-center text-secondary text-lg mb-8">This section provides a comprehensive reference for the
+                <code>SmartDevice</code> library, your primary tool for connecting your IoT device to the Smart
+                Classroom Hub.
+                Understanding these functions and data types is crucial for building robust and interactive projects.
+            </p>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">GPIO Pin Definitions
+            </h2>
+            <p class="text-secondary">These are the safe-to-use GPIO pin definitions for your ESP8266 NodeMCU board. Use
+                these
+                friendly names in your code to avoid conflicts with essential system pins.</p>
+            <table class="w-full text-left text-secondary">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4">Macro</th>
+                        <th class="py-3 px-4">GPIO Pin</th>
+                        <th class="py-3 px-4">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D0</code></td>
+                        <td class="py-2 px-4">16</td>
+                        <td class="py-2 px-4">HIGH at boot, used to wake up from deep sleep.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D1</code></td>
+                        <td class="py-2 px-4">5</td>
+                        <td class="py-2 px-4">Safe to use.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D2</code></td>
+                        <td class="py-2 px-4">4</td>
+                        <td class="py-2 px-4">Safe to use.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D3</code></td>
+                        <td class="py-2 px-4">0</td>
+                        <td class="py-2 px-4">Connected to Flash button, boot fails if pulled LOW.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D4</code></td>
+                        <td class="py-2 px-4">2</td>
+                        <td class="py-2 px-4">HIGH at boot, boot fails if pulled LOW.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D5</code></td>
+                        <td class="py-2 px-4">14</td>
+                        <td class="py-2 px-4">Safe to use.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D6</code></td>
+                        <td class="py-2 px-4">12</td>
+                        <td class="py-2 px-4">Safe to use.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D7</code></td>
+                        <td class="py-2 px-4">13</td>
+                        <td class="py-2 px-4">Safe to use.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>PIN_D8</code></td>
+                        <td class="py-2 px-4">15</td>
+                        <td class="py-2 px-4">Required for boot, boot fails if pulled HIGH.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">SmartHome Namespace</h2>
+            <p class="text-secondary">The <code>SmartHome</code> namespace contains data structures (structs and enums)
+                used
+                for defining IoT variable types. These structures simplify sending and receiving complex data,
+                especially for
+                devices like smart lights.</p>
+
+            <h3 class="text-xl font-bold text-primary mb-3"><code>enum LightType</code></h3>
+            <p class="text-secondary mt-2">Defines the type of light being represented.</p>
+            <ul class="list-disc list-inside pl-4 space-y-2 text-secondary">
+                <li><code>DIMMABLE_WHITE</code>: For lights that can only control brightness (0-255).</li>
+                <li><code>FULL_COLOR</code>: For lights that can control brightness and color (RGB).</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-primary mb-3"><code>struct Light</code></h3>
+            <p class="text-secondary mt-2">Represents the state of a smart light, including its type, on/off state,
+                brightness, and color (for full-color lights).</p>
+            <table class="w-full text-left text-secondary">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4">Member</th>
+                        <th class="py-3 px-4">Type</th>
+                        <th class="py-3 px-4">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-2 px-4"><code>type</code></td>
+                        <td class="py-2 px-4"><code>LightType</code></td>
+                        <td class="py-2 px-4">Specifies if the light is dimmable white or full color.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>state</code></td>
+                        <td class="py-2 px-4"><code>bool</code></td>
+                        <td class="py-2 px-4"><code>true</code> if ON, <code>false</code> if OFF.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>brightness</code></td>
+                        <td class="py-2 px-4"><code>uint8_t</code></td>
+                        <td class="py-2 px-4">Brightness level (0-255).</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>color</code></td>
+                        <td class="py-2 px-4"><code>uint32_t</code></td>
+                        <td class="py-2 px-4">RGB color in <code>0xRRGGBB</code> format (e.g., <code>0xFF0000</code> for
+                            Red).
+                            Only relevant for <code>FULL_COLOR</code> lights.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>payload()</code></td>
+                        <td class="py-2 px-4"><code>String</code></td>
+                        <td class="py-2 px-4">Generates a JSON string payload from the struct's current state, ready for
+                            MQTT
+                            publication.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">SmartDevice Class</h2>
+            <p class="text-secondary">The <code>SmartDevice</code> class provides all the essential functionalities for
+                your
+                ESP8266 to connect to Wi-Fi, communicate with the MQTT broker, and handle incoming/outgoing messages.
+            </p>
+
+            <h3 class="text-xl font-bold text-primary mb-3">Constructor</h3>
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>SmartDevice()</code></h4>
+                <p class="text-sm text-secondary">Initializes a new instance of the <code>SmartDevice</code> class. You
+                    will
+                    typically declare this as a global object in your sketch.</p>
+                <pre><code><span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>; <span class="sh-comment">// Declare a SmartDevice object</span></code></pre>
+            </div>
+
+            <h3 class="text-xl font-bold text-primary mb-3">Public Methods</h3>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>void begin(const char *deviceName, const char *wifi_ssid, const char
+                        *wifi_pass, const char *mqtt_broker)</code></h4>
+                <p class="text-sm text-secondary">Initializes the device, connects to the specified Wi-Fi network, and
+                    establishes a connection to the MQTT Hub. This function should be called once in your
+                    <code>setup()</code>
+                    function.
+                </p>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Parameter</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"><code>deviceName</code></td>
+                            <td class="py-1 px-4"><code>const char *</code></td>
+                            <td class="py-1 px-4">A unique name for your device (e.g., "Station1_HVAC").</td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 px-4"><code>wifi_ssid</code></td>
+                            <td class="py-1 px-4"><code>const char *</code></td>
+                            <td class="py-1 px-4">The Wi-Fi network SSID (e.g., "McMasterIoT-Camp").</td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 px-4"><code>wifi_pass</code></td>
+                            <td class="py-1 px-4"><code>const char *</code></td>
+                            <td class="py-1 px-4">The Wi-Fi network password (e.g., "Roomba2025").</td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 px-4"><code>mqtt_broker</code></td>
+                            <td class="py-1 px-4"><code>const char *</code></td>
+                            <td class="py-1 px-4">The IP address of the MQTT Broker (e.g., "192.168.0.147").</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre
+                    class="mt-4"><code><span class="sh-variable">myDevice</span>.<span class="sh-function">begin</span>(<span class="sh-variable">DEVICE_NAME</span>, <span class="sh-variable">WIFI_SSID</span>, <span class="sh-variable">WIFI_PASSWORD</span>, <span class="sh-variable">MQTT_BROKER_IP</span>);</code></pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>void update()</code></h4>
+                <p class="text-sm text-secondary">Keeps the device connected to Wi-Fi and the MQTT Hub, and processes
+                    any
+                    incoming messages. This function <b>MUST</b> be called in every iteration of your Arduino
+                    <code>loop()</code>
+                    function.
+                </p>
+                <pre><code><span class="sh-keyword">void</span> <span class="sh-function">loop</span>() {
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">update</span>(); <span class="sh-comment">// Keep the device online and process messages</span>
+  <span class="sh-function">readSensor</span>(); <span class="sh-comment">// Your custom sensor reading function</span>
+}</code></pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>void publishTo(String fullTopic, String payload)</code></h4>
+                <p class="text-sm text-secondary">Publishes a raw string message to a specific MQTT topic path. Use this
+                    to
+                    send data (e.g., sensor readings, status updates) from your device to the central hub or other
+                    subscribed
+                    devices.</p>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Parameter</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"><code>fullTopic</code></td>
+                            <td class="py-1 px-4"><code>String</code></td>
+                            <td class="py-1 px-4">The complete MQTT topic path (e.g.,
+                                "<code>classroom/station1/temperature</code>").</td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 px-4"><code>payload</code></td>
+                            <td class="py-1 px-4"><code>String</code></td>
+                            <td class="py-1 px-4">The message content as a string. For Light messages, use
+                                <code>Light.payload()</code>.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre
+                    class="mt-4"><code><span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">BASE_TOPIC</span> + <span class="sh-string">"/temperature"</span>, <span class="sh-function">String</span>(<span class="sh-variable">currentTemp</span>));
+<span class="sh-class">SmartHome::Light</span> <span class="sh-variable">myLight</span>; <span class="sh-comment">// Example Light object</span>
+<span class="sh-variable">myLight</span>.<span class="sh-variable">state</span> = <span class="sh-keyword">true</span>;
+<span class="sh-variable">myLight</span>.<span class="sh-variable">brightness</span> = <span class="sh-literal">150</span>;
+<span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">BASE_TOPIC</span> + <span class="sh-string">"/light"</span>, <span class="sh-variable">myLight</span>.<span class="sh-function">payload</span>());</code></pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>void subscribeTo(String fullTopic)</code></h4>
+                <p class="text-sm text-secondary">Subscribes your device to a specific MQTT topic path, allowing it to
+                    receive
+                    messages published on that topic. This version also stores the subscription for automatic
+                    re-subscription on
+                    reconnect.</p>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Parameter</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"><code>fullTopic</code></td>
+                            <td class="py-1 px-4"><code>String</code></td>
+                            <td class="py-1 px-4">The complete MQTT topic path to subscribe to (e.g.,
+                                "<code>classroom/station1s</code>").</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre
+                    class="mt-4"><code><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">BASE_TOPIC</span> + <span class="sh-string">"s"</span>);
+<span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-string">"classroom/master/broadcast"</span>); <span class="sh-comment">// Subscribe to a global topic</span></code></pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>void onMessage(MessageCallback callback)</code></h4>
+                <p class="text-sm text-secondary">Registers a function to handle all incoming MQTT messages received by
+                    your
+                    device. The registered <code>callback</code> function will be executed whenever a message arrives on
+                    a
+                    topic your device is subscribed to.</p>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Parameter</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"><code>callback</code></td>
+                            <td class="py-1 px-4"><code>MessageCallback</code></td>
+                            <td class="py-1 px-4">A pointer to a function with the signature
+                                <code>void func(String topic, String payload)</code>.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre
+                    class="mt-4"><code><span class="sh-comment">// Define your message handler function</span>
+<span class="sh-keyword">void</span> <span class="sh-function">myMessageHandler</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>) {
+  <span class="sh-comment">// Process the incoming message</span>
+  <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
+  <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
+  <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
+  <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">payload</span>);
+}
+        
+<span class="sh-comment">// In your setup() function:</span>
+<span class="sh-variable">myDevice</span>.<span class="sh-function">onMessage</span>(<span class="sh-variable">myMessageHandler</span>);</code></pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>bool isConnected()</code></h4>
+                <p class="text-sm text-secondary">Checks if the MQTT client is currently connected to the central hub.
+                </p>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Returns</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"></td>
+                            <td class="py-1 px-4"><code>bool</code></td>
+                            <td class="py-1 px-4"><code>true</code> if connected, <code>false</code> otherwise.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre class="mt-4"><code><span class="sh-preprocessor">if</span> (<span class="sh-variable">myDevice</span>.<span class="sh-function">isConnected</span>()) {
+  <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Device is online."</span>);
+} <span class="sh-keyword">else</span> {
+  <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Device is offline, attempting reconnect..."</span>);
+}</code></pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>static SmartHome::Light commandToLight(String command)</code>
+                </h4>
+                <p class="text-sm text-secondary">A static helper function to parse an incoming raw command string
+                    (typically
+                    from an MQTT message payload) into a structured <code>SmartHome::Light</code> object. This
+                    simplifies
+                    handling light-related commands.</p>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Parameter</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"><code>command</code></td>
+                            <td class="py-1 px-4"><code>String</code></td>
+                            <td class="py-1 px-4">The raw command string (e.g., "ON", "OFF", "BRIGHTNESS:120",
+                                "COLOR:#FF00FF").</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="w-full text-left text-secondary mt-2">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4">Returns</th>
+                            <th class="py-2 px-4">Type</th>
+                            <th class="py-2 px-4">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-1 px-4"></td>
+                            <td class="py-1 px-4"><code>SmartHome::Light</code></td>
+                            <td class="py-1 px-4">A <code>Light</code> struct populated with the parsed command details.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre class="mt-4"><code><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span>.<span class="sh-function">endsWith</span>(<span class="sh-string">"/light/set"</span>)) {
+  <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">lightState</span> = <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">lightState</span>.<span class="sh-variable">state</span>) {
+    <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Light ON!"</span>);
+  } <span class="sh-preprocessor">else</span> {
+    <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Light OFF!"</span>);
+  }
+    <span class="sh-comment">// Apply brightness/color based on lightState members</span>
+  }
+}</code></pre>
+            </div>
+        </div>
+
+        <div id="upload-troubleshoot" class="page">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">Upload & Troubleshooting Guide</h1>
+            <p class="text-center text-secondary text-lg mb-8">Encountering issues is a natural part of the engineering
+                process! This guide will help you diagnose and resolve common problems you might face while uploading
+                your code
+                or connecting your device to the network.</p>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Common Bug Hotspots &
+                Solutions
+            </h2>
+
+            <div class="highlight-box">
+                <h3 class="font-bold text-accent mb-2">1. Wi-Fi / Network Connection Issues</h3>
+                <p class="text-sm text-secondary">Your device needs a stable connection to the McMasterIoT-Camp Wi-Fi
+                    and the
+                    central MQTT Hub (Broker) to function. If your device isn't connecting or sending/receiving
+                    messages, check
+                    these:</p>
+                <ul class="list-disc list-inside pl-4 mt-3 space-y-2 text-secondary text-sm">
+                    <li><b>Incorrect Credentials:</b> Double-check the Wi-Fi SSID (<code>McMasterIoT-Camp</code>) and
+                        Password
+                        (<code>Roomba2025</code>). Also, ensure the MQTT Broker IP Address (<code>192.168.0.147</code> -
+                        confirm with instructor)
+                        is correctly entered in your <code>UniversalDeviceTemplate.ino</code>.
+                        <pre
+                            class="mt-2"><code><span class="sh-keyword">const char</span> *<span class="sh-variable">WIFI_SSID</span> = <span class="sh-string">"McMasterIoT-Camp"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">WIFI_PASSWORD</span> = <span class="sh-string">"Roomba2025"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">MQTT_BROKER_IP</span> = <span class="sh-string">"192.168.0.147"</span>; <span class="sh-comment">// Confirm with instructor</span></code></pre>
+                    </li>
+                    <li><b>"System Engine" Modifications:</b> The "System Engine" part of the
+                        <code>UniversalDeviceTemplate.ino</code>
+                        handles all networking. <b class="text-error-red-soft">DO NOT EDIT THIS SECTION.</b> Any changes
+                        can
+                        break the connection logic. If you suspect changes, revert to a fresh template.
+                    </li>
+                    <li><b>Hub Offline:</b> The central MQTT Hub might be offline or unreachable. Inform your instructor
+                        if you
+                        suspect this is the case after verifying your own code.</li>
+                    <li><b>Serial Monitor Output:</b> Open the Serial Monitor in Arduino IDE (Tools > Serial Monitor).
+                        Set the
+                        baud rate to <code>115200</code>. Look for messages like "Connecting to WiFi...", "Connected!",
+                        "MQTT
+                        connecting...", or "Failed to connect to MQTT". These messages are crucial for diagnosing
+                        network
+                        issues.
+                        <pre
+                            class="mt-2"><code><span class="sh-function">Serial</span>.<span class="sh-function">begin</span>(<span class="sh-literal">115200</span>); <span class="sh-comment">// Ensure this is in setup()</span>
+<span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Debugging output..."</span>); <span class="sh-comment">// Add your own debugging messages</span></code></pre>
+                    </li>
+                    <li><b>Firewall/Antivirus:</b> Rarely, local computer firewalls or antivirus software can interfere
+                        with
+                        the Arduino IDE's ability to communicate with the board. If other troubleshooting fails,
+                        temporarily
+                        disable them (with instructor permission).</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3 class="font-bold text-accent mb-2">2. Code Logic & Syntax Errors</h3>
+                <p class="text-sm text-secondary">These are errors in your C++ code that prevent it from compiling or
+                    running
+                    correctly. The Arduino IDE compiler will give you feedback.</p>
+                <ul class="list-disc list-inside pl-4 mt-3 space-y-2 text-secondary text-sm">
+                    <li><b>Compiler Errors:</b> When you click "Verify" or "Upload," the bottom pane of the Arduino IDE
+                        will
+                        show red error messages. Read these carefully! They often tell you the file name and line number
+                        where
+                        the error occurred. Common errors include missing semicolons (<code>;</code>), misspelled
+                        variable/function
+                        names, unmatched parentheses <code>()</code>, curly braces <code>{}</code>, or square brackets
+                        <code>[]</code>.
+                    </li>
+                    <li><b>Incorrect Variable/Function Scope:</b> Ensure variables and functions are declared in the
+                        correct
+                        places (e.g., global variables outside of functions, local variables inside the function where
+                        they are
+                        used).
+                    </li>
+                    <li><b>Case Sensitivity:</b> C++ is case-sensitive. <code>mydevice</code> is different from
+                        <code>myDevice</code>. Always match the exact casing.
+                    </li>
+                    <li><b>Library Issues:</b> If you include new libraries (e.g., <code>#include &lt;DHT.h&gt;</code>),
+                        ensure
+                        they are installed via the Arduino IDE's Library Manager (Sketch > Include Library > Manage
+                        Libraries...).
+                    </li>
+                    <li><b>Logic Bugs (Runtime Errors):</b> Your code compiles but doesn't do what you expect. Use
+                        <code>Serial.print()</code> and <code>Serial.println()</code> extensively in your
+                        <code>setupDevice()</code>,
+                        <code>readSensor()</code>, and <code>triggerActuator()</code> functions to print variable values
+                        and
+                        track program flow. This is your most powerful debugging tool.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3 class="font-bold text-accent mb-2">3. Upload / Port Issues</h3>
+                <p class="text-sm text-secondary">Problems getting your compiled code onto the ESP8266 board.</p>
+                <ul class="list-disc list-inside pl-4 mt-3 space-y-2 text-secondary text-sm">
+                    <li><b>Incorrect Board Selection:</b> Go to "Tools > Board" and ensure "NodeMCU 1.0 (ESP-12E
+                        Module)" or
+                        the equivalent for your board is selected.</li>
+                    <li><b>Incorrect Port Selection:</b> Go to "Tools > Port" and select the correct COM port for your
+                        ESP8266.
+                        If you unplug and replug the USB cable, the port might change. On Windows, this is usually COMx;
+                        on macOS,
+                        it might be <code>/dev/cu.usbserial-XXXX</code>.</li>
+                    <li><b>Driver Issues:</b> For some ESP8266 boards, you might need a USB-to-Serial driver (e.g.,
+                        CH340G or
+                        CP2102 driver). If no COM port appears even after plugging in, you likely need to install the
+                        correct
+                        driver for your board's USB chip.</li>
+                    <li><b>"Failed to connect / A fatal error occurred" during Upload:</b>
+                        <ul class="list-disc list-inside ml-4 mt-2 text-secondary text-sm">
+                            <li><b>Press and Hold FLASH button:</b> Some boards require you to press and hold the
+                                "FLASH" or
+                                "BOOT" button on the ESP8266 board while uploading, then release it after the upload
+                                starts (you'll
+                                see "Connecting..." in the IDE).</li>
+                            <li><b>Loose USB Cable:</b> Ensure your USB cable is fully inserted and not faulty. Try a
+                                different
+                                cable if possible.</li>
+                            <li><b>Power Issues:</b> Ensure your board is adequately powered. USB 2.0 ports generally
+                                provide
+                                enough power, but sometimes a powered USB hub or a shorter, higher-quality cable can
+                                help.</li>
+                        </ul>
+                    </li>
+                    <li><b>Conflicting Programs:</b> Ensure no other program (like another Serial Monitor, or other IDE)
+                        is
+                        currently using the COM port. Close any such applications.</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3 class="font-bold text-accent mb-2">4. Physical Wiring Mistakes</h3>
+                <p class="text-sm text-secondary">Even perfect code won't work with incorrect wiring. Always
+                    double-check your
+                    physical connections!</p>
+                <ul class="list-disc list-inside pl-4 mt-3 space-y-2 text-secondary text-sm">
+                    <li><b>Component Orientation:</b> Many components (LEDs, sensors, chips) are polarized or have
+                        specific
+                        pin orientations. Ensure they are inserted correctly. Look for small dots, notches, or
+                        longer/shorter
+                        legs.</li>
+                    <li><b>Correct Pin Usage:</b> Verify that you are connecting components to the exact GPIO pins
+                        specified in
+                        your code (e.g., if code says <code>PIN_D1</code>, connect to the physical D1 pin on the
+                        NodeMCU). Refer
+                        to the GPIO Pin Definitions in the API Reference section.</li>
+                    <li><b>Loose Connections:</b> Wires can easily come loose on breadboards or header pins. Gently push
+                        all
+                        wires to ensure a firm connection.</li>
+                    <li><b>Short Circuits:</b> Ensure no bare wires or component leads are touching unintentionally,
+                        which can
+                        cause unexpected behavior or damage components.</li>
+                    <li><b>Power and Ground:</b> Always ensure your components have a common ground connection with the
+                        ESP8266,
+                        and that power (3.3V or 5V, depending on component) is correctly supplied.</li>
+                </ul>
+            </div>
+            <p class="text-center text-secondary text-lg mt-8">If you've gone through these steps and are still stuck,
+                don't
+                hesitate to ask an instructor for help!<br>
+                They are there to guide you.</p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-item, .dropdown-item');
+            const dropdownContainer = document.getElementById('dropdown-container');
+            const dropdownButton = document.getElementById('nav-missions-btn');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const dropdownArrow = document.getElementById('dropdown-arrow');
+
+            function showPage(pageId) {
+                pages.forEach(page => page.classList.remove('active'));
+
+                const activePage = document.getElementById(pageId);
+                if (activePage) {
+                    activePage.classList.add('active');
+                }
+
+                navLinks.forEach(link => {
+                    const isDropdownButton = link.id === 'nav-missions-btn';
+                    const isForCurrentPage = link.dataset.page === pageId;
+                    const isDropdownPageActive = activePage && activePage.id.startsWith('station');
+
+                    link.classList.remove('bg-accent', 'text-custom-bg', 'font-bold');
+                    link.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+
+                    if (isForCurrentPage && !link.classList.contains('dropdown-item')) {
+                        link.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
+                        link.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+                    }
+                    else if (isDropdownButton && isDropdownPageActive) {
+                        link.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
+                        link.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+                    }
+                });
+
+                closeDropdown();
+                // Call chart rendering function when the infographic page is active
+                if (pageId === 'overview') {
+                    renderInfographicCharts();
+                }
+            }
+
+            function openDropdown() {
+                dropdownMenu.classList.remove('hidden');
+                dropdownArrow.style.transform = 'rotate(180deg)';
+            }
+
+            function closeDropdown() {
+                dropdownMenu.classList.add('hidden');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+            }
+
+            // --- Event Listeners ---
+            navLinks.forEach(link => {
+                if (link.dataset.page) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showPage(link.dataset.page);
+                        window.scrollTo(0, 0);
+                    });
+                }
+            });
+
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isHidden = dropdownMenu.classList.contains('hidden');
+                if (isHidden) {
+                    openDropdown();
+                } else {
+                    closeDropdown();
+                }
+            });
+
+            window.addEventListener('click', (event) => {
+                if (!dropdownContainer.contains(event.target)) {
+                    closeDropdown();
+                }
+            });
+
+            // --- Initialization ---
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+            });
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.classList.add('block', 'w-full', 'text-left', 'px-4', 'py-2', 'text-sm', 'text-primary', 'hover:bg-accent', 'hover:text-custom-bg', 'transition-colors', 'rounded-lg');
+            });
+
+            showPage('home'); // Show home page on initial load
+
+            // Chart rendering function for the infographic page
+            function renderInfographicCharts() {
+                // Utility function to wrap Chart.js labels
+                function wrapLabel(label, maxLength = 16) {
+                    if (label.length <= maxLength) {
+                        return label;
+                    }
+                    const words = label.split(' ');
+                    let lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + word).length > maxLength && currentLine.length > 0) {
+                            lines.push(currentLine.trim());
+                            currentLine = word + ' ';
+                        } else {
+                            currentLine += word + ' ';
+                        }
+                    });
+                    if (currentLine.length > 0) {
+                        lines.push(currentLine.trim());
+                    }
+                    return lines;
+                }
+
+                const tooltipConfig = {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function (tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                        return label.join(' ');
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: { // Also define legend callbacks for proper multi-line labels if needed
+                            labels: {
+                                color: '#BDC1C6', // Secondary text color for legend
+                                padding: 20,
+                                font: { family: 'Product Sans' }
+                            }
+                        }
+                    }
+                };
+
+                // Chart 2: Troubleshooting Hotspots (Doughnut Chart)
+                const troubleshootingCtx = document.getElementById('troubleshootingChart');
+                if (troubleshootingCtx) { // Check if canvas exists on the current page
+                    const existingChart = Chart.getChart(troubleshootingCtx);
+                    if (existingChart) existingChart.destroy(); // Destroy previous instance to prevent duplicates
+
+                    new Chart(troubleshootingCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: [
+                                wrapLabel('Wi-Fi / Network Connection'),
+                                wrapLabel('Code Logic & Syntax Errors'),
+                                wrapLabel('Upload / Port Issues'),
+                                wrapLabel('Physical Wiring Mistakes')
+                            ],
+                            datasets: [{
+                                label: 'Common Bug Hotspots',
+                                data: [40, 30, 20, 10], /* Example data distribution */
+                                backgroundColor: ['#8ab4f8', '#ef5350', '#ffb300', '#2196f3'], /* Accent, Error-Red, Warning-Yellow, Info-Blue */
+                                borderColor: 'transparent', /* Removed border */
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            ...tooltipConfig,
+                            maintainAspectRatio: false,
+                            cutout: '60%', /* Doughnut thickness */
+                            plugins: {
+                                ...tooltipConfig.plugins,
+                                legend: {
+                                    display: false /* Removed legend */
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
