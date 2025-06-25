@@ -1,56 +1,72 @@
 // 1. LIBRARY INCLUSIONS
 #include <SmartDevice.h>
-#include <Adafruit_NeoPixel.h>
+#include <Servo.h>
 
 using namespace SmartHome; // NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE
 
 // 2. VARIABLE DEFINITIONS
-const int STRIP_PIN = PIN_D5;
-const int NUM_LEDS = 5;
-const int BULB_PIN = PIN_D6;
+const int KEYPAD_PIN = A0;     // To receive State from Keypad
+const int LOCK_1_PIN = PIN_D5; // First Servo Lock Pin
+const int LOCK_2_PIN = PIN_D6; // Second Servo Lock Pin
+const int DOOR_PIN = PIN_D7;   // Contact Sensor Pin
+bool local = false;   // Flag to track if the command came from the keypad
 
 // 3. SERVER CONFIGURATION
-const char *DEVICE_NAME = "Glowing_Emu"; // <-- CHANGE THIS!
-const char *STRIP_TOPIC = "classroom/lights";
-const char *BULB_TOPIC = "porch/light";
+const char *DEVICE_NAME = "Fort_Knox"; // <-- CHANGE THIS!
+const char *LOCK_TOPIC = "entrance/lock";
+const char *DOOR_TOPIC = "entrance/door";
 
 // 4. OBJECT DECLARATIONS
 SmartDevice myDevice;
-Adafruit_NeoPixel strip(NUM_LEDS, STRIP_PIN, NEO_GRB + NEO_KHZ800); // NeoPixel strip object
+Servo lock1;
+Servo lock2;
+enum KeypadState { STANDBY, LOCK, UNLOCK } request;
 
 // 5. DEVICE FUNCTIONS
 void setupDevice() // Runs ONCE at startup.
 {
-  strip.begin(); // Initialize the NeoPixel strip
-  strip.show();  // Initialize all pixels to 'off'
+  // Set keypad and contact sensor as inputs
+  pinMode(KEYPAD_PIN, INPUT);
+  pinMode(DOOR_PIN, INPUT_PULLUP); // Use internal pull-up resistor for contact sensor
 
-  pinMode(BULB_PIN, OUTPUT);   // Set the bulb pin as output
-  digitalWrite(BULB_PIN, LOW); // Ensure the bulb is off at startup
+  // Attach servos to their respective pins
+  lock1.attach(LOCK_1_PIN);
+  lock2.attach(LOCK_2_PIN);
 
-  // Subscribe to the topics for the strip and bulb to receive commands
-  myDevice.subscribeTo(STRIP_TOPIC);
-  myDevice.subscribeTo(BULB_TOPIC);
+  // Subscribe to the lock topic to receive commands
+  myDevice.subscribeTo(LOCK_TOPIC);
 }
 
-void readSensor() {} // Runs REPEATEDLY in the main loop.
+// NEW Function to set the lock state as locked[true] or unlocked[false].
+void setLock(bool state, bool fromKeypad)
+{
+  lock1.write(state ? 180 : 0); // Lock or unlock the first servo
+  lock2.write(state ? 0 : 180); // Mirror first servo because its position is inverted
+
+  if (!fromKeypad) return; // Exit if not from keypad
+
+  myDevice.publishTo(DOOR_TOPIC, state ? "true" : "false");
+  this.local = true;
+}
+
+void readSensor() // Runs REPEATEDLY in the main loop.
+{
+  // Read door status from the contact sensor
+  bool doorClosed = !digitalRead(DOOR_PIN); // Inverted because the sensor is active LOW
+
+  // Publish the door status to the MQTT topic
+  myDevice.publishTo(DOOR_TOPIC, doorClosed ? "true" : "false");
+
+  // Read keypad
+  request = map(analogRead(KEYPAD_PIN), 0, 1023, 0, 2);
+  if (request != STANDBY) setLock(request == LOCK, true); // Lock or unlock based on keypad input and inform server
+}
 
 void triggerActuator(String topic, String command) // Runs ON_DEMAND when a command is received from the Smart Hub.
 {
-  // Create Light struct to hold light data
-  Light light = SmartDevice::commandToLight(command);
-
-  if (topic == STRIP_TOPIC)
-  {
-    strip.fill(SmartDevice::getRGB(light)); // Convert Light to RGB and fill the strip
-    strip.show();                           // Update the strip with the new color
-  }
-
-  else if (topic == BULB_TOPIC) {
-    if (light.isOn)                                                  // Check if the light is meant to be on
-      analogWrite(BULB_PIN, SmartDevice::getBrightnessValue(light)); // Set bulb brightness
-    else
-      digitalWrite(BULB_PIN, LOW); // Turn off the bulb if not on
-  }
+  if (topic == LOCK_TOPIC)
+    if (local) local = false; // Reset Flag for next use
+    else setLock(command == "true", false); // Lock or unlock based on command, do not inform server
 }
 
 /*

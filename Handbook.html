@@ -618,7 +618,7 @@
                 instructions.</p>
               <pre><code><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">command</span>) {
   <span class="sh-comment">// Your actuator control logic goes here.</span>
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>) { <span class="sh-variable">digitalWrite</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">HIGH</span>); } <span class="sh-comment">// EXAMPLE Actuation Sequence</span>
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"true"</span>) { <span class="sh-variable">digitalWrite</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">HIGH</span>); } <span class="sh-comment">// EXAMPLE Actuation Sequence</span>
 }</code></pre>
             </li>
           </ol>
@@ -940,20 +940,20 @@
         </li>
         <li><b>Configuration:</b> Update the <code>DEVICE_NAME</code> and add specific topics for your devices.
           <pre><code class="language-cpp"><span class="sh-comment">// 3. SERVER CONFIGURATION</span>
-<span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_HVAC_Kettle"</span>; <span class="sh-comment">// e.g., "Sarah_HVAC_Kettle"</span>
-<span class="sh-keyword">const char*</span> <span class="sh-variable">KETTLE_TOPIC</span> = <span class="sh-string">"classroom/kettle"</span>;
-<span class="sh-keyword">const char*</span> <span class="sh-variable">HVAC_TOPIC</span> = <span class="sh-string">"classroom/hvac"</span>;</code></pre>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_HVAC_Kettle"</span>; <span class="sh-comment">// e.g., "Sarah_HVAC_Kettle"</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">KETTLE_TOPIC</span> = <span class="sh-string">"classroom/kettle"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">HVAC_TOPIC</span> = <span class="sh-string">"classroom/hvac"</span>;</code></pre>
         </li>
         <li><b><code>setupDevice()</code>:</b> In this function, you'll configure your relay pins as outputs
           and ensure they start in a safe (OFF) state. Also, subscribe to the command topics.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
   <span class="sh-comment">// Configure both relay pins as outputs</span>
-  <span class="sh-function">pinMode</span>(<span class="sh-variable">HVAC_PIN</span>, <span class="sh-literal">OUTPUT</span>);
-  <span class="sh-function">pinMode</span>(<span class="sh-variable">KETTLE_PIN</span>, <span class="sh-literal">OUTPUT</span>);
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">HVAC_PIN</span>, <span class="sh-keyword">OUTPUT</span>);
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">KETTLE_PIN</span>, <span class="sh-keyword">OUTPUT</span>);
 
   <span class="sh-comment">// Ensure both relays start OFF to prevent unexpected activations</span>
-  <span class="sh-function">digitalWrite</span>(<span class="sh-variable">HVAC_PIN</span>, <span class="sh-literal">LOW</span>);
-  <span class="sh-function">digitalWrite</span>(<span class="sh-variable">KETTLE_PIN</span>, <span class="sh-literal">LOW</span>);
+  <span class="sh-function">digitalWrite</span>(<span class="sh-variable">HVAC_PIN</span>, <span class="sh-keyword">LOW</span>);
+  <span class="sh-function">digitalWrite</span>(<span class="sh-variable">KETTLE_PIN</span>, <span class="sh-keyword">LOW</span>);
 
   <span class="sh-comment">// Subscribe to the command topics for HVAC and Kettle</span>
   <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">HVAC_TOPIC</span>);
@@ -965,18 +965,18 @@
           string. Remember to report the status back to the cloud using <code>myDevice.publishTo()</code>.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
   <span class="sh-comment">// ---&lt; PROCESS INCOMING COMMANDS AND CONTROL ACTUATORS HERE &gt;---</span>
-  <span class="sh-comment">// Choose pin based on topic</span>
   <span class="sh-keyword">int</span> <span class="sh-variable">pin</span>;
+  <span class="sh-comment">// Choose pin based on topic</span>
   <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> == <span class="sh-variable">KETTLE_TOPIC</span>)
     <span class="sh-variable">pin</span> = <span class="sh-variable">KETTLE_PIN</span>;
   <span class="sh-preprocessor">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-variable">HVAC_TOPIC</span>)
     <span class="sh-variable">pin</span> = <span class="sh-variable">HVAC_PIN</span>;
 
   <span class="sh-comment">// Turn pin ON or OFF based on command</span>
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"ON"</span>)
-    <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pin</span>, <span class="sh-literal">HIGH</span>);
-  <span class="sh-preprocessor">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"OFF"</span>)
-    <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pin</span>, <span class="sh-literal">LOW</span>);
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"true"</span>)
+    <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pin</span>, <span class="sh-keyword">HIGH</span>);
+  <span class="sh-preprocessor">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"false"</span>)
+    <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pin</span>, <span class="sh-keyword">LOW</span>);
 }</code></pre>
         </li>
       </ul>
@@ -1071,30 +1071,31 @@
         <li><b>3. Server Configuration:</b> Update the <code>DEVICE_NAME</code> and add specific topics for each of your
           sensors.
           <pre><code class="language-cpp"><span class="sh-comment">// 3. SERVER CONFIGURATION</span>
-<span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Enviro_Bro"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "YourName_EnviroSense"</span>
-<span class="sh-keyword">const char*</span> <span class="sh-variable">TEMP_TOPIC</span> = <span class="sh-string">"classroom/thermostat"</span>;
-<span class="sh-keyword">const char*</span> <span class="sh-variable">MOTION_TOPIC</span> = <span class="sh-string">"classroom/motion"</span>;
-<span class="sh-keyword">const char*</span> <span class="sh-variable">WINDOW_TOPIC</span> = <span class="sh-string">"classroom/window"</span>;</code></pre>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Enviro_Bro"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "YourName_EnviroSense"</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">TEMP_TOPIC</span> = <span class="sh-string">"classroom/thermostat"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">MOTION_TOPIC</span> = <span class="sh-string">"classroom/motion"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">WINDOW_TOPIC</span> = <span class="sh-string">"classroom/window"</span>;</code></pre>
         </li>
         <li><b>4. Object Declarations:</b> Declare your <code>SmartDevice</code> object (already there) and your
           <code>DHT</code> sensor object.
           <pre><code class="language-cpp"><span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
 <span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;
-<span class="sh-class">DHT</span> <span class="sh-variable">dht</span>(<span class="sh-variable">TEMP_PIN</span>, <span class="sh-type">DHT11</span>); <span class="sh-comment">// Initialize DHT sensor: pin, type (DHT11 or DHT22)</span></code></pre>
+<span class="sh-class">DHT</span> <span class="sh-variable">dht</span>(<span class="sh-variable">TEMP_PIN</span>, <span class="sh-keyword">DHT11</span>); <span class="sh-comment">// Initialize DHT sensor: pin, type (DHT11 or DHT22)</span></code></pre>
         </li>
         <li><b>5. Device Functions:</b>
           <ul>
             <li><b><code>setupDevice()</code>:</b> In this function, you'll initialize your DHT sensor and configure the
-              motion and window sensor pins.
+              motion and window sensor pins. Since your device publishes data and doesn't act on commands, you don't
+              need to subscribe to any topics.
               <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
   <span class="sh-comment">// Initialize the DHT sensor</span>
   <span class="sh-variable">dht</span>.<span class="sh-function">begin</span>();
 
   <span class="sh-comment">// Set motion sensor pin as input</span>
-  <span class="sh-function">pinMode</span>(<span class="sh-variable">MOTION_PIN</span>, <span class="sh-literal">INPUT</span>);
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">MOTION_PIN</span>, <span class="sh-keyword">INPUT</span>);
 
   <span class="sh-comment">// Set window sensor pin as input_pullup (no external resistor needed)</span>
-  <span class="sh-function">pinMode</span>(<span class="sh-variable">WINDOW_PIN</span>, <span class="sh-literal">INPUT_PULLUP</span>);
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">WINDOW_PIN</span>, <span class="sh-keyword">INPUT_PULLUP</span>);
 }</code></pre>
             </li>
             <li><b><code>readSensor()</code>:</b> This is where you'll read data from your sensors and publish it to the
@@ -1129,7 +1130,7 @@
           <ul class="list-disc list-inside pl-4 space-y-2">
             <li>The central dashboard correctly displays the temperature from your DHT11 sensor.</li>
             <li>The dashboard updates in real-time when motion is detected by your PIR sensor.</li>
-            <li>The dashboard accurately shows whether the window is "OPEN" or "CLOSED" when you interact with the
+            <li>The dashboard accurately shows whether the window is open or closed when you interact with the
               magnetic reed switch.</li>
             <li>You can see the sensor readings being printed to your Arduino IDE's Serial Monitor.</li>
           </ul>
@@ -1169,7 +1170,7 @@
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
       <ul class="list-disc list-inside pl-4 space-y-1">
         <li>1x ESP8266 Board &amp; Breadboard</li>
-        <li>1x WS2812B NeoPixel LED Strip (5 LEDs)</li>
+        <li>1x WS2812B NeoPixel LED Strip (6 LEDs)</li>
         <li>1x Standard 5mm LED</li>
         <li>1x 220 Ohm Resistor (for the standard LED)</li>
       </ul>
@@ -1207,30 +1208,30 @@
           in your strip.
           <pre><code class="language-cpp"><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
 <span class="sh-keyword">const int</span> <span class="sh-variable">STRIP_PIN</span> = <span class="sh-keyword">PIN_D5</span>;
-<span class="sh-keyword">const int</span> <span class="sh-variable">NUM_LEDS</span> = <span class="sh-literal">5</span>;
+<span class="sh-keyword">const int</span> <span class="sh-variable">NUM_LEDS</span> = <span class="sh-literal">6</span>;
 <span class="sh-keyword">const int</span> <span class="sh-variable">BULB_PIN</span> = <span class="sh-keyword">PIN_D6</span>;</code></pre>
         </li>
         <li><b>Configuration:</b> Update the <code>DEVICE_NAME</code> and add specific topics for your lighting
           devices.
           <pre><code class="language-cpp"><span class="sh-comment">// 3. SERVER CONFIGURATION</span>
-<span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Glowing_Emu"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "YourName_Lighting"</span>
-<span class="sh-keyword">const char*</span> <span class="sh-variable">STRIP_TOPIC</span> = <span class="sh-string">"classroom/lights"</span>;
-<span class="sh-keyword">const char*</span> <span class="sh-variable">BULB_TOPIC</span> = <span class="sh-string">"porch/light"</span>;</code></pre>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Glowing_Emu"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "YourName_Lighting"</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">STRIP_TOPIC</span> = <span class="sh-string">"classroom/lights"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">BULB_TOPIC</span> = <span class="sh-string">"porch/light"</span>;</code></pre>
         </li>
         <li><b>Object Declarations:</b> Declare your <code>SmartDevice</code> object and an
           <code>Adafruit_NeoPixel</code> object for the LED strip.
           <pre><code class="language-cpp"><span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
 <span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;
-<span class="sh-class">Adafruit_NeoPixel</span> <span class="sh-variable">strip</span>(<span class="sh-variable">NUM_LEDS</span>, <span class="sh-variable">STRIP_PIN</span>, <span class="sh-literal">NEO_GRB</span> + <span class="sh-literal">NEO_KHZ800</span>); <span class="sh-comment">// NeoPixel strip object</span></code></pre>
+<span class="sh-class">Adafruit_NeoPixel</span> <span class="sh-variable">strip</span>(<span class="sh-variable">NUM_LEDS</span>, <span class="sh-variable">STRIP_PIN</span>, <span class="sh-class">NEO_GRB</span> + <span class="sh-keyword">NEO_KHZ800</span>); <span class="sh-comment">// NeoPixel strip object</span></code></pre>
         </li>
         <li><b><code>setupDevice()</code>:</b> Initialize the NeoPixel strip, set the standard LED pin as an
           output, and ensure both start in an OFF state. Also, subscribe to the command topics.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
-  <span class="sh-function">strip.begin</span>(); <span class="sh-comment">// Initialize the NeoPixel strip</span>
-  <span class="sh-function">strip.show</span>();  <span class="sh-comment">// Initialize all pixels to 'off'</span>
+  <span class="sh-variable">strip</span>.<span class="sh-function">begin</span>(); <span class="sh-comment">// Initialize the NeoPixel strip</span>
+  <span class="sh-variable">strip</span>.<span class="sh-function">show</span>();  <span class="sh-comment">// Initialize all pixels to 'off'</span>
   
-  <span class="sh-function">pinMode</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-literal">OUTPUT</span>);   <span class="sh-comment">// Set the bulb pin as output</span>
-  <span class="sh-function">digitalWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-literal">LOW</span>); <span class="sh-comment">// Ensure the bulb is off at startup</span>
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-keyword">OUTPUT</span>);   <span class="sh-comment">// Set the bulb pin as output</span>
+  <span class="sh-function">digitalWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-keyword">LOW</span>); <span class="sh-comment">// Ensure the bulb is off at startup</span>
   
   <span class="sh-comment">// Subscribe to the topics for the strip and bulb to receive commands</span>
   <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">STRIP_TOPIC</span>);
@@ -1257,7 +1258,7 @@
     <span class="sh-preprocessor">if</span> (<span class="sh-variable">light</span>.<span class="sh-variable">isOn</span>)
       <span class="sh-function">analogWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-class">SmartDevice</span>::<span class="sh-function">getBrightnessValue</span>(<span class="sh-variable">light</span>)); <span class="sh-comment">// Set bulb brightness</span>
     <span class="sh-preprocessor">else</span>
-      <span class="sh-function">digitalWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-literal">LOW</span>); <span class="sh-comment">// Turn off the bulb if not on</span>
+      <span class="sh-function">digitalWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-keyword">LOW</span>); <span class="sh-comment">// Turn off the bulb if not on</span>
   }
 }</code></pre>
         </li>
@@ -1272,166 +1273,24 @@
         <ul class="list-disc list-inside text-sm space-y-2">
           <li><b>NeoPixel Power:</b> If your NeoPixels flicker or show incorrect colors, they might not be
             getting enough power. Ensure a solid 5V connection.</li>
-          <li><b>Color and Brightness Control:</b> The `SmartDevice` library provides helper functions
-            `commandToLight()` to parse incoming commands into a `Light` struct, `getRGB()` to convert color
-            commands for the NeoPixel, and `getBrightnessValue()` for the standard LED. These simplify the
-            command processing.</li>
-          <li><b>Analog Write for Brightness:</b> The standard LED brightness is controlled using `analogWrite()`,
+          <li><b>Color and Brightness Control:</b> The <code>SmartDevice</code> library provides helper functions
+            <code>commandToLight()</code> to parse incoming commands into a <code>Light</code> struct,
+            <code>getRGB()</code> to convert color
+            commands for the NeoPixel, and <code>getBrightnessValue()</code> for the standard LED. These simplify the
+            command processing.
+          </li>
+          <li><b>Analog Write for Brightness:</b> The standard LED brightness is controlled using
+            <code>analogWrite()</code>,
             which uses PWM (Pulse Width Modulation). Ensure you are mapping the brightness value (0-100)
-            to the appropriate range for `analogWrite()` (typically 0-255).</li>
-          <li><b>Serial Monitor:</b> Use `Serial.println()` extensively to debug incoming commands and verify
+            to the appropriate range for <code>analogWrite()</code> (typically 0-255).
+          </li>
+          <li><b>Serial Monitor:</b> Use <code>Serial.println()</code> extensively to debug incoming commands and verify
             your logic.</li>
         </ul>
       </div>
     </div>
 
-    <div id="station4" class="page">
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 4: Smart Door
-        Security</h2>
-      <h3 class="text-xl font-bold text-primary mb-3">Your Mission: Guardians of the Gateway</h3>
-      <p class="text-secondary">You are the <b>Security &amp; Access Team</b>. Your critical mission is to build a
-        complete smart door system. You'll use two servo motors (inverted to each other to simulate a robust
-        locking mechanism) and a magnetic contact switch
-        to detect if the door is open or closed. You must constantly report the complete status of both the door
-        (open/closed) and the lock (locked/unlocked) to the central hub.</p>
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
-      <p class="text-secondary">This is exactly how smart locks (like August or Yale Smart Lock) work! You're
-        building the core components of a sophisticated access control system that can be remotely managed and
-        provide real-time security alerts. Imagine integrating this with security cameras or smart alarms!</p>
 
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
-      <ul class="list-disc list-inside pl-4 space-y-1">
-        <li>1x ESP8266 Board</li>
-        <li>2x Servo Motor (e.g., SG90 or similar, often miniature)</li>
-        <li>1x Magnetic Contact Switch</li>
-      </ul>
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
-      <p class="text-secondary mb-4">Servos can draw more power than a digital pin can directly supply, so we
-        power them from the <code>VIN</code> pin on your ESP8266 board, which provides a steady 5V directly from
-        the USB connection. The magnetic contact switch works just like the one in Station 2, using the ESP's
-        internal pull-up resistor.</p>
-      <img
-        src="https://hackster.imgix.net/uploads/attachments/1112773/image_mYrTQym88w.png?auto=compress%2Cformat&w=1280&h=960&fit=max"
-        alt="Wiring Diagram for Station 4 (Example for Servo)"
-        class="w-full rounded-2xl my-4 border border-custom-border"
-        onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=Servo+Wiring+Diagram+Placeholder';">
-      <ol class="list-decimal list-inside pl-4 space-y-2">
-        <li><b>Servo 1 (Lock Mechanism):</b> Connect its <b>Power</b> (red wire, usually) to the
-          <code>VIN</code>
-          pin on your ESP8266. Connect its <b>Ground</b> (brown/black wire) to a <code>GND</code> pin. Connect
-          its <b>Signal</b> (orange/yellow wire) to <code>PIN_D6</code>.
-        </li>
-        <li><b>Servo 2 (Inverted Lock Mechanism):</b> Connect its <b>Power</b> to <code>VIN</code> and
-          <b>Ground</b> to <code>GND</code>. Connect its <b>Signal</b> to <code>PIN_D5</code>. This servo will
-          move in the opposite direction of Servo 1 to ensure a robust lock/unlock action.
-        </li>
-        <li><b>Door Sensor (Magnetic Contact Switch):</b> Connect one wire of the switch to <code>PIN_D1</code>
-          and the other wire to <code>GND</code>. We will configure this pin with <code>INPUT_PULLUP</code>
-          mode in your code.</li>
-      </ol>
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
-      <p class="text-secondary">Your station acts as both an actuator (lock) and a sensor (door state). You will
-        primarily write code in the <code>setupDevice()</code>, <code>readSensor()</code> and
-        <code>triggerActuator()</code> functions within your <code>UniversalDeviceTemplate.ino</code>.
-      </p>
-      <ul class="list-disc list-inside pl-4 space-y-2">
-        <li><b>Configuration &amp; Libraries:</b> Update the <code>DEVICE_NAME</code> and `BASE_TOPIC`. Also,
-          include the Servo library, define
-          your servo objects and pins, and declare a global variable to track the lock state:
-          <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
-        
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Door"</span>; <span class="sh-comment">// e.g., "Emily_Door"</span>
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/door_security"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
-        
-        <span class="sh-class">Servo</span> lockServo1;
-        <span class="sh-class">Servo</span> lockServo2;
-        
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN_1</span> <span class="sh-variable">PIN_D6</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN_2</span> <span class="sh-variable">PIN_D5</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">DOOR_SENSOR_PIN</span> <span class="sh-variable">PIN_D1</span>
-        
-        <span class="sh-type">bool</span> isLocked = <span class="sh-literal">false</span>; <span class="sh-comment">// Global variable to track the current lock state</span></code></pre>
-        </li>
-        <li><b><code>setupDevice()</code>:</b> Initialize your servos and set the pin mode for the door
-          sensor. Subscribe to the command topic.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
-          lockServo1.<span class="sh-function">attach</span>(SERVO_PIN_1);
-          lockServo2.<span class="sh-function">attach</span>(SERVO_PIN_2);
-        
-          <span class="sh-comment">// Set initial position (e.g., unlocked). Adjust angles for your physical setup.</span>
-          lockServo1.<span class="sh-function">write</span>(<span class="sh-number">90</span>); <span class="sh-comment">// Example angle for unlocked state for servo 1</span>
-          lockServo2.<span class="sh-function">write</span>(<span class="sh-number">90</span>); <span class="sh-comment">// Example angle for unlocked state for servo 2 (inverted action)</span>
-          isLocked = <span class="sh-literal">false</span>; <span class="sh-comment">// Reflect initial unlocked state
-        
-          // Configure door sensor pin
-          </span><span class="sh-function">pinMode</span>(DOOR_SENSOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
-        
-          <span class="sh-comment">// Subscribe to the command topic for the door lock
-          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/lock"</span>);
-        }</code></pre>
-        </li>
-        <li><b><code>triggerActuator(String topic, String command)</code>:</b> This function will receive
-          <code>"LOCK"</code> and <code>"UNLOCK"</code> commands. You'll move the servos to their respective
-          positions and update your global
-          <code>isLocked</code> variable.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">command</span>);
-        
-          <span class="sh-comment">// Handle commands for the door lock
-          </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/lock"</span>) {
-            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"LOCK"</span>) {
-              lockServo1.<span class="sh-function">write</span>(<span class="sh-number">0</span>);   <span class="sh-comment">// Adjust angles for locked state for servo 1</span>
-              lockServo2.<span class="sh-function">write</span>(<span class="sh-number">180</span>); <span class="sh-comment">// Adjust angles for locked state for servo 2 (inverted)</span>
-              isLocked = <span class="sh-literal">true</span>;
-              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Door LOCKED"</span>);
-            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"UNLOCK"</span>) {
-              lockServo1.<span class="sh-function">write</span>(<span class="sh-number">90</span>);  <span class="sh-comment">// Adjust angles for unlocked state for servo 1</span>
-              lockServo2.<span class="sh-function">write</span>(<span class="sh-number">90</span>);  <span class="sh-comment">// Adjust angles for unlocked state for servo 2 (inverted)</span>
-              isLocked = <span class="sh-literal">false</span>;
-              <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Door UNLOCKED"</span>);
-            }
-            <span class="sh-comment">// Publish the updated lock status
-            </span><span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/lock"</span>, isLocked <span class="sh-operator">?</span> <span class="sh-string">"LOCKED"</span> <span class="sh-operator">:</span> <span class="sh-string">"UNLOCKED"</span>);
-          }
-        }</code></pre>
-        </li>
-        <li><b><code>readSensor()</code>:</b> This is where you'll continuously read the door sensor and
-          combine its state with the lock's state (from <code>isLocked</code>) into a single status string,
-          then publish it.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
-          <span class="sh-comment">// This function runs repeatedly to monitor the door sensor and publish status.</span>
-          <span class="sh-comment">// Read the magnetic contact switch. LOW means the switch is closed (door closed).</span>
-          <span class="sh-type">bool</span> doorIsClosed = (<span class="sh-function">digitalRead</span>(DOOR_SENSOR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
-        
-          <span class="sh-comment">// Determine the string representation for door state.</span>
-          <span class="sh-type">String</span> doorStatus = doorIsClosed <span class="sh-operator">?</span> <span class="sh-string">"CLOSED"</span> <span class="sh-operator">:</span> <span class="sh-string">"OPEN"</span>;
-        
-          <span class="sh-comment">// Combine into the required format: "DOOR_STATE,LOCK_STATE".
-          </span><span class="sh-type">String</span> payload = doorStatus + <span class="sh-string">","</span> + (isLocked ? <span class="sh-string">"LOCKED"</span> : <span class="sh-string">"UNLOCKED"</span>);
-          <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/door_state"</span>, payload); <span class="sh-comment">// Publish to "classroom/door_security/door_state".
-          </span><span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Door status sent: "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(payload);
-        }</code></pre>
-        </li>
-      </ul>
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
-      <p class="text-secondary">You succeed when the central dashboard correctly shows the door's state (e.g.,
-        "CLOSED,LOCKED" or "OPEN,UNLOCKED") in real-time, and you can reliably lock and unlock the door using
-        voice commands via Google Assistant!</p>
-      <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
-        <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
-        <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
-          <li><b>Servo Angles:</b> Experiment with <code>myServo.write(angle);</code> to find the precise
-            angles that fully lock and unlock your physical mechanism. Servos operate between 0 and 180
-            degrees. Remember to adjust both servos for inverted action.</li>
-          <li><b>Power for Servo:</b> If your servo jitters or doesn't move smoothly, it might not be getting
-            enough power. The <code>VIN</code> pin is usually good, but large servos might need a dedicated
-            external power supply (ask instructor if needed).</li>
-        </ul>
-      </div>
-    </div>
 
     <div id="station5" class="page">
       <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Automated
@@ -1656,8 +1515,8 @@
         <span class="sh-keyword">const char*</span> <span class="sh-variable">CURTAIN_BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>;
         
         <span class="sh-comment">// Global state variables to track the status of other devices
-        </span><span class="sh-type">String</span> porchLightStatus = <span class="sh-string">"OFF"</span>;
-        <span class="sh-type">String</span> hvacStatus = <span class="sh-string">"OFF"</span>;
+        </span><span class="sh-type">String</span> porchLightStatus = <span class="sh-string">"false"</span>;
+        <span class="sh-type">String</span> hvacStatus = <span class="sh-string">"false"</span>;
         <span class="sh-type">String</span> doorLockStatus = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Will be like "CLOSED,LOCKED"
         </span><span class="sh-type">String</span> curtainStatus = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Will be like "OPEN" or "CLOSED"
         
@@ -1719,11 +1578,11 @@
           <span class="sh-comment">// Update global state variables and LEDs based on the 'topic' and 'payload'.
           </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>) {
             porchLightStatus = payload;
-            <span class="sh-function">digitalWrite</span>(LED_PORCH_PIN, (porchLightStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
+            <span class="sh-function">digitalWrite</span>(LED_PORCH_PIN, (porchLightStatus == <span class="sh-string">"true"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
           }
           <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>) {
             hvacStatus = payload;
-            <span class="sh-function">digitalWrite</span>(LED_HVAC_PIN, (hvacStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
+            <span class="sh-function">digitalWrite</span>(LED_HVAC_PIN, (hvacStatus == <span class="sh-string">"true"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
           }
           <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/door_state"</span>) {
             doorLockStatus = payload; <span class="sh-comment">// This payload will be like "CLOSED,LOCKED"
@@ -1761,7 +1620,7 @@
           // Handle Porch Light Button: Toggle ON/OFF for porch light.
           </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_PORCH_PIN) == <span class="sh-literal">LOW</span>) { <span class="sh-comment">// Button pressed (LOW because of INPUT_PULLUP)
             </span><span class="sh-comment">// Use the global 'porchLightStatus' state variable to decide which command to send.
-            </span><span class="sh-type">String</span> command = (porchLightStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-string">"OFF"</span> : <span class="sh-string">"ON"</span>;
+            </span><span class="sh-type">String</span> command = (porchLightStatus == <span class="sh-string">"true"</span>) ? <span class="sh-string">"false"</span> : <span class="sh-string">"true"</span>;
             <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>, command);
             <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Porch Light "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
             <span class="sh-function">delay</span>(<span class="sh-number">250</span>); <span class="sh-comment">// Simple debounce to prevent multiple presses.
@@ -1769,7 +1628,7 @@
         
           <span class="sh-comment">// Handle HVAC Button: Toggle ON/OFF for HVAC.
           </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_HVAC_PIN) == <span class="sh-literal">LOW</span>) {
-            <span class="sh-type">String</span> command = (hvacStatus == <span class="sh-string">"ON"</span>) ? <span class="sh-string">"OFF"</span> : <span class="sh-string">"ON"</span>;
+            <span class="sh-type">String</span> command = (hvacStatus == <span class="sh-string">"true"</span>) ? <span class="sh-string">"false"</span> : <span class="sh-string">"true"</span>;
             <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>, command);
             <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: HVAC "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
             <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
@@ -2182,7 +2041,7 @@
             <tr>
               <td class="py-1 px-4"><code>command</code></td>
               <td class="py-1 px-4"><code>String</code></td>
-              <td class="py-1 px-4">The raw command string (e.g., "ON", "OFF", "BRIGHTNESS:120",
+              <td class="py-1 px-4">The raw command string (e.g., "true", "false", "BRIGHTNESS:120",
                 "COLOR:#FF00FF").</td>
             </tr>
           </tbody>
