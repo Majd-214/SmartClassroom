@@ -1,79 +1,56 @@
 // 1. LIBRARY INCLUSIONS
 #include <SmartDevice.h>
-#include <IRremote.h>
-#include <Servo.h>
 
 using namespace SmartHome; // NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE
 
 // 2. VARIABLE DEFINITIONS
-const int SERVO_PIN = PIN_D5;  // First Servo Lock Pin
-const int REMOTE_PIN = PIN_D6; // IR Remote Pin
+const int *BUTTON_PIN = {PIN_D1, PIN_D2, PIN_D3, PIN_D4}; // Button pins for the curtain control
+const int *LED_PIN = {PIN_D5, PIN_D6, PIN_D7, PIN_D8};
 
 // 3. SERVER CONFIGURATION
-const char *DEVICE_NAME = "Fort_Knox"; // <-- CHANGE THIS!
-const char *CURTAIN_TOPIC = "classroom/curtain";
+const char *DEVICE_NAME = "Remote_Detonators"; // <-- CHANGE THIS!
+const char *LIGHT_TOPIC = "classroom/lights";
+const char *KETTLE_TOPIC = "classroom/kettle";
+const char *PORCH_TOPIC = "porch/light";
+const char *HVAC_TOPIC = "classroom/hvac";
 
 // 4. OBJECT DECLARATIONS
 SmartDevice myDevice;
-Servo servo;
 
 // 5. DEVICE FUNCTIONS
 void setupDevice() // Runs ONCE at startup.
 {
-  servo.attach(SERVO_PIN);      // Attach the servo to the specified pin
-  IrReceiver.begin(REMOTE_PIN); // Initialize the IR receiver on the specified pin
-  servo.write(0);               // Start with the curtain open
-
-  myDevice.subscribeTo(CURTAIN_TOPIC); // Subscribe to the curtain topic
-}
-
-// Tell Students to COPY-and-PASTE this function into their code!
-int mapCodeToButton(unsigned long code)
-{
-  if ((code & 0x0000FFFF) == 0x0000BF00)
+  for (int i = 0; i < 4; i++) // Initialize button pins
   {
-    code >>= 16;
-    if (((code >> 8) ^ (code & 0x00FF)) == 0x00FF)
-      return code & 0xFF;
+    pinMode(BUTTON_PIN[i], INPUT_PULLUP); // Set button pins as input with pull-up resistor
+    pinMode(LED_PIN[i], OUTPUT);          // Set LED pins as output
   }
-  return -1;
-}
-
-// Tell Students to COPY-and-PASTE this function into their code!
-int readInfrared()
-{
-  int result = -1;
-  if (IrReceiver.decode())
-  {
-    result = mapCodeToButton(IrReceiver.decodedIRData.decodedRawData);
-    IrReceiver.resume();
-  }
-  return result;
-}
-
-// NEW Helper Function
-void curtainClosed(bool state, bool informServer)
-{
-  if (state)
-    servo.write(180);
-  else
-    servo.write(0);
-  if (informServer)
-    myDevice.publishTo(CURTAIN_TOPIC, state ? "true" : "false");
+  myDevice.subscribeTo(LIGHT_TOPIC);  // Subscribe to the light topic
+  myDevice.subscribeTo(KETTLE_TOPIC); // Subscribe to the kettle topic
+  myDevice.subscribeTo(PORCH_TOPIC);  // Subscribe to the porch light topic
+  myDevice.subscribeTo(HVAC_TOPIC);   // Subscribe to the HVAC topic
 }
 
 void readSensor() // Runs REPEATEDLY in the main loop.
 {
-  int code = readInfrared(); // Read the IR remote code
-  if (code == 8)
-    curtainClosed(true, true);
-  else if (code == 10)
-    curtainClosed(false, true);
+  myDevice.publish(LIGHT_TOPIC, digitalRead(BUTTON_PIN[0]) ? "true" : "false");  // Publish the state of the first button
+  myDevice.publish(KETTLE_TOPIC, digitalRead(BUTTON_PIN[1]) ? "true" : "false"); // Publish the state of the second button
+  myDevice.publish(PORCH_TOPIC, digitalRead(BUTTON_PIN[2]) ? "true" : "false");  // Publish the state of the third button
+  myDevice.publish(HVAC_TOPIC, digitalRead(BUTTON_PIN[3]) ? "true" : "false");   // Publish the state of the fourth button
 }
 
 void triggerActuator(String topic, String command) // Runs ON_DEMAND when a command is received from the Smart Hub.
 {
-  curtainClosed(command == "true", false); // If the command is to close the curtain
+  if (topic == LIGHT_TOPIC)
+    digitalWrite(LED_PIN[0], command == "true");
+  else if (topic == KETTLE_TOPIC)
+    digitalWrite(LED_PIN[1], command == "true");
+  else if (topic == PORCH_TOPIC)
+    digitalWrite(LED_PIN[2], command == "true");
+  else if (topic == HVAC_TOPIC)
+    digitalWrite(LED_PIN[3], command == "true");
+  else
+    Serial.println("Unknown topic: " + topic); // Handle unknown topics gracefully
 }
 
 /*
