@@ -1,72 +1,79 @@
 // 1. LIBRARY INCLUSIONS
 #include <SmartDevice.h>
+#include <IRremote.h>
 #include <Servo.h>
 
 using namespace SmartHome; // NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE
 
 // 2. VARIABLE DEFINITIONS
-const int KEYPAD_PIN = A0;     // To receive State from Keypad
-const int LOCK_1_PIN = PIN_D5; // First Servo Lock Pin
-const int LOCK_2_PIN = PIN_D6; // Second Servo Lock Pin
-const int DOOR_PIN = PIN_D7;   // Contact Sensor Pin
-bool local = false;   // Flag to track if the command came from the keypad
+const int SERVO_PIN = PIN_D5;  // First Servo Lock Pin
+const int REMOTE_PIN = PIN_D6; // IR Remote Pin
 
 // 3. SERVER CONFIGURATION
 const char *DEVICE_NAME = "Fort_Knox"; // <-- CHANGE THIS!
-const char *LOCK_TOPIC = "entrance/lock";
-const char *DOOR_TOPIC = "entrance/door";
+const char *CURTAIN_TOPIC = "classroom/curtain";
 
 // 4. OBJECT DECLARATIONS
 SmartDevice myDevice;
-Servo lock1;
-Servo lock2;
-enum KeypadState { STANDBY, LOCK, UNLOCK } request;
+Servo servo;
 
 // 5. DEVICE FUNCTIONS
 void setupDevice() // Runs ONCE at startup.
 {
-  // Set keypad and contact sensor as inputs
-  pinMode(KEYPAD_PIN, INPUT);
-  pinMode(DOOR_PIN, INPUT_PULLUP); // Use internal pull-up resistor for contact sensor
+  servo.attach(SERVO_PIN);      // Attach the servo to the specified pin
+  IrReceiver.begin(REMOTE_PIN); // Initialize the IR receiver on the specified pin
+  servo.write(0);               // Start with the curtain open
 
-  // Attach servos to their respective pins
-  lock1.attach(LOCK_1_PIN);
-  lock2.attach(LOCK_2_PIN);
-
-  // Subscribe to the lock topic to receive commands
-  myDevice.subscribeTo(LOCK_TOPIC);
+  myDevice.subscribeTo(CURTAIN_TOPIC); // Subscribe to the curtain topic
 }
 
-// NEW Function to set the lock state as locked[true] or unlocked[false].
-void setLock(bool state, bool fromKeypad)
+// Tell Students to COPY-and-PASTE this function into their code!
+int mapCodeToButton(unsigned long code)
 {
-  lock1.write(state ? 180 : 0); // Lock or unlock the first servo
-  lock2.write(state ? 0 : 180); // Mirror first servo because its position is inverted
+  if ((code & 0x0000FFFF) == 0x0000BF00)
+  {
+    code >>= 16;
+    if (((code >> 8) ^ (code & 0x00FF)) == 0x00FF)
+      return code & 0xFF;
+  }
+  return -1;
+}
 
-  if (!fromKeypad) return; // Exit if not from keypad
+// Tell Students to COPY-and-PASTE this function into their code!
+int readInfrared()
+{
+  int result = -1;
+  if (IrReceiver.decode())
+  {
+    result = mapCodeToButton(IrReceiver.decodedIRData.decodedRawData);
+    IrReceiver.resume();
+  }
+  return result;
+}
 
-  myDevice.publishTo(DOOR_TOPIC, state ? "true" : "false");
-  this.local = true;
+// NEW Helper Function
+void curtainClosed(bool state, bool informServer)
+{
+  if (state)
+    servo.write(180);
+  else
+    servo.write(0);
+  if (informServer)
+    myDevice.publishTo(CURTAIN_TOPIC, state ? "true" : "false");
 }
 
 void readSensor() // Runs REPEATEDLY in the main loop.
 {
-  // Read door status from the contact sensor
-  bool doorClosed = !digitalRead(DOOR_PIN); // Inverted because the sensor is active LOW
-
-  // Publish the door status to the MQTT topic
-  myDevice.publishTo(DOOR_TOPIC, doorClosed ? "true" : "false");
-
-  // Read keypad
-  request = map(analogRead(KEYPAD_PIN), 0, 1023, 0, 2);
-  if (request != STANDBY) setLock(request == LOCK, true); // Lock or unlock based on keypad input and inform server
+  int code = readInfrared(); // Read the IR remote code
+  if (code == 8)
+    curtainClosed(true, true);
+  else if (code == 10)
+    curtainClosed(false, true);
 }
 
 void triggerActuator(String topic, String command) // Runs ON_DEMAND when a command is received from the Smart Hub.
 {
-  if (topic == LOCK_TOPIC)
-    if (local) local = false; // Reset Flag for next use
-    else setLock(command == "true", false); // Lock or unlock based on command, do not inform server
+  curtainClosed(command == "true", false); // If the command is to close the curtain
 }
 
 /*

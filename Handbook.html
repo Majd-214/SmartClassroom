@@ -1571,169 +1571,224 @@
     </div>
 
     <div id="station5" class="page">
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Automated
-        Curtain</h2>
-      <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Mechatronics Maestros</h3>
-      <p class="text-secondary">You are the <b>Mechatronics Team</b>. This is a low-level control challenge that
-        combines mechanical movement with smart logic! You'll program the intelligence for a motorized smart
-        curtain. You will use a positional servo as the motor and two photo-interrupter switches to detect when
-        the
-        curtain is fully open or fully closed. This mission requires understanding and implementing a "state
-        machine" to ensure smooth and reliable operation!</p>
+      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Automated Curtain
+        System
+      </h2>
+      <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Environmental Alchemists</h3>
+      <p class="text-secondary">You are the <strong>Environmental Alchemists</strong>. Your mission is to integrate a
+        smart curtain
+        system into the classroom. This system will allow for automated control of curtains or blinds using both a local
+        IR remote control and remote commands from the central smart hub. This station focuses on creating a seamless
+        interface between physical actuation and diverse control inputs.</p>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
-      <p class="text-secondary">Think about automated window shades in smart homes or offices that can adjust
-        based on sunlight, time of day, or privacy needs. You're building the core control system for such
-        convenience, integrating mechanical components with intelligent software.</p>
+      <p class="text-secondary">Think of smart blinds in modern homes that adjust themselves based on sunlight, or
+        automatic
+        curtains in lecture halls controlled by a presenter. You are building a system that can be controlled both
+        manually (via a remote) and automatically (via a smart home system).</p>
 
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
       <ul class="list-disc list-inside pl-4 space-y-1">
-        <li>1x ESP8266 Board</li>
-        <li>1x Positional Servo Motor (to simulate curtain movement)</li>
-        <li>2x Photo-interrupter Switches (one for "fully open", one for "fully closed")</li>
+        <li>1x ESP8266 Board &amp; Breadboard</li>
+        <li>1x SG90 Servo Motor</li>
+        <li>1x IR Receiver Module</li>
+        <li>1x IR Remote Control (typically comes with the IR Receiver)</li>
       </ul>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
-      <p class="text-secondary mb-4">A positional servo is wired just like a standard servo. The photo-interrupter
-        switches are sensors that detect when something breaks a light beam; they will be physically triggered
-        when the curtain reaches its fully open or closed position.</p>
-      <img
-        src="https://hackster.imgix.net/uploads/attachments/1112773/image_mYrTQym88w.png?auto=compress%2Cformat&w=1280&h=960&fit=max"
-        alt="Wiring Diagram for Station 5 (Example for Servo &amp; Switches)"
+      <p class="text-secondary mb-4">This station involves wiring a servo for actuation and an IR receiver for input.
+        The
+        Servo Motor and IR Receiver Module are typically pre-powered. Students primarily need to focus on connecting
+        the signal and ground lines as described below.</p>
+      <img src="Assets/station5-diagram.png" alt="Wiring Diagram for Station 5"
         class="w-full rounded-2xl my-4 border border-custom-border"
-        onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=Servo+Switch+Wiring+Diagram+Placeholder';">
+        onerror="this.onerror=null; this.src='https://placehold.co/860x484/2d2e30/e8eaed?text=Wiring+Diagram+Placeholder';">
       <ol class="list-decimal list-inside pl-4 space-y-2">
-        <li><b>Positional Servo:</b> Connect its <b>Power</b> (red wire) to <code>VIN</code> (5V from
-          USB), its <b>Ground</b> (black/brown wire) to <code>GND</code>, and its <b>Signal</b> (yellow/orange
-          wire) to <code>PIN_D6</code>.</li>
-        <li><b>Photo-interrupter Switches:</b> These switches have a signal output. Connect the signal pin of
-          the "Fully Open" switch to <code>PIN_D1</code> and the "Fully Closed" switch to <code>PIN_D2</code>.
-          You will likely need to supply 3.3V and GND to these sensors as well (check datasheet).</li>
+        <li><strong>SG90 Servo Motor:</strong> Connect its <strong>Signal (Orange/Yellow)</strong> wire to pin
+          <code class="language-cpp">PIN_D5</code>. Connect its <strong>GND (Brown/Black)</strong> wire to a
+          <code class="language-cpp">GND</code> pin on your ESP8266.
+        </li>
+        <li><strong>IR Receiver Module:</strong> Connect its <strong>Signal</strong> pin to pin
+          <code class="language-cpp">PIN_D6</code>. Connect its <strong>GND</strong> pin to a
+          <code class="language-cpp">GND</code> pin on your ESP8266.
+        </li>
       </ol>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
-      <p class="text-secondary">This station involves controlling a motor and reading sensors to manage the
-        curtain's movement. You will primarily write code in the <code>setupDevice()</code>,
-        <code>readSensor()</code> and <code>triggerActuator()</code> functions within your
-        <code>UniversalDeviceTemplate.ino</code>.
-      </p>
+      <p class="text-secondary">This station will use the <code class="language-cpp">readSensor()</code> function to
+        detect IR remote
+        commands and the <code class="language-cpp">triggerActuator()</code> function to handle commands from the
+        Smart Hub. You will also
+        implement helper functions to manage IR signal processing and curtain actuation.</p>
       <ul class="list-disc list-inside pl-4 space-y-2">
-        <li><b>Configuration &amp; Libraries:</b> Update the <code>DEVICE_NAME</code> and `BASE_TOPIC`. Also,
-          include the Servo library, define
-          your servo object and pins, and declare a global variable for the curtain's state:
-          <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
-        
-      <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Curtain"</span>; <span class="sh-comment">// e.g., "Omar_Curtain"</span>
-      <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
-      
-      <span class="sh-class">Servo</span> myCurtainMotor;
-      <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN</span> <span class="sh-variable">PIN_D6</span>
-      <span class="sh-preprocessor">#define</span> <span class="sh-variable">OPEN_SENSOR_PIN</span> <span class="sh-variable">PIN_D1</span>  <span class="sh-comment">// Photo-interrupter for fully open</span>
-      <span class="sh-preprocessor">#define</span> <span class="sh-variable">CLOSED_SENSOR_PIN</span> <span class="sh-variable">PIN_D2</span> <span class="sh-comment">// Photo-interrupter for fully closed
-        
-        </span><span class="sh-type">String</span> currentCurtainState = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Global variable to track the curtain's state: "OPEN", "CLOSED", "MOVING"</span></code></pre>
+        <li><strong>1. Library Inclusions:</strong> This section includes necessary libraries. <code
+            class="language-cpp">SmartDevice.h</code> is for
+          Smart Home communications, <code class="language-cpp">IRremote.h</code> is for handling infrared signals,
+          and <code class="language-cpp">Servo.h</code> is for controlling servo motors.
+          <pre><code class="language-cpp"><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;IRremote.h&gt;</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
+
+<span class="sh-keyword">using</span> <span class="sh-keyword">namespace</span> <span class="sh-class">SmartHome;</span> <span class="sh-comment">// NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE</span></code></pre>
         </li>
-        <li><b><code>setupDevice()</code>:</b> Initialize your servo and set the pin
-          modes for the photo-interrupter switches. Subscribe to the command topic.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
-          myCurtainMotor.<span class="sh-function">attach</span>(SERVO_PIN);
-          myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-number">0</span>); <span class="sh-comment">// Set initial curtain position (e.g., closed). Adjust for your setup.
-          </span>currentCurtainState = <span class="sh-string">"CLOSED"</span>; <span class="sh-comment">// Assume initial closed state or add calibration logic
-        
-          </span><span class="sh-function">pinMode</span>(OPEN_SENSOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>); <span class="sh-comment">// Use INPUT_PULLUP for the sensors
-          </span><span class="sh-function">pinMode</span>(CLOSED_SENSOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
-        
-          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/position"</span>);
-        }</code></pre>
+        <li><strong>2. Variable Definitions:</strong> Here, you define constants for the pins your components are
+          connected to.
+          The <code class="language-cpp">local</code> boolean flag is crucial for distinguishing commands originating
+          from the local IR remote versus
+          those coming from the remote Smart Hub, preventing unintended feedback loops.
+          <pre><code class="language-cpp"><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">SERVO_PIN</span> = <span class="sh-keyword">PIN_D5</span>;  <span class="sh-comment">// First Servo Lock Pin</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">REMOTE_PIN</span> = <span class="sh-keyword">PIN_D6</span>; <span class="sh-comment">// IR Remote Pin</span>
+
+<span class="sh-comment">// 3. SERVER CONFIGURATION</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Rolling_Peacock"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">CURTAIN_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>;
+
+<span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
+<span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;
+<span class="sh-class">Servo</span> <span class="sh-variable">servo</span>;</code></pre>
         </li>
-        <li><b><code>triggerActuator(String topic, String command)</code>:</b> This function will
-          control the servo based on incoming commands to open or close the curtain.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">command</span>);
-        
-          <span class="sh-comment">// Handle commands for the curtain position
-          </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/position"</span>) {
-            <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"OPEN"</span>) {
-              myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-number">180</span>); <span class="sh-comment">// Adjust angle for fully open position
-              </span>currentCurtainState = <span class="sh-string">"MOVING"</span>; <span class="sh-comment">// Set state to moving
-              </span><span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Curtain OPENING"</span>);
-            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"CLOSE"</span>) {
-              myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-number">0</span>); <span class="sh-comment">// Adjust angle for fully closed position
-              </span>currentCurtainState = <span class="sh-string">"MOVING"</span>; <span class="sh-comment">// Set state to moving
-              </span><span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Curtain CLOSING"</span>);
-            } <span class="sh-keyword">else if</span> (<span class="sh-variable">command</span> == <span class="sh-string">"STOP"</span>) {
-              myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-variable">myCurtainMotor</span>.<span class="sh-function">read</span>()); <span class="sh-comment">// Stop at current position (requires a servo that holds position)
-              </span>currentCurtainState = <span class="sh-string">"STOPPED"</span>; <span class="sh-comment">// Indicate stopped state
-              </span><span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Curtain STOPPED"</span>);
-              <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/state"</span>, <span class="sh-string">"STOPPED"</span>);
-            }
-          }
-        }</code></pre>
-        </li>
-        <li><b><code>readSensor()</code>:</b> This is where the state machine logic lives. It will
-          continuously check the current state (from the switches) and publish status updates. You might also
-          want to
-          stop the servo once a limit switch is hit.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
-          <span class="sh-comment">// Read the state of the open and closed photo-interrupter switches.
-          // Assuming LOW means the beam is interrupted (curtain is at that position).
-          </span><span class="sh-type">bool</span> openSensorActive = (<span class="sh-function">digitalRead</span>(OPEN_SENSOR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
-          <span class="sh-type">bool</span> closedSensorActive = (<span class="sh-function">digitalRead</span>(CLOSED_SENSOR_PIN) <span class="sh-operator">==</span> <span class="sh-literal">LOW</span>);
-        
-          <span class="sh-comment">// Update internal state and publish if state changes
-          </span><span class="sh-type">String</span> newCurtainState = currentCurtainState;
-        
-          <span class="sh-keyword">if</span> (openSensorActive &amp;&amp; newCurtainState != <span class="sh-string">"OPEN"</span>) {
-            newCurtainState = <span class="sh-string">"OPEN"</span>;
-            myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-variable">myCurtainMotor</span>.<span class="sh-function">read</span>()); <span class="sh-comment">// Stop the servo if it hits open limit
-          </span>} <span class="sh-keyword">else if</span> (closedSensorActive &amp;&amp; newCurtainState != <span class="sh-string">"CLOSED"</span>) {
-            newCurtainState = <span class="sh-string">"CLOSED"</span>;
-            myCurtainMotor.<span class="sh-function">write</span>(<span class="sh-variable">myCurtainMotor</span>.<span class="sh-function">read</span>()); <span class="sh-comment">// Stop the servo if it hits closed limit
-          </span>} <span class="sh-keyword">else if</span> (!openSensorActive &amp;&amp; !closedSensorActive &amp;&amp; (currentCurtainState == <span class="sh-string">"OPEN"</span> || currentCurtainState == <span class="sh-string">"CLOSED"</span>)) {
-            <span class="sh-comment">// If it was open/closed but now neither sensor is active, it must be moving (unless commanded STOPPED).
-            // This is a simplified state; for robust systems, manage this with command.
-            </span>newCurtainState = <span class="sh-string">"MOVING"</span>;
-          }
-        
-          <span class="sh-keyword">if</span> (newCurtainState != currentCurtainState) {
-            currentCurtainState = newCurtainState;
-            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(<span class="sh-variable">BASE_TOPIC</span>) + <span class="sh-string">"/state"</span>, currentCurtainState);
-            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Curtain status updated: "</span>);
-            <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(currentCurtainState);
-          }
-        }</code></pre>
-        </li>
-      </ul>
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
-      <p class="text-secondary">Success is when the curtain opens and closes fully via voice commands, stopping
-        automatically and reliably when it hits the respective photo-interrupter switches (both open and
-        closed). The central
-        dashboard should also accurately reflect the curtain's state as "OPEN" or "CLOSED" when it reaches an
-        end point, or "STOPPED" if you manually stop it.</p>
-      <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
-        <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
-        <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
-          <li><b>Photo-interrupter Logic:</b> Understand if your photo-interrupter outputs HIGH or LOW when
-            the beam
-            is broken, and adjust your `digitalRead` checks accordingly. `INPUT_PULLUP` will make the pin
-            HIGH when
-            the beam is NOT broken, and LOW when it IS broken (which is often what you want for limit
-            switches).</li>
-          <li><b>Positional Servo:</b> Unlike continuous rotation, a positional servo moves to a specific
-            angle and
-            stops. You'll need to map your "OPEN" and "CLOSE" commands to specific angles (0-180 degrees)
-            for your
-            servo and physical curtain setup.
-          </li>
-          <li><b>Robustness:</b> Consider what happens if a photo-interrupter fails. How can you add a timeout
-            to prevent
-            the motor from running indefinitely? (These are advanced questions for later!)</li>
-          <li><b>Debugging States:</b> Print the `currentCurtainState` variable to your
-            `Serial Monitor` in the `loop()` to observe how your state machine is
-            transitioning. This is a powerful debugging technique.
-          </li>
-        </ul>
-      </div>
+        <li><strong>3. Server Configuration:</strong> (This section is included in the previous code block as per the
+          provided code structure). This defines the device name and the MQTT topic for curtain control.</li>
+        <li><strong>4. Object Declarations:</strong> (This section is included in the previous code block as per the
+          provided code structure). This declares the <code class="language-cpp">SmartDevice</code> and <code
+            class="language-cpp">Servo</code> objects.</li>
+        <li><strong>5. Device Functions:</strong> This is where the core logic of your curtain system resides.
+          <ul>
+            <li><strong><code class="language-cpp">setupDevice()</code>:</strong> This function executes once when
+              your
+              ESP8266 powers on. It attaches the servo motor to its designated pin and initializes the IR
+              receiver. It also sets the initial position of the curtain to open and subscribes to the <code
+                class="language-cpp">CURTAIN_TOPIC</code>.
+              <pre><code class="language-cpp"><span class="sh-comment">// 5. DEVICE FUNCTIONS</span>
+<span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() <span class="sh-comment">// Runs ONCE at startup.</span>
+{
+  <span class="sh-variable">servo</span>.<span class="sh-function">attach</span>(<span class="sh-variable">SERVO_PIN</span>);      <span class="sh-comment">// Attach the servo to the specified pin</span>
+  <span class="sh-class">IrReceiver</span>.<span class="sh-function">begin</span>(<span class="sh-variable">REMOTE_PIN</span>); <span class="sh-comment">// Initialize the IR receiver on the specified pin</span>
+  <span class="sh-variable">servo</span>.<span class="sh-function">write</span>(<span class="sh-literal">0</span>);               <span class="sh-comment">// Start with the curtain open</span>
+
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">CURTAIN_TOPIC</span>); <span class="sh-comment">// Subscribe to the curtain topic</span>
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">mapCodeToButton(unsigned long code)</code>:</strong> This is a
+              <strong>NEW</strong> helper function that you need to create and add to your
+              <code class="language-cpp">UniversalDeviceTemplate.ino</code> file. It should be placed
+              <strong>between</strong> the <code class="language-cpp">void setupDevice()</code> and <code
+                class="language-cpp">void readSensor()</code> functions.
+              This function takes a raw IR remote code and maps it to a simplified integer value. You will need
+              to determine the specific IR codes for your remote's buttons (e.g., using the Serial Monitor) and
+              update the <code class="language-cpp">if</code> conditions accordingly.
+              <pre><code class="language-cpp"><span class="sh-keyword">int</span> <span class="sh-function">mapCodeToButton</span>(<span class="sh-keyword">unsigned long</span> <span class="sh-variable">code</span>)
+{
+  <span class="sh-preprocessor">if</span> ((<span class="sh-variable">code</span> & <span class="sh-literal">0x0000FFFF</span>) == <span class="sh-literal">0x0000BF00</span>)
+  {
+    <span class="sh-variable">code</span> >>= <span class="sh-literal">16</span>;
+    <span class="sh-preprocessor">if</span> (((<span class="sh-variable">code</span> >> <span class="sh-literal">8</span>) ^ (<span class="sh-variable">code</span> & <span class="sh-literal">0x00FF</span>)) == <span class="sh-literal">0x00FF</span>) <span class="sh-preprocessor">return</span> <span class="sh-variable">code</span> & <span class="sh-literal">0xFF</span>;
+  }
+  <span class="sh-preprocessor">return</span> <span class="sh-literal">-1</span>;
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">readInfrared()</code>:</strong> This is another <strong>NEW
+              </strong> helper function that you need to create and add to your
+              <code class="language-cpp">UniversalDeviceTemplate.ino</code> file. It should also be placed
+              <strong>between</strong> the <code class="language-cpp">void setupDevice()</code> and <code
+                class="language-cpp">void readSensor()</code> functions.
+              This function checks if an IR signal has been received, decodes it, maps the raw code to a button
+              value using <code class="language-cpp">mapCodeToButton()</code>, and then resumes the IR receiver
+              for the next command.
+              <pre><code class="language-cpp"><span class="sh-keyword">int</span> <span class="sh-function">readInfrared</span>()
+{
+  <span class="sh-keyword">int</span> <span class="sh-variable">result</span> = <span class="sh-literal">-1</span>;
+  <span class="sh-preprocessor">if</span> (<span class="sh-class">IrReceiver</span>.<span class="sh-function">decode</span>())
+  {
+    <span class="sh-variable">result</span> = <span class="sh-function">mapCodeToButton</span>(<span class="sh-class">IrReceiver</span>.<span class="sh-variable">decodedIRData</span>.<span class="sh-variable">decodedRawData</span>);
+    <span class="sh-class">IrReceiver</span>.<span class="sh-function">resume</span>();
+  }
+  <span class="sh-preprocessor">return</span> <span class="sh-variable">result</span>;
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">curtainClosed(bool state, bool informServer)</code>:</strong>
+              This is another <strong>NEW</strong> helper function that you need to create and add to your
+              <code class="language-cpp">UniversalDeviceTemplate.ino</code> file. It should also be placed
+              <strong>between</strong> the <code class="language-cpp">void setupDevice()</code> and <code
+                class="language-cpp">void readSensor()</code> functions.
+              Its purpose is to control the physical servo motor to either close (<code
+                class="language-cpp">true</code>) or open (<code class="language-cpp">false</code>) the
+              curtain. The <code class="language-cpp">informServer</code> parameter determines if the new state
+              should be published back to the Smart Hub.
+              <pre><code class="language-cpp"><span class="sh-comment">// NEW Helper Function</span>
+<span class="sh-keyword">void</span> <span class="sh-function">curtainClosed</span>(<span class="sh-keyword">bool</span> <span class="sh-variable">state</span>, <span class="sh-keyword">bool</span> <span class="sh-variable">informServer</span>)
+{
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">state</span>) <span class="sh-variable">servo</span>.<span class="sh-function">write</span>(<span class="sh-literal">180</span>);
+  <span class="sh-preprocessor">else</span> <span class="sh-variable">servo</span>.<span class="sh-function">write</span>(<span class="sh-literal">0</span>);
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">informServer</span>) <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">CURTAIN_TOPIC</span>, <span class="sh-variable">state</span> ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>);
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">readSensor()</code>:</strong> This function runs continuously
+              in the main
+              loop. It calls <code class="language-cpp">readInfrared()</code> to check for IR remote commands.
+              Based on the received code (8 for close, 10 for open in this example), it calls <code
+                class="language-cpp">curtainClosed()</code> to actuate the servo and inform the server.
+              <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() <span class="sh-comment">// Runs REPEATEDLY in the main loop.</span>
+{
+  <span class="sh-keyword">int</span> <span class="sh-variable">code</span> = <span class="sh-function">readInfrared</span>(); <span class="sh-comment">// Read the IR remote code</span>
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">code</span> == <span class="sh-literal">8</span>) <span class="sh-function">curtainClosed</span>(<span class="sh-keyword">true</span>, <span class="sh-keyword">true</span>);
+  <span class="sh-preprocessor">else if</span> (<span class="sh-variable">code</span> == <span class="sh-literal">10</span>) <span class="sh-function">curtainClosed</span>(<span class="sh-keyword">false</span>, <span class="sh-keyword">true</span>);
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">triggerActuator(String topic, String command)</code>:</strong>
+              This function is called when your
+              device receives an MQTT message (a command from the Smart Hub). If the message is for the <code
+                class="language-cpp">CURTAIN_TOPIC</code>, it calls <code class="language-cpp">curtainClosed()</code> to
+              actuate the servo based on the incoming command
+              ("true" for close, "false" for open), ensuring it does not publish back to the server since the
+              command originated remotely.
+              <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) <span class="sh-comment">// Runs ON_DEMAND when a command is received from the Smart Hub.</span>
+{
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> == <span class="sh-variable">CURTAIN_TOPIC</span>) <span class="sh-function">curtainClosed</span>(<span class="sh-variable">command</span> == <span class="sh-string">"true"</span>, <span class="sh-keyword">false</span>); <span class="sh-comment">// If the command is to close the curtain</span>
+}</code></pre>
+            </li>
+          </ul>
+          <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+          <p class="text-secondary">Your mission is a success when: </p>
+          <ul class="list-disc list-inside pl-4 space-y-2">
+            <li>You can press a button on your IR remote to open the curtain (servo moves), and the dashboard
+              updates to "false" (open).</li>
+            <li>You can press a button on your IR remote to close the curtain (servo moves), and the dashboard
+              updates to "true" (closed).</li>
+            <li>You can send "true" (close) and "false" (open) commands from the central dashboard or via voice,
+              and the
+              servo responds accordingly.</li>
+            <li>All commands and sensor readings are visible in your Arduino IDE's Serial Monitor.</li>
+          </ul>
+          <p class="text-secondary">Ask your instructor to test it!</p>
+          <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+            <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+            <ul class="list-disc list-inside text-sm space-y-2">
+              <li><b>Finding IR Remote Codes:</b> The most challenging part will be identifying the exact IR codes
+                transmitted by your remote control's buttons. Use <code
+                  class="language-cpp">Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);</code>
+                within your <code class="language-cpp">readSensor()</code> function (temporarily, before adding
+                the <code>readInfrared</code> function) to print the raw hexadecimal
+                codes when you press buttons. Then, update the <code class="language-cpp">mapCodeToButton()</code>
+                function with these codes. The example uses code <code class="language-cpp">8</code> for close
+                and <code class="language-cpp">10</code> for open.</li>
+              <li><b>Servo Angles:</b> You will need to fine-tune the <code class="language-cpp">0</code> and
+                <code class="language-cpp">180</code> degree values in <code class="language-cpp">curtainClosed()</code>
+                to correspond to your curtain's fully open and fully closed positions. Some servos may
+                have a different effective range.
+              </li>
+              <li><b><code class="language-cpp">local</code> Flag:</b> This flag is critical for preventing
+                feedback loops where a local IR remote
+                command is sent to the cloud, received back by the device, and then re-processed as if it were
+                a <i>new</i> cloud command. Ensure it's set correctly and reset after use.</li>
+              <li><b>Debugging:</b> The Serial Monitor is your best friend. Use <code
+                  class="language-cpp">Serial.println()</code> statements to
+                print the <code class="language-cpp">code</code> from <code class="language-cpp">readInfrared()</code>,
+                and any incoming <code class="language-cpp">topic</code>/<code class="language-cpp">command</code> in
+                <code class="language-cpp">triggerActuator</code> to understand exactly what your device
+                is doing.
+              </li>
+            </ul>
+          </div>
     </div>
 
     <div id="station6" class="page">
