@@ -271,6 +271,10 @@
       color: #b5cea8;
     }
 
+    .sh-enum {
+      color: #47c3ff;
+    }
+
     /* Custom styles for the Overview (Instructor Briefing) page */
     .overview-section-header {
       font-family: 'Product Sans', sans-serif;
@@ -1290,7 +1294,281 @@
       </div>
     </div>
 
+    <div id="station4" class="page">
+      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 4: Smart Security
+        System
+      </h2>
+      <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Fortress Architects</h3>
+      <p class="text-secondary">You are the <strong>Fortress Architects</strong>. Your mission is to establish a robust
+        security
+        system for the smart classroom. This involves a multi-point access control system with dual servo-controlled
+        locks and a door contact sensor. Your system will monitor the door's status and allow for remote and local
+        actuation of the locks. This station is critical for securing the intelligent environment.</p>
+      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
+      <p class="text-secondary">Think of smart locks on homes and offices, or security systems that alert you when a
+        door
+        is opened. You are building a prototype of such a system, integrating both physical security (locks) and
+        monitoring (door sensor) with remote control capabilities.</p>
 
+      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
+      <ul class="list-disc list-inside pl-4 space-y-1">
+        <li>1x ESP8266 Board &amp; Breadboard</li>
+        <li>2x SG90 Servo Motors</li>
+        <li>1x Analog Keypad Module (e.g., a simple button array with analog output)</li>
+        <li>1x Magnetic Contact Sensor (Door Sensor)</li>
+      </ul>
+      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
+      <p class="text-secondary mb-4">This station requires precise wiring for both input sensors (keypad, door sensor)
+        and
+        output actuators (servos). The Analog Keypad and Servo Motors are typically pre-powered. Students primarily
+        need to focus on connecting the signal and ground lines as described below.</p>
+      <img src="Assets/station4-diagram.png" alt="Wiring Diagram for Station 4"
+        class="w-full rounded-2xl my-4 border border-custom-border"
+        onerror="this.onerror=null; this.src='https://placehold.co/860x484/2d2e30/e8eaed?text=Wiring+Diagram+Placeholder';">
+      <ol class="list-decimal list-inside pl-4 space-y-2">
+        <li><strong>Analog Keypad Module:</strong> Connect the <strong>Signal</strong> pin of the keypad module to
+          analog pin
+          <code class="language-cpp">A0</code> on your ESP8266. Connect <strong>GND</strong> to a
+          <code class="language-cpp">GND</code> pin on your ESP8266. The keypad handles all password logic and outputs
+          an analog voltage representing its state.
+        </li>
+        <li><strong>SG90 Servo Motors (x2):</strong>
+          <ul>
+            <li>For <strong>Lock 1 Servo</strong>: Connect its <strong>Signal (Orange/Yellow)</strong> wire to pin
+              <code class="language-cpp">PIN_D5</code>. Connect its <strong>GND (Brown/Black)</strong> wire
+              to a <code class="language-cpp">GND</code> pin on your ESP8266.
+            </li>
+            <li>For <strong>Lock 2 Servo</strong>: Connect its <strong>Signal (Orange/Yellow)</strong> wire to pin
+              <code class="language-cpp">PIN_D6</code>. Connect its <strong>GND (Brown/Black)</strong> wire to a
+              <code class="language-cpp">GND</code> pin.
+            </li>
+          </ul>
+        </li>
+        <li><strong>Magnetic Contact Sensor (Door Sensor):</strong> Connect one wire of the switch to pin
+          <code class="language-cpp">PIN_D7</code> on your ESP8266. Connect the other wire of the switch to a <code
+            class="language-cpp">GND</code> pin on
+          your ESP8266. This will use the internal pull-up resistor, meaning the pin will read <code
+            class="language-cpp">HIGH</code> when the
+          door is closed and <code class="language-cpp">LOW</code> when open.
+        </li>
+      </ol>
+      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
+      <p class="text-secondary">This station combines both sensing (keypad, door sensor) and actuation (servos). You
+        will work extensively in all three main device functions: <code class="language-cpp">setupDevice()</code>,
+        <code class="language-cpp">readSensor()</code>, and <code class="language-cpp">triggerActuator()</code> within
+        your
+        <code class="language-cpp">UniversalDeviceTemplate.ino</code>. Pay extra attention to the logic that determines
+        if a command came
+        from the local keypad or the remote smart hub.
+      </p>
+      <ul class="list-disc list-inside pl-4 space-y-2">
+        <li><strong>1. Library Inclusions:</strong> This section includes necessary libraries. <code
+            class="language-cpp">SmartDevice.h</code> is for
+          Smart Home communications, and <code class="language-cpp">Servo.h</code> is specifically for controlling
+          servo motors.
+          The <code class="language-cpp">using namespace SmartHome;</code> line simplifies the use of <code
+            class="language-cpp">SmartHome</code> specific types without needing to
+          prefix them.
+          <pre><code class="language-cpp"><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
+
+<span class="sh-keyword">using</span> <span class="sh-keyword">namespace</span> <span class="sh-class">SmartHome;</span> <span class="sh-comment">// NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE</span></code></pre>
+        </li>
+        <li><strong>2. Variable Definitions:</strong> Here, you define constants for the pins your components are
+          connected to.
+          The <code class="language-cpp">local</code> boolean flag is crucial for distinguishing commands originating
+          from the local keypad versus
+          those coming from the remote Smart Hub, preventing unintended feedback loops. The <code
+            class="language-cpp">KeypadState</code> enum helps
+          categorize the different analog voltage states from your keypad.
+          <pre><code class="language-cpp"><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">KEYPAD_PIN</span> = <span class="sh-literal">A0</span>;     <span class="sh-comment">// To receive State from Keypad</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">LOCK_1_PIN</span> = <span class="sh-keyword">PIN_D5</span>; <span class="sh-comment">// First Servo Lock Pin</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">LOCK_2_PIN</span> = <span class="sh-keyword">PIN_D6</span>; <span class="sh-comment">// Second Servo Lock Pin</span>
+<span class="sh-keyword">const int</span> <span class="sh-variable">DOOR_PIN</span> = <span class="sh-keyword">PIN_D7</span>;   <span class="sh-comment">// Contact Sensor Pin</span>
+<span class="sh-keyword">bool</span> <span class="sh-variable">local</span> = <span class="sh-keyword">false</span>;   <span class="sh-comment">// Flag to track if the command came from the keypad</span>
+
+<span class="sh-keyword">enum</span> <span class="sh-class">KeypadState</span> { <span class="sh-enum">STANDBY</span>, <span class="sh-enum">LOCK</span>, <span class="sh-enum">UNLOCK</span> } <span class="sh-variable">request</span>;</code></pre>
+        </li>
+        <li><strong>3. Server Configuration:</strong> This section defines the unique name for your device on the
+          network and the
+          MQTT topics through which it will communicate. <code class="language-cpp">LOCK_TOPIC</code> will be used
+          for sending/receiving lock
+          commands, and <code class="language-cpp">DOOR_TOPIC</code> for the door sensor's status.
+          <pre><code class="language-cpp"><span class="sh-comment">// 3. SERVER CONFIGURATION</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Fort_Knox"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "YourName_Security"</span>
+<span class="sh-keyword">const char</span> *<span class="sh-variable">LOCK_TOPIC</span> = <span class="sh-string">"entrance/lock"</span>;
+<span class="sh-keyword">const char</span> *<span class="sh-variable">DOOR_TOPIC</span> = <span class="sh-string">"entrance/door"</span>;</code></pre>
+        </li>
+        <li><strong>4. Object Declarations:</strong> Here, you create instances of the <code
+            class="language-cpp">SmartDevice</code> class to handle network
+          communication and MQTT messaging. You also declare two <code class="language-cpp">Servo</code> objects, one
+          for each physical lock you
+          will control.
+          <pre><code class="language-cpp"><span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
+<span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;
+<span class="sh-class">Servo</span> <span class="sh-variable">lock1</span>;
+<span class="sh-class">Servo</span> <span class="sh-variable">lock2</span>;</code></pre>
+        </li>
+        <li><strong>5. Device Functions:</strong> This is where the core logic of your security system resides.
+          <ul>
+            <li><strong><code class="language-cpp">setupDevice()</code>:</strong> This function executes once when
+              your
+              ESP8266 powers on. It sets
+              up the digital and analog pins for the keypad and door sensor as inputs. It then attaches the two
+              servo motors to their designated pins. Finally, it subscribes your device to the <code
+                class="language-cpp">LOCK_TOPIC</code> to
+              receive commands for the door lock.
+              <pre><code class="language-cpp"><span class="sh-comment">// 5. DEVICE FUNCTIONS</span>
+<span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() <span class="sh-comment">// Runs ONCE at startup.</span>
+{
+  <span class="sh-comment">// Set keypad and contact sensor as inputs</span>
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">KEYPAD_PIN</span>, <span class="sh-keyword">INPUT</span>);
+  <span class="sh-function">pinMode</span>(<span class="sh-variable">DOOR_PIN</span>, <span class="sh-keyword">INPUT_PULLUP</span>); <span class="sh-comment">// Use internal pull-up resistor for contact sensor</span>
+
+  <span class="sh-comment">// Attach servos to their respective pins</span>
+  <span class="sh-variable">lock1</span>.<span class="sh-function">attach</span>(<span class="sh-variable">LOCK_1_PIN</span>);
+  <span class="sh-variable">lock2</span>.<span class="sh-function">attach</span>(<span class="sh-variable">LOCK_2_PIN</span>);
+
+  <span class="sh-comment">// Subscribe to the lock topic to receive commands</span>
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">LOCK_TOPIC</span>);
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">setLock(bool state, bool fromKeypad)</code>:</strong> This is
+              a <strong>NEW</strong>
+              helper function that you need to create and add to your <code
+                class="language-cpp">UniversalDeviceTemplate.ino</code> file. It should be placed
+              <strong>between</strong> the <code class="language-cpp">void setupDevice()</code> and <code
+                class="language-cpp">void readSensor()</code> functions.
+              Its purpose is to control the physical servo motors to either lock or unlock the door. The <code
+                class="language-cpp">state</code> parameter determines if the lock should be <code
+                class="language-cpp">true</code> (locked) or <code class="language-cpp">false</code>
+              (unlocked), and the <code class="language-cpp">fromKeypad</code> parameter indicates if the command
+              originated from the local keypad. This function also publishes the new lock state to the <code
+                class="language-cpp">DOOR_TOPIC</code> if the command came from the keypad, and sets the <code
+                class="language-cpp">local</code> flag accordingly.
+              <pre><code class="language-cpp"><span class="sh-comment">// NEW Function to set the lock state as locked[true] or unlocked[false].</span>
+<span class="sh-keyword">void</span> <span class="sh-function">setLock</span>(<span class="sh-keyword">bool</span> <span class="sh-variable">state</span>, <span class="sh-keyword">bool</span> <span class="sh-variable">fromKeypad</span>)
+{
+  <span class="sh-variable">lock1</span>.<span class="sh-function">write</span>(<span class="sh-variable">state</span> ? <span class="sh-literal">180</span> : <span class="sh-literal">0</span>); <span class="sh-comment">// Lock or unlock the first servo</span>
+  <span class="sh-variable">lock2</span>.<span class="sh-function">write</span>(<span class="sh-variable">state</span> ? <span class="sh-literal">0</span> : <span class="sh-literal">180</span>); <span class="sh-comment">// Mirror first servo because its position is inverted</span>
+
+  <span class="sh-preprocessor">if</span> (!<span class="sh-variable">fromKeypad</span>) <span class="sh-preprocessor">return</span>; <span class="sh-comment">// Exit if not from keypad</span>
+
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">DOOR_TOPIC</span>, <span class="sh-variable">state</span> ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>);
+  <span class="sh-keyword">this</span>.<span class="sh-variable">local</span> = <span class="sh-keyword">true</span>;
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">readSensor()</code>:</strong> This function runs continuously
+              in the main
+              loop. It reads the
+              door contact sensor to determine if the door is open or closed and publishes this status to the
+              <code class="language-cpp">DOOR_TOPIC</code>. It also reads the analog voltage from the keypad,
+              which represents its internal state
+              (whether a lock, unlock, or standby button was pressed after password logic). It then calls the
+              <code class="language-cpp">setLock</code> function if a lock/unlock action is detected from the
+              keypad.
+              <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() <span class="sh-comment">// Runs REPEATEDLY in the main loop.</span>
+{
+  <span class="sh-comment">// Read door status from the contact sensor</span>
+  <span class="sh-keyword">bool</span> <span class="sh-variable">doorClosed</span> = !<span class="sh-function">digitalRead</span>(<span class="sh-variable">DOOR_PIN</span>); <span class="sh-comment">// Inverted because the sensor is active LOW</span>
+
+  <span class="sh-comment">// Publish the door status to the MQTT topic</span>
+  <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">DOOR_TOPIC</span>, <span class="sh-variable">doorClosed</span> ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>);
+
+  <span class="sh-comment">// Read keypad</span>
+  <span class="sh-variable">request</span> = <span class="sh-function">map</span>(<span class="sh-function">analogRead</span>(<span class="sh-variable">KEYPAD_PIN</span>), <span class="sh-literal">0</span>, <span class="sh-literal">1023</span>, <span class="sh-literal">0</span>, <span class="sh-literal">2</span>);
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">request</span> != <span class="sh-enum">STANDBY</span>) <span class="sh-function">setLock</span>(<span class="sh-variable">request</span> == <span class="sh-enum">LOCK</span>, <span class="sh-keyword">true</span>); <span class="sh-comment">// Lock or unlock based on keypad input and inform server</span>
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">triggerActuator(String topic, String command)</code>:</strong>
+              This
+              function is called when your
+              device receives an MQTT message. If the message is for the <code class="language-cpp">LOCK_TOPIC</code>,
+              it first checks the
+              <code class="language-cpp">local</code> flag. If <code class="language-cpp">local</code> is <code
+                class="language-cpp">true</code>, it means the command originated from the keypad, so the flag
+              is
+              reset, and no further action is taken (to prevent re-actuating servos that just moved). If <code
+                class="language-cpp">local</code>
+              is <code class="language-cpp">false</code>, the command came from the Smart Hub, and <code
+                class="language-cpp">setLock</code> is called to actuate the servos.
+              The <code class="language-cpp">false</code> argument for <code class="language-cpp">fromKeypad
+                      </code> ensures this remote command doesn't trigger another publish
+              back to the server.
+              <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) <span class="sh-comment">// Runs ON_DEMAND when a command is received from the Smart Hub.</span>
+{
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> == <span class="sh-variable">LOCK_TOPIC</span>)
+  {
+    <span class="sh-preprocessor">if</span> (<span class="sh-variable">local</span>) <span class="sh-variable">local</span> = <span class="sh-keyword">false</span>; <span class="sh-comment">// Reset Flag for next use</span>
+    <span class="sh-preprocessor">else</span> <span class="sh-function">setLock</span>(<span class="sh-variable">command</span> == <span class="sh-string">"true"</span>, <span class="sh-keyword">false</span>); <span class="sh-comment">// Lock or unlock based on command, do not inform server</span>
+  }
+}</code></pre>
+            </li>
+          </ul>
+          <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+          <p class="text-secondary">Your mission is a success when: </p>
+          <ul class="list-disc list-inside pl-4 space-y-2">
+            <li>You can press the "LOCK" button on your local keypad, and both servos move to the locked
+              position, and the dashboard updates to "true" (locked).</li>
+            <li>You can press the "UNLOCK" button on your local keypad, and both servos move to the unlocked
+              position, and the dashboard updates to "false" (unlocked).</li>
+            <li>You can send "true" (lock) and "false" (unlock) commands from the central dashboard or via voice,
+              and both
+              servos respond accordingly.</li>
+            <li>The central dashboard accurately reflects the door's "true" (closed) or "false" (open) status when
+              you interact
+              with the magnetic contact sensor.</li>
+            <li>All commands and sensor readings are visible in your Arduino IDE's Serial Monitor.</li>
+          </ul>
+          <p class="text-secondary">Ask your instructor to test it!</p>
+          <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+            <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+            <ul class="list-disc list-inside text-sm space-y-2">
+              <li><b>Analog Keypad Calibration:</b> The <code
+                  class="language-cpp">map(analogRead(KEYPAD_PIN), 0, 1023, 0, 2)</code> line maps the
+                analog sensor reading (0-1023) to your <code class="language-cpp">KeypadState</code> enum
+                values (0, 1, 2 for <span class="sh-enum">STANDBY</span>, <span class="sh-enum">LOCK</span>,
+                <span class="sh-enum">UNLOCK</span>). You will likely need to adjust the <code
+                  class="language-cpp">0, 1023</code> range and
+                the <code class="language-cpp">0, 2</code> output range, or add
+                more precise <code class="language-cpp">if</code> conditions, based on the exact analog voltage
+                output of your specific keypad
+                buttons. Use <code class="language-cpp">Serial.println(analogRead(KEYPAD_PIN));</code> to see
+                the raw readings from your keypad.
+              </li>
+              <li><b>Servo Angles:</b> Servos typically move from 0 to 180 degrees. The code uses <code
+                  class="language-cpp">180</code> for locked
+                and <code class="language-cpp">0</code> for unlocked for <code class="language-cpp">lock1</code>, and
+                the inverse for <code class="language-cpp">lock2</code> (<code class="language-cpp">0</code> for locked,
+                <code class="language-cpp">180</code> for
+                unlocked) to simulate an inverted mechanism. You might need to adjust these values to
+                physically match your lock mechanism.
+              </li>
+              <li><b><code class="language-cpp">local</code> Flag:</b> This flag is critical for preventing
+                feedback loops where a local keypad
+                command is sent to the cloud, received back by the device, and then re-processed as if it were
+                a <i>new</i> cloud command. Ensure it's set correctly and reset after use.</li>
+              <li><b>Door Sensor Logic:</b> The <code class="language-cpp">!digitalRead(DOOR_PIN)</code> inverts
+                the reading because the sensor
+                is assumed to be active LOW (meaning it reads <code class="language-cpp">LOW</code> when the
+                door is closed). If your sensor
+                behaves differently, you might need to adjust this.</li>
+              <li><b>Powering Servos:</b> If your servos behave erratically, they might not be getting enough
+                power. If using many servos or large ones, consider an external 5V power supply rather than
+                drawing directly from the ESP8266.</li>
+              <li><b>Debugging:</b> The Serial Monitor is your best friend. Use <code
+                  class="language-cpp">Serial.println()</code> statements to
+                print the <code class="language-cpp">keypadValue</code>, <code class="language-cpp">doorClosed</code>
+                status, and any incoming <code class="language-cpp">topic</code>/<code
+                  class="language-cpp">command</code> in
+                <code class="language-cpp">triggerActuator</code> to understand exactly what your device
+                is doing.
+              </li>
+            </ul>
+          </div>
+    </div>
 
     <div id="station5" class="page">
       <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Automated
@@ -1342,13 +1620,13 @@
           your servo object and pins, and declare a global variable for the curtain's state:
           <pre><code class="language-cpp"><span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span>
         
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Curtain"</span>; <span class="sh-comment">// e.g., "Omar_Curtain"</span>
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
-        
-        <span class="sh-class">Servo</span> myCurtainMotor;
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN</span> <span class="sh-variable">PIN_D6</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">OPEN_SENSOR_PIN</span> <span class="sh-variable">PIN_D1</span>  <span class="sh-comment">// Photo-interrupter for fully open</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">CLOSED_SENSOR_PIN</span> <span class="sh-variable">PIN_D2</span> <span class="sh-comment">// Photo-interrupter for fully closed
+      <span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_Curtain"</span>; <span class="sh-comment">// e.g., "Omar_Curtain"</span>
+      <span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+      
+      <span class="sh-class">Servo</span> myCurtainMotor;
+      <span class="sh-preprocessor">#define</span> <span class="sh-variable">SERVO_PIN</span> <span class="sh-variable">PIN_D6</span>
+      <span class="sh-preprocessor">#define</span> <span class="sh-variable">OPEN_SENSOR_PIN</span> <span class="sh-variable">PIN_D1</span>  <span class="sh-comment">// Photo-interrupter for fully open</span>
+      <span class="sh-preprocessor">#define</span> <span class="sh-variable">CLOSED_SENSOR_PIN</span> <span class="sh-variable">PIN_D2</span> <span class="sh-comment">// Photo-interrupter for fully closed
         
         </span><span class="sh-type">String</span> currentCurtainState = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Global variable to track the curtain's state: "OPEN", "CLOSED", "MOVING"</span></code></pre>
         </li>
