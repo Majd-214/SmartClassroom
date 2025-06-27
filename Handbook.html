@@ -1792,227 +1792,196 @@
     </div>
 
     <div id="station6" class="page">
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 6: Master
-        Control Panel</h2>
-      <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The System Integrators</h3>
-      <p class="text-secondary">You are the <b>System Integration Team</b>. You have the most complex and exciting
-        task: building the master physical controller for the entire Smart Classroom! You will program four push
-        buttons, each designed to toggle the state of another specific device in the room (like the HVAC,
-        lights, or door). Crucially, your panel's LEDs must always show the <i>real</i>, live state of those
-        other devices, making your panel a true command and feedback center.</p>
+      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 6: Universal Remote
+        Control Panel
+      </h2>
+      <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Master Orchestrators</h3>
+      <p class="text-secondary">You are the <strong>Master Orchestrators</strong>. Your mission is to build a universal
+        remote control panel that can send commands to multiple smart devices within the classroom, and also receive
+        feedback to light up LEDs on the panel. This station will demonstrate a comprehensive understanding of both
+        sending and receiving commands in a multi-device smart home environment, effectively turning your ESP8266 into
+        a central control unit.</p>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
-      <p class="text-secondary">You're building the physical equivalent of a smart home hub or a building
-        management system dashboard! This is how users interact directly with complex IoT setups, providing a
-        tangible interface that reflects the system's current status and allows for immediate control. This
-        involves deep understanding of how different smart devices communicate.</p>
+      <p class="text-secondary">Imagine a control panel in a smart meeting room where you can turn on lights, adjust the
+        thermostat, or activate a projector with the press of a single button. You are creating a miniature version of
+        such a system, capable of interacting with different smart devices simultaneously.</p>
 
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Hardware Kit</h4>
       <ul class="list-disc list-inside pl-4 space-y-1">
-        <li>1x ESP8266 Board</li>
-        <li>1x Pre-wired Panel with 4 Push Buttons</li>
-        <li>1x 4-channel Relay Module (to control the panel's indicator LEDs)</li>
+        <li>1x ESP8266 Board &amp; Breadboard</li>
+        <li>4x Push Buttons</li>
+        <li>1x Relay Module (4-channel)</li>
+        <li>Jumper Wires</li>
       </ul>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Wiring Guide</h4>
-      <p class="text-secondary mb-4">This station is largely pre-wired for convenience, but it's important to
-        understand the connections so you can use the correct pins in your code. The buttons are connected as
-        inputs, and the relay module controls the indicator LEDs on your panel.</p>
-      <img src="https://diyables.io/images/products/button-esp8266.jpg"
-        alt="Wiring Diagram for Station 6 (Example for Buttons)"
+      <p class="text-secondary mb-4">This station involves wiring multiple buttons as inputs and a relay module to
+        control
+        the 24V LEDs as outputs. Each button will correspond to a specific remote device, and each LED will indicate
+        the state of that device.</p>
+      <img src="Assets/station6-diagram.png" alt="Wiring Diagram for Station 6"
         class="w-full rounded-2xl my-4 border border-custom-border"
-        onerror="this.onerror=null; this.src='https://placehold.co/800x450/2d2e30/e8eaed?text=Button+Wiring+Diagram+Placeholder';">
-      <ul class="list-disc list-inside pl-4 space-y-2">
-        <li><b>Buttons:</b> These are typically wired to pins like <code>PIN_D1, PIN_D2, PIN_D5, PIN_D6</code>.
-          They will be configured with <code>INPUT_PULLUP</code> mode, meaning they read <code>LOW</code> when
-          pressed. Your instructor will confirm exact pin assignments.</li>
-        <li><b>Relays (for LEDs):</b> The input pins of the 4-channel relay module that control your panel's
-          indicator LEDs will be wired to other digital output pins on your ESP8266. Your instructor will
-          confirm the exact pins.</li>
-      </ul>
+        onerror="this.onerror=null; this.src='https://placehold.co/860x484/2d2e30/e8eaed?text=Wiring+Diagram+Placeholder';">
+      <ol class="list-decimal list-inside pl-4 space-y-2">
+        <li><strong>Push Buttons (Inputs):</strong> Connect one leg of each of your 4 buttons to the following ESP8266
+          pins: <code class="language-cpp">PIN_D1</code>, <code class="language-cpp">PIN_D2</code>, <code
+            class="language-cpp">PIN_D3</code>, and <code class="language-cpp">PIN_D4</code>. Connect the other leg
+          of each button directly to a <code class="language-cpp">GND</code> pin on your ESP8266. You will use the
+          internal pull-up resistors, so no external resistors are needed for the buttons.</li>
+        <li><strong>Relay Module (Outputs for 24V LEDs):</strong> Connect the 5V and GND pins of your 4-channel relay
+          module to the 5V and GND rails on your breadboard (which are connected to your ESP8266's 5V and GND). Then,
+          connect the signal pins for each of the 4 relay channels to the following ESP8266 pins: <code
+            class="language-cpp">PIN_D5</code>, <code class="language-cpp">PIN_D6</code>, <code
+            class="language-cpp">PIN_D7</code>, and <code class="language-cpp">PIN_D8</code>. The 24V LEDs will be
+          connected to the relay module directly.</li>
+      </ol>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: Step-by-Step</h4>
-      <p class="text-secondary">Your mission is to integrate multiple devices. This station is unique as it will
-        heavily utilize the advanced <code>SmartDevice</code> functions. You will primarily write code in the
-        <code>setupDevice()</code> and <code>readSensor()</code> functions. You will also create a
-        custom <code>handlePanelMessages()</code> function that will be registered with
-        <code>onMessage()</code>.
-      </p>
+      <p class="text-secondary">This station will use arrays to manage multiple inputs, outputs, and MQTT topics
+        efficiently. You will implement logic to send commands based on button presses and update local LEDs based on
+        incoming commands from the Smart Hub.</p>
       <ul class="list-disc list-inside pl-4 space-y-2">
-        <li><b>Configuration &amp; Global Variables:</b> Update the <code>DEVICE_NAME</code>. You will create
-          many global variables to track the state of other devices and define your button and LED pins. Also,
-          add a forward declaration for your custom message handler.
-          <pre><code class="language-cpp"><span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"YourName_ControlPanel"</span>; <span class="sh-comment">// e.g., "Sarah_Panel"
-        
-        // Define the BASE_TOPIC for each system you will control/monitor
-        </span><span class="sh-keyword">const char*</span> <span class="sh-variable">PORCH_LIGHT_BASE_TOPIC</span> = <span class="sh-string">"classroom/lighting"</span>;
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">HVAC_BASE_TOPIC</span> = <span class="sh-string">"classroom/hvac_kettle"</span>;
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">DOOR_LOCK_BASE_TOPIC</span> = <span class="sh-string">"classroom/door_security"</span>;
-        <span class="sh-keyword">const char*</span> <span class="sh-variable">CURTAIN_BASE_TOPIC</span> = <span class="sh-string">"classroom/curtain"</span>;
-        
-        <span class="sh-comment">// Global state variables to track the status of other devices
-        </span><span class="sh-type">String</span> porchLightStatus = <span class="sh-string">"false"</span>;
-        <span class="sh-type">String</span> hvacStatus = <span class="sh-string">"false"</span>;
-        <span class="sh-type">String</span> doorLockStatus = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Will be like "CLOSED,LOCKED"
-        </span><span class="sh-type">String</span> curtainStatus = <span class="sh-string">"UNKNOWN"</span>; <span class="sh-comment">// Will be like "OPEN" or "CLOSED"
-        
-        // Define your button and LED pins here (confirm with instructor for exact pins)
-        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_PORCH_PIN</span> <span class="sh-variable">PIN_D1</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_HVAC_PIN</span> <span class="sh-variable">PIN_D2</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_DOOR_PIN</span> <span class="sh-variable">PIN_D5</span>
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">BUTTON_CURTAIN_PIN</span> <span class="sh-variable">PIN_D6</span>
-        
-        <span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_PORCH_PIN</span> <span class="sh-variable">PIN_D7</span> <span class="sh-comment">// Example pin for Porch Light status LED
-        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_HVAC_PIN</span> <span class="sh-variable">PIN_D8</span>  <span class="sh-comment">// Example pin for HVAC status LED
-        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_DOOR_PIN</span> <span class="sh-variable">PIN_D0</span>  <span class="sh-comment">// Example pin for Door Lock status LED
-        </span><span class="sh-preprocessor">#define</span> <span class="sh-variable">LED_CURTAIN_PIN</span> <span class="sh-variable">PIN_D4</span> <span class="sh-comment">// Example pin for Curtain status LED
-        
-        // Forward declaration for the custom message handler.
-        </span><span class="sh-keyword">void</span> handlePanelMessages(<span class="sh-type">String</span> topic, <span class="sh-type">String</span> payload);</code></pre>
+        <li><strong>1. Library Inclusions:</strong> This section includes the necessary <code
+            class="language-cpp">SmartDevice.h</code> library for Smart Home communications.
+          <pre><code class="language-cpp"><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
+<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span>
+
+<span class="sh-keyword">using</span> <span class="sh-keyword">namespace</span> <span class="sh-class">SmartHome;</span> <span class="sh-comment">// NAMESPACE COMMITMENT, DO NOT REMOVE THIS LINE</span></code></pre>
         </li>
-        <li><b><code>setupDevice()</code>:</b> Set up your button inputs and LED outputs. Crucially,
-          subscribe to all the status topics you need to listen to from other devices, and register your
-          custom <code>handlePanelMessages()</code> function with <code>myDevice.onMessage()</code>.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
-          <span class="sh-comment">// Set up button pins as INPUT_PULLUP.
-          </span><span class="sh-function">pinMode</span>(BUTTON_PORCH_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
-          <span class="sh-function">pinMode</span>(BUTTON_HVAC_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
-          <span class="sh-function">pinMode</span>(BUTTON_DOOR_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
-          <span class="sh-function">pinMode</span>(BUTTON_CURTAIN_PIN, <span class="sh-literal">INPUT_PULLUP</span>);
-        
-          <span class="sh-comment">// Set up LED pins as OUTPUT and ensure they are initially OFF.
-          </span><span class="sh-function">pinMode</span>(LED_PORCH_PIN, <span class="sh-literal">OUTPUT</span>);
-          <span class="sh-function">pinMode</span>(LED_HVAC_PIN, <span class="sh-literal">OUTPUT</span>);
-          <span class="sh-function">pinMode</span>(LED_DOOR_PIN, <span class="sh-literal">OUTPUT</span>);
-          <span class="sh-function">pinMode</span>(LED_CURTAIN_PIN, <span class="sh-literal">OUTPUT</span>);
-          <span class="sh-function">digitalWrite</span>(LED_PORCH_PIN, <span class="sh-literal">LOW</span>);
-          <span class="sh-function">digitalWrite</span>(LED_HVAC_PIN, <span class="sh-literal">LOW</span>);
-          <span class="sh-function">digitalWrite</span>(LED_DOOR_PIN, <span class="sh-literal">LOW</span>);
-          <span class="sh-function">digitalWrite</span>(LED_CURTAIN_PIN, <span class="sh-literal">LOW</span>);
-        
-          <span class="sh-comment">// Subscribe to status topics of the controlled devices.
-          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>);
-          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>);
-          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/door_state"</span>);
-          <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-type">String</span>(CURTAIN_BASE_TOPIC) + <span class="sh-string">"/state"</span>);
-        
-          <span class="sh-comment">// Register your custom advanced message handler.
-          // This replaces the default triggerActuator routing, allowing you to handle all messages.
-          </span><span class="sh-variable">myDevice</span>.<span class="sh-function">onMessage</span>(handlePanelMessages);
-        }</code></pre>
+        <li><strong>2. Variable Definitions:</strong> Here, you define arrays for your button pins, LED pins, and their
+          corresponding states. The <code class="language-cpp">TOPICS</code> array holds the MQTT topics that your
+          remote control panel will interact with (e.g., controlling lights, a kettle, etc.).
+          <pre><code class="language-cpp"><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
+<span class="sh-keyword">const int</span> <span class="sh-operator">*</span><span class="sh-variable">BTN_PINS</span> = {<span class="sh-keyword">PIN_D1</span>, <span class="sh-keyword">PIN_D2</span>, <span class="sh-keyword">PIN_D3</span>, <span class="sh-keyword">PIN_D4</span>}; <span class="sh-comment">// Button pins for the curtain control</span>
+<span class="sh-keyword">const int</span> <span class="sh-operator">*</span><span class="sh-variable">LED_PINS</span> = {<span class="sh-keyword">PIN_D5</span>, <span class="sh-keyword">PIN_D6</span>, <span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">PIN_D8</span>};
+<span class="sh-keyword">bool</span> <span class="sh-operator">*</span><span class="sh-variable">BTN_STS</span> = {<span class="sh-keyword">false</span>, <span class="sh-keyword">false</span>, <span class="sh-keyword">false</span>, <span class="sh-keyword">false</span>}; <span class="sh-comment">// Initial states of the buttons</span>
+
+<span class="sh-comment">// 3. SERVER CONFIGURATION</span>
+<span class="sh-keyword">const char</span> <span class="sh-operator">*</span><span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"Remote_Detonators"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
+<span class="sh-keyword">const char</span> <span class="sh-operator">*</span><span class="sh-variable">TOPICS</span> = {<span class="sh-string">"classroom/lights"</span>, <span class="sh-string">"classroom/kettle"</span>, <span class="sh-string">"porch/light"</span>, <span class="sh-string">"classroom/hvac"</span>};
+
+<span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
+<span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;</code></pre>
         </li>
-        <li><b><code>handlePanelMessages(String topic, String payload)</code>:</b> Create this function. It will
-          be called every time any message is received on any topic your panel is subscribed to. Use
-          <code>if/else if</code> statements to determine which device sent the message and update your global
-          state variables and corresponding LEDs.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">handlePanelMessages</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>) {
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Rx: Topic: "</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">", Payload: "</span>);
-          <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">payload</span>);
-        
-          <span class="sh-comment">// Update global state variables and LEDs based on the 'topic' and 'payload'.
-          </span><span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>) {
-            porchLightStatus = payload;
-            <span class="sh-function">digitalWrite</span>(LED_PORCH_PIN, (porchLightStatus == <span class="sh-string">"true"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
-          }
-          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>) {
-            hvacStatus = payload;
-            <span class="sh-function">digitalWrite</span>(LED_HVAC_PIN, (hvacStatus == <span class="sh-string">"true"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
-          }
-          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/door_state"</span>) {
-            doorLockStatus = payload; <span class="sh-comment">// This payload will be like "CLOSED,LOCKED"
-            // Extract lock status (second part of the string after comma)
-            </span><span class="sh-type">int</span> commaIndex = payload.<span class="sh-function">indexOf</span>(<span class="sh-string">","</span>);
-            <span class="sh-keyword">if</span> (commaIndex != -1) {
-              <span class="sh-type">String</span> lockPart = payload.<span class="sh-function">substring</span>(commaIndex + <span class="sh-number">1</span>);
-              <span class="sh-function">digitalWrite</span>(LED_DOOR_PIN, (lockPart == <span class="sh-string">"LOCKED"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
-            }
-          }
-          <span class="sh-keyword">else if</span> (<span class="sh-variable">topic</span> == <span class="sh-type">String</span>(CURTAIN_BASE_TOPIC) + <span class="sh-string">"/state"</span>) {
-            curtainStatus = payload;
-            <span class="sh-function">digitalWrite</span>(LED_CURTAIN_PIN, (curtainStatus == <span class="sh-string">"OPEN"</span>) ? <span class="sh-literal">HIGH</span> : <span class="sh-literal">LOW</span>);
-          }
-          <span class="sh-comment">// Add more conditions for other stations' status topics if needed for future expansion.
-          </span>
-          <span class="sh-comment">// (Optional) Update an OLED/LCD display here based on the updated statuses
-          // display.clearDisplay();
-          // display.setTextSize(1);
-          // display.setTextColor(SSD1306_WHITE);
-          // display.setCursor(0,0);
-          // display.println("P: " + porchLightStatus);
-          // display.println("H: " + hvacStatus);
-          // display.println("D: " + doorLockStatus.substring(doorLockStatus.indexOf(',') + 1)); // Show only lock part
-          // display.println("C: " + curtainStatus);
-          // display.display();
-        }</code></pre>
-        </li>
-        <li><b><code>readSensor()</code>:</b> This is where you will check for button presses and publish
-          commands to other devices. Remember to use <code>publishTo()</code> and include debouncing.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
-          <span class="sh-comment">// This function handles checking button presses and sending commands.
-          // It runs repeatedly. Add simple debouncing (delay) after a press.
-        
-          // Handle Porch Light Button: Toggle ON/OFF for porch light.
-          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_PORCH_PIN) == <span class="sh-literal">LOW</span>) { <span class="sh-comment">// Button pressed (LOW because of INPUT_PULLUP)
-            </span><span class="sh-comment">// Use the global 'porchLightStatus' state variable to decide which command to send.
-            </span><span class="sh-type">String</span> command = (porchLightStatus == <span class="sh-string">"true"</span>) ? <span class="sh-string">"false"</span> : <span class="sh-string">"true"</span>;
-            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(PORCH_LIGHT_BASE_TOPIC) + <span class="sh-string">"/porch_light"</span>, command);
-            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Porch Light "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
-            <span class="sh-function">delay</span>(<span class="sh-number">250</span>); <span class="sh-comment">// Simple debounce to prevent multiple presses.
-          </span>}
-        
-          <span class="sh-comment">// Handle HVAC Button: Toggle ON/OFF for HVAC.
-          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_HVAC_PIN) == <span class="sh-literal">LOW</span>) {
-            <span class="sh-type">String</span> command = (hvacStatus == <span class="sh-string">"true"</span>) ? <span class="sh-string">"false"</span> : <span class="sh-string">"true"</span>;
-            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(HVAC_BASE_TOPIC) + <span class="sh-string">"/hvac"</span>, command);
-            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: HVAC "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
-            <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
-          }
-        
-          <span class="sh-comment">// Handle Door Lock Button: Toggle LOCK/UNLOCK for the door.
-          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_DOOR_PIN) == <span class="sh-literal">LOW</span>) {
-            <span class="sh-comment">// Parse the current lock state from the combined doorLockStatus string
-            </span><span class="sh-type">int</span> commaIndex = doorLockStatus.<span class="sh-function">indexOf</span>(<span class="sh-string">","</span>);
-            <span class="sh-type">String</span> currentLockPart = (commaIndex != -1) ? doorLockStatus.<span class="sh-function">substring</span>(commaIndex + <span class="sh-number">1</span>) : <span class="sh-string">"UNKNOWN"</span>;
-        
-            <span class="sh-type">String</span> command = (currentLockPart == <span class="sh-string">"LOCKED"</span>) ? <span class="sh-string">"UNLOCK"</span> : <span class="sh-string">"LOCK"</span>;
-            <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(DOOR_LOCK_BASE_TOPIC) + <span class="sh-string">"/lock"</span>, command);
-            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Door "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
-            <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
-          }
-        
-          <span class="sh-comment">// Handle Curtain Button: Toggle OPEN/CLOSE for the curtain.
-          </span><span class="sh-keyword">if</span> (<span class="sh-function">digitalRead</span>(BUTTON_CURTAIN_PIN) == <span class="sh-literal">LOW</span>) {
-            <span class="sh-type">String</span> command = (curtainStatus == <span class="sh-string">"OPEN"</span>) ? <span class="sh-string">"CLOSE"</span> : <span class="sh-string">"OPEN"</span>; <span class="sh-comment">// Toggle based on current OPEN/CLOSED status
-            </span><span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-type">String</span>(CURTAIN_BASE_TOPIC) + <span class="sh-string">"/position"</span>, command);
-            <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Panel Cmd: Curtain "</span>); <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(command);
-            <span class="sh-function">delay</span>(<span class="sh-number">250</span>);
-          }
-        }</code></pre>
-        </li>
-      </ul>
-      <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
-      <p class="text-secondary">You've succeeded when pressing a button on your panel reliably toggles the state
-        of its corresponding device elsewhere in the room (e.g., press HVAC button, the fan turns on/off). Most
-        importantly, your panel's indicator LED for each function <i>always</i> shows the correct, real-time
-        status of that device, even if the device was controlled by voice or another panel!</p>
-      <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
-        <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
-        <ul class="list-disc list-inside text-sm text-accent/80 space-y-2">
-          <li><b>Full Topic Paths:</b> Double-check that you are using the <i>exact</i> full topic paths for
-            both subscribing to status updates AND publishing commands (e.g.,
-            `classroom/hvac_kettle/hvac` vs. `classroom/hvac_kettle/hvac`).
-          </li>
-          <li><b>State Synchronization:</b> The biggest challenge is ensuring your panel's LEDs accurately
-            reflect the real state of the other devices. This requires the `onMessage` callback
-            (`handlePanelMessages` in this case)
-            to <i>immediately</i> update your global state variables and LEDs whenever a status message
-            comes in.</li>
-          <li><b>Debouncing Explained:</b> A physical button "bounces" when pressed, sending many rapid
-            HIGH/LOW signals. The `delay(250)` after a press is a simple "debounce" mechanism.
-            For more advanced projects, you'd use a timer-based approach.</li>
-          <li><b>Start-up State:</b> When your panel first turns on, it might not know the state of other
-            devices. It will learn their states as soon as they publish their next status update.</li>
-        </ul>
-      </div>
+        <li><strong>3. Server Configuration:</strong> (This section is included in the previous code block as per the
+          provided code structure). This defines the unique name for your device on the network and an array of MQTT
+          topics it will control and listen to.</li>
+        <li><strong>4. Object Declarations:</strong> (This section is included in the previous code block as per the
+          provided code structure). Here, you create an instance of the <code class="language-cpp">SmartDevice</code>
+          class to handle network communication and MQTT messaging.</li>
+        <li><strong>5. Device Functions:</strong> This is where the core logic of your remote control panel resides.
+          <ul>
+            <li><strong><code class="language-cpp">setupDevice()</code>:</strong> This function runs once at
+              startup. It uses
+              loops to configure all button pins as inputs with pull-up resistors and all LED pins as outputs.
+              Crucially, it also subscribes to each topic in the <code class="language-cpp">TOPICS</code> array,
+              allowing your device to receive commands for multiple smart home components.
+              <pre><code class="language-cpp"><span class="sh-comment">// 5. DEVICE FUNCTIONS</span>
+<span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() <span class="sh-comment">// Runs ONCE at startup.</span>
+{
+  <span class="sh-preprocessor"> for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">PIN</span> : <span class="sh-variable">BTN_PINS</span>) <span class="sh-function"> pinMode</span>(<span class="sh-variable">PIN</span>, <span class="sh-variable">INPUT_PULLUP</span>); <span class="sh-comment">// Set button pins as input with pull-up resistor</span>
+  <span class="sh-preprocessor"> for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">LED</span> : <span class="sh-variable">LED_PINS</span>) <span class="sh-function"> pinMode</span>(<span class="sh-variable">LED</span>, <span class="sh-variable">OUTPUT</span>); <span class="sh-comment">// Set LED pins as output</span>
+  <span class="sh-preprocessor"> for</span> (<span class="sh-keyword">char</span> <span class="sh-operator">*</span><span class="sh-variable">TOPIC</span> : <span class="sh-variable">TOPICS</span>) <span class="sh-variable"> myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">TOPIC</span>); <span class="sh-comment">// Subscribe to each topic in the list</span>
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">readSensor()</code>:</strong> This function runs continuously
+              in the main
+              loop. It iterates through each button, reads its current state, and compares it to the previously
+              stored state in <code class="language-cpp">BTN_STS</code>. If a button's state changes (i.e., it
+              is pressed), it retrieves the current state of the corresponding smart device using <code
+                class="language-cpp">myDevice.retrieveState()</code> and then publishes the toggled command
+              ("true" or "false") back to the Smart Hub.
+              <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() <span class="sh-comment">// Runs REPEATEDLY in the main loop.</span>
+{
+  <span class="sh-preprocessor"> for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> = <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-literal">4</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) <span class="sh-comment">// Read the state of each button</span>
+  {
+    <span class="sh-preprocessor"> if</span> (<span class="sh-operator">!</span><span class="sh-function">digitalRead</span>(<span class="sh-variable">BUTTON_PIN</span>[<span class="sh-variable">i</span>])) <span class="sh-variable"> BUTTON_STATES</span>[<span class="sh-variable">i</span>] = <span class="sh-operator">!</span><span class="sh-variable">BUTTON_STATES</span>[<span class="sh-variable">i</span>]; <span class="sh-comment">// LOW means button pressed</span>
+    <span class="sh-variable"> myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">TOPICS</span>[<span class="sh-variable">i</span>], <span class="sh-variable">BUTTON_STATES</span>[<span class="sh-variable">i</span>] <span class="sh-operator">?</span> <span class="sh-string">"true"</span> <span class="sh-operator">:</span> <span class="sh-string">"false"</span>); <span class="sh-comment">// Publish the state of each button</span>
+  }
+}</code></pre>
+            </li>
+            <li><strong><code class="language-cpp">triggerActuator(String topic, String command)</code>:</strong>
+              This function is called when your
+              device receives an MQTT message (a command from the Smart Hub). It iterates through the defined
+              <code class="language-cpp">TOPICS</code> to find which smart device the command is for. Once a match
+              is found, it controls the corresponding LED on your panel, turning it HIGH (on) if the command is
+              "true" or LOW (off) if the command is "false".
+              <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) <span class="sh-comment">// Runs ON_DEMAND when a command is received from the Smart Hub.</span>
+{
+  <span class="sh-preprocessor"> for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> = <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-literal">4</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) <span class="sh-comment">// Check which topic matches the command</span>
+  {
+    <span class="sh-preprocessor"> if</span> (<span class="sh-variable">topic</span> == <span class="sh-variable">TOPICS</span>[<span class="sh-variable">i</span>]) <span class="sh-comment">// If the topic matches</span>
+    {
+      <span class="sh-function"> digitalWrite</span>(<span class="sh-variable">LED_PINS</span>[<span class="sh-variable">i</span>], <span class="sh-variable">command</span> == <span class="sh-string">"true"</span>); <span class="sh-comment">// Set the corresponding LED based on the command</span>
+      <span class="sh-keyword"> return</span>; <span class="sh-comment">// Exit after handling the first matching topic</span>
+    }
+  }
+}</code></pre>
+            </li>
+          </ul>
+          <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
+          <p class="text-secondary">Your mission is a success when: </p>
+          <ul class="list-disc list-inside pl-4 space-y-2">
+            <li>Pressing each button on your control panel toggles the state of its corresponding smart device (e.g.,
+              lights, kettle) as seen on the Smart Home Dashboard.</li>
+            <li>The LED associated with each button lights up when the corresponding smart device is turned "on"
+              (receives a "true" command) and turns off when it's "off" (receives a "false" command), whether the
+              command originated from your panel or the Smart Hub.</li>
+            <li>All commands sent from your panel and received by your panel are visible in your Arduino IDE's Serial
+              Monitor.</li>
+          </ul>
+          <p class="text-secondary">Ask your instructor to test it!</p>
+          <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+            <h5 class="font-bold text-accent mb-2">Challenges &amp; Tips:</h5>
+            <ul class="list-disc list-inside text-sm space-y-2">
+              <li><b>Array Indexing:</b> Pay close attention to how arrays (<code class="language-cpp">BTN_PINS</code>,
+                <code class="language-cpp">LED_PINS</code>, <code class="language-cpp">TOPICS</code>, <code
+                  class="language-cpp">BTN_STS</code>) are used. The <code class="language-cpp">for</code> loops iterate
+                from <code class="language-cpp">0</code> to <code class="language-cpp">3</code>, corresponding to the
+                four elements in each array.
+              </li>
+              <li><b>Matching Topics:</b> Ensure the topic names in your <code class="language-cpp">TOPICS</code> array
+                exactly match the topics of the devices you intend to control (e.g., "classroom/lights"). Misspellings
+                will prevent communication.</li>
+              <li><b>Wiring Multiple Components:</b> Double-check all your connections, especially for multiple buttons
+                and the relay module, to avoid short circuits or incorrect readings.</li>
+              <li>
+                <b>Important Note on <code class="language-cpp">readSensor()</code> (Direct Feedback):</b>
+                I've noticed a couple of points in the <code>readSensor()</code> function that might lead to compilation
+                issues or unexpected behavior based on the variable definitions provided earlier in your code:
+                <ul>
+                  <li>The variables <code class="language-cpp">BUTTON_PIN</code> and <code
+                      class="language-cpp">BUTTON_STATES</code> are used within <code
+                      class="language-cpp">readSensor()</code>, but based on your "Variable Definitions"
+                    section, the correct array names are <code class="language-cpp">BTN_PINS</code> and
+                    <code class="language-cpp">BTN_STS</code> respectively. You might need to adjust these
+                    variable names in <code class="language-cpp">readSensor()</code> for the code to
+                    compile correctly.
+                  </li>
+                  <li>The logic in the new <code class="language-cpp">readSensor()</code> function
+                    (<code>if (!digitalRead(BUTTON_PIN[i])) BUTTON_STATES[i] = !BUTTON_STATES[i];</code>) directly
+                    toggles the state and publishes it *every time* the button is read as pressed. This
+                    implementation might cause the device state to toggle rapidly or unpredictably if the
+                    button is held down, as it lacks a debouncing mechanism based on state change. Consider
+                    if this is the intended behavior for your universal remote.</li>
+                </ul>
+              </li>
+              <li>
+                <b>Note on <code class="language-cpp">BTN_STS</code> Declaration:</b>
+                You requested that <code>BTN_STS</code> be declared as
+                <code>bool *BTN_STS = {false, false, false, false};</code>.
+                While I have implemented this as requested, it's important to note that initializing a
+                <code>bool*</code>
+                (pointer to a boolean) directly with an initializer list like <code>{false, false, false, false}</code>
+                is a non-standard C++ feature (often a GNU extension). In standard C++, this syntax is
+                typically used for initializing a <code>bool</code> array (e.g.,
+                <code>bool BTN_STS[] = {false, ...}</code>).
+                If you encounter compilation warnings or unexpected runtime behavior, this specific declaration
+                style might be a contributing factor. For typical array behavior, <code>bool BTN_STS[] = ...</code> is
+                the more common and portable approach.
+              </li>
+              <li><b>Debugging:</b> The Serial Monitor is essential for verifying button presses, published commands,
+                and received commands for your LEDs.</li>
+            </ul>
+          </div>
     </div>
 
     <div id="api-reference" class="page">
