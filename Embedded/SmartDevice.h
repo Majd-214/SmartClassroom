@@ -1,29 +1,37 @@
-/*
+/**
+ * @file SmartDevice.h
+ * @brief Smart Device Library for IoT applications.
+ * This library provides functionalities for connecting to Wi-Fi, MQTT, and controlling smart home devices.
+ * It includes support for light control, device management, and message handling.
+ * @version 2.5.0
+ * @date 2025-06-30
+ *
 ====================================================================
-  Smart Device Library Header (SmartDevice.h) - Version 2.4.0
+  Smart Device Library Header (SmartDevice.h) - Version 2.5.1
 ====================================================================
 */
 #ifndef SmartDevice_h
 #define SmartDevice_h
 
 #include <Arduino.h>
-#include <ArduinoJson.h>       // Make sure this is included for DynamicJsonDocument
-#include <Adafruit_NeoPixel.h> // Include if getRGB will be a public method using it
+#include <ArduinoJson.h>
+#include <Adafruit_NeoPixel.h>
 
-//  Safe ESP8266 GPIO Pin Definitions
-// ===============================================================
-// Use these friendly pin names in your sketch to avoid using essential pins.
-#define PIN_D0 16 // GPIO ~ HIGH at boot, used to wake up from deep sleep
-#define PIN_D1 5  // GPIO - Safe to use
-#define PIN_D2 4  // GPIO - Safe to use
-#define PIN_D3 0  // GPIO ~ Connected to Flash button, boot fails is pulled LOW
-#define PIN_D4 2  // GPIO ~ HIGH at boot, boot fails if pulled LOW
-#define PIN_D5 14 // GPIO - Safe to use
-#define PIN_D6 12 // GPIO - Safe to use
-#define PIN_D7 13 // GPIO - Safe to use
-#define PIN_D8 15 // GPIO ~ Required for boot, boot fails if pulled HIGH
+/**
+ * @brief Pin definitions for the smart device.
+ * These pins are used for various functionalities such as LED control, button inputs, and other peripherals
+ */
+#define PIN_D0 16
+#define PIN_D1 5
+#define PIN_D2 4
+#define PIN_D3 0
+#define PIN_D4 2
+#define PIN_D5 14
+#define PIN_D6 12
+#define PIN_D7 13
+#define PIN_D8 15
 
-// Define your Light struct within the SmartHome namespace
+// Namespace for smart home data types
 namespace SmartHome
 {
   enum LightType
@@ -42,6 +50,7 @@ namespace SmartHome
   };
 }
 
+// Callback function signature for handling incoming messages
 typedef void (*MessageCallback)(String topic, String payload);
 
 class SmartDevice
@@ -55,12 +64,9 @@ public:
   void onMessage(MessageCallback callback);
   bool isConnected();
 
-  // Static helper function to parse command string into Light struct
+  // Static helper functions for simplified light control
   static SmartHome::Light commandToLight(String command);
-
-  // NEW: Abstraction helper for RGB conversion
-  static uint32_t getRGB(SmartHome::Light lightCommand); // For color/dimmable lights
-  // NEW: Abstraction helper for getting raw brightness (0-255)
+  static uint32_t getRGB(SmartHome::Light lightCommand);
   static uint8_t getBrightnessValue(SmartHome::Light lightCommand);
 
 private:

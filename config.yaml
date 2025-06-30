@@ -1,19 +1,19 @@
 # ===================================================================
-# Dynamic Project Configuration File (config.yaml)
+# Dynamic Project Configuration File (config.yaml) - v2.5.1
 # ===================================================================
-# This file is the single source of truth for the entire Smart Hub system.
-# The bridge script will dynamically build its logic based on this file.
+# This file is the single source of truth for the hub system.
+# The bridge script dynamically builds its logic based on this file.
 #
-# direction: TO_CLOUD (for sensors), FROM_CLOUD (for actuators), BIDIRECTIONAL (for both)
-# type: The data type expected (String, Float, Integer, Boolean, Dimmed, Color)
+# direction: TO_CLOUD (sensors), FROM_CLOUD (actuators), BIDIRECTIONAL
+# type: String, Float, Integer, Boolean, Dimmed, Color
 # ===================================================================
 
 # --- Local MQTT Broker Configuration ---
 local_mqtt_broker:
-  host: "localhost" # HUB Router IP Address Or "localhost" if running on the same machine
-  port: 1883 # Default MQTT port
+  host: "localhost" # IP Address of the machine running the hub, or "localhost"
+  port: 1883        # Default MQTT port
 
-# --- Arduino Cloud Credentials (Account A: Environment) ---
+# --- Arduino Cloud Account A: Environment ---
 account_a:
   enabled: true
   device_id: "a5ae4bba-2de1-4550-a15a-ee4d37d8a75b"
@@ -44,7 +44,7 @@ account_a:
       topic: "classroom/kettle"
       type: "Boolean"
 
-# --- Arduino Cloud Credentials (Account B: Security) ---
+# --- Arduino Cloud Account B: Security ---
 account_b:
   enabled: true
   device_id: "e6a92bb5-fd57-4251-aa15-346a3c988e1e"
@@ -56,7 +56,7 @@ account_b:
       type: "Boolean"
 
     - name: "light"
-      direction: "FROM_CLOUD"
+      direction: "BIDIRECTIONAL"
       topic: "classroom/light"
       type: "Dimmed"
 
