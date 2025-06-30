@@ -1,6 +1,6 @@
 # ====================================================================
 #   McMaster Engineering Summer Camp - Smart Classroom IoT Hub
-#   PRODUCTION VERSION 2.4.0 - FULLY DYNAMIC ENGINE - MAJD ABURAS 2025
+#   PRODUCTION VERSION 2.5.0 - INTEGRATED LIGHT OBJECTS - MAJD ABURAS 2025
 #
 #   This script is a generic engine. All logic for variable
 #   mapping and message routing is loaded from config.yaml at runtime.
@@ -12,7 +12,7 @@
 # ====================================================================
 
 # Import Communication Libraries
-from arduino_iot_cloud import ArduinoCloudClient
+from arduino_iot_cloud import ArduinoCloudClient, ColoredLight, DimmedLight
 import paho.mqtt.client as mqtt
 
 # Import System Libraries
@@ -75,19 +75,29 @@ def generic_on_write_callback(client, value, variable_config):
     logging.info(f"Cloud command received for '{cloud_var_name}': {value} (Type: {var_type})")
 
     payload = ""
-    # Format payload based on the variable type expected by the local device
-    if var_type == "Boolean":
-        payload = "true" if value else "false" # Send "true"/"false" strings for C++ bool parsing
-    elif var_type == "Color" or var_type == "Dimmed":
-        # For Color and Dimmed, 'value' from Arduino Cloud is already a Python dictionary.
-        # Serialize this dictionary to a JSON string.
-        try:
-            payload = json.dumps(value)
-        except TypeError:
-            logging.error(f"Error serializing {var_type} command to JSON. Expected dictionary, got {type(value)}: {value}", exc_info=True)
-            return # Abort publishing if payload formatting fails
-    else:  # Default to sending the raw value as a string for other types (Float, Integer, String)
-        payload = str(value)
+    try:
+        # Format payload based on the variable type expected by the local device
+        if var_type == "Boolean":
+            payload = "true" if value else "false" # Send "true"/"false" strings for C++ bool parsing
+        elif var_type == "Color":
+            # The 'value' is a ColoredLight object. Create a dictionary from its properties.
+            if value.swi is None or value.bri is None or value.hue is None or value.sat is None:
+                logging.warning(f"Incomplete ColoredLight data for '{cloud_var_name}'. Not publishing.")
+                return
+            payload_dict = {"swi": value.swi, "bri": int(value.bri), "hue": int(value.hue), "sat": int(value.sat)}
+            payload = json.dumps(payload_dict)
+        elif var_type == "Dimmed":
+            # The 'value' is a DimmedLight object. Create a dictionary from its properties.
+            if value.swi is None or value.bri is None:
+                logging.warning(f"Incomplete DimmedLight data for '{cloud_var_name}'. Not publishing.")
+                return
+            payload_dict = {"swi": value.swi, "bri": int(value.bri)}
+            payload = json.dumps(payload_dict)
+        else:  # Default to sending the raw value as a string for other types (Float, Integer, String)
+            payload = str(value)
+    except Exception as e:
+        logging.error(f"Error formatting payload for '{cloud_var_name}': {e}", exc_info=True)
+        return
 
     # Publish to local MQTT if connected and direction allows
     if local_client and local_client.is_connected():
@@ -139,7 +149,6 @@ def on_message_local(client, userdata, msg):
                     cloud_client = cloud_clients[rule['account']]
                     cloud_var_name = rule['name']
                     var_type = rule['type']
-
                     value_to_send = None
 
                     # Convert the incoming payload based on the variable type defined in config.yaml
@@ -150,22 +159,40 @@ def on_message_local(client, userdata, msg):
                     elif var_type == "Integer":
                         value_to_send = int(payload)
                     elif var_type == "Color" or var_type == "Dimmed":
-                        # For Color and Dimmed, expect the payload to be a JSON string
+                        # Payload is a JSON string, convert to a dictionary
                         try:
                             value_to_send = json.loads(payload)
+                            if not isinstance(value_to_send, dict):
+                                logging.error(f"Payload for {var_type} on topic '{msg.topic}' is not a JSON object: '{payload}'")
+                                value_to_send = None
                         except json.JSONDecodeError:
-                            logging.error(f"Failed to decode JSON for {var_type} type from payload '{payload}' on topic '{msg.topic}'. Expected JSON string.", exc_info=True)
-                            value_to_send = None # Set to None to prevent pushing invalid data
-                    elif var_type == "String": # Explicitly handle String type
+                            logging.error(f"Failed to decode JSON for {var_type} type from payload '{payload}' on topic '{msg.topic}'.", exc_info=True)
+                            value_to_send = None
+                    elif var_type == "String":
                         value_to_send = payload
-                    else: # Fallback for unknown/unhandled types, log a warning
-                        logging.warning(f"Unsupported variable type '{var_type}' for cloud variable '{cloud_var_name}'. Sending raw payload as string.")
+                    else:
+                        logging.warning(f"Unsupported variable type '{var_type}'. Sending raw payload as string.")
                         value_to_send = payload
 
-
+                    # Now, push the value to the cloud
                     if value_to_send is not None:
-                        logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}' for account '{rule['account']}'")
-                        cloud_client[cloud_var_name] = value_to_send
+                        if var_type == "Color" or var_type == "Dimmed":
+                            # For light objects, update properties from the dictionary
+                            light_obj = cloud_client[cloud_var_name]
+                            logging.info(f"Updating cloud light object '{cloud_var_name}' with data: {value_to_send}")
+                            if 'swi' in value_to_send:
+                                light_obj.swi = bool(value_to_send['swi'])
+                            if 'bri' in value_to_send:
+                                light_obj.bri = int(value_to_send['bri'])
+                            if var_type == "Color":
+                                if 'hue' in value_to_send:
+                                    light_obj.hue = int(value_to_send['hue'])
+                                if 'sat' in value_to_send:
+                                    light_obj.sat = int(value_to_send['sat'])
+                        else:
+                            # For simple types, just assign the value
+                            logging.info(f"Pushing value '{value_to_send}' to cloud variable '{cloud_var_name}' for account '{rule['account']}'")
+                            cloud_client[cloud_var_name] = value_to_send
                     else:
                         logging.warning(f"Could not determine valid value to send for '{cloud_var_name}' from payload '{payload}' on topic '{msg.topic}'.")
 
@@ -174,7 +201,7 @@ def on_message_local(client, userdata, msg):
                 except Exception as e:
                     logging.error(f"Error processing rule {rule} for topic {msg.topic}: {e}. Payload: '{payload}'", exc_info=True)
         else:
-            logging.debug(f"No routing rule found for topic: {msg.topic}. Message ignored.") # Changed to debug
+            logging.debug(f"No routing rule found for topic: {msg.topic}. Message ignored.")
 
     except Exception as e:
         logging.error(f"Error processing main local message from topic '{msg.topic}': {e}", exc_info=True)
@@ -251,16 +278,27 @@ if __name__ == "__main__":
                         logging.error(f"Skipping variable '{var_name}' in account '{acc_name}': Invalid 'type' '{var_type}'. Must be one of {VALID_VAR_TYPES}.")
                         continue
 
-                    # Register the variable with the Arduino Cloud Client
+                    # Create the on_write callback (used for FROM_CLOUD and BIDIRECTIONAL)
+                    callback = None
                     if direction in ["FROM_CLOUD", "BIDIRECTIONAL"]:
-                        # When a variable is FROM_CLOUD or BIDIRECTIONAL, it means the cloud can WRITE to it.
-                        # So, we register an on_write callback that calls our generic handler.
+                        # When a variable can be written from the cloud, we need a callback.
+                        # The lambda captures the variable's specific configuration.
                         callback = lambda c, v, vc=var_config: generic_on_write_callback(c, v, vc)
-                        client.register(var_name, on_write=callback)
-                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_type}) with on_write callback.")
-                    else: # TO_CLOUD variables only send data, no cloud commands received
-                        client.register(var_name)
-                        logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_type}).")
+
+                    # Register the variable based on its type
+                    if var_type == "Color":
+                        client.register(ColoredLight(var_name, on_write=callback))
+                        logging.info(f"   Registered cloud variable '{var_name}' as ColoredLight (Direction: {direction}).")
+                    elif var_type == "Dimmed":
+                        client.register(DimmedLight(var_name, on_write=callback))
+                        logging.info(f"   Registered cloud variable '{var_name}' as DimmedLight (Direction: {direction}).")
+                    else: # For all other types (String, Float, Integer, Boolean)
+                        if callback:
+                            client.register(var_name, on_write=callback)
+                            logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_type}) with on_write callback.")
+                        else: # TO_CLOUD only
+                            client.register(var_name)
+                            logging.info(f"   Registered cloud variable '{var_name}' (Direction: {direction}, Type: {var_type}).")
 
                     # Build the MQTT routing map for messages coming FROM local devices TO the cloud
                     if direction in ["TO_CLOUD", "BIDIRECTIONAL"]:
