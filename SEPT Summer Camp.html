@@ -139,19 +139,19 @@
             align-items: center;
         }
 
-        /* --- Typography & Common Elements --- */
+         /* --- Typography & Common Elements --- */
         h1 {
-            font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+            font-size: clamp(2.2rem, 5vw, 4rem);
             font-weight: 700;
-            margin: 0 0 1rem 0;
+            margin: 0 0 0.8rem 0;
             line-height: 1.1;
             letter-spacing: -0.02em;
         }
 
         h2 {
-            font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+            font-size: clamp(1.1rem, 2vw, 1.6rem);
             font-weight: 400;
-            margin: 0 0 2rem 0;
+            margin: 0 0 1.5rem 0;
             color: var(--text-secondary);
             line-height: 1.5;
             max-width: 900px;
@@ -235,7 +235,7 @@
         #iot-diagram {
             position: relative;
             width: 450px;
-            height: 450px;
+            height: 200px;
             margin: 2rem auto;
         }
 
@@ -994,7 +994,7 @@
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
             gap: 2rem;
-            min-height: 400px;
+            min-height: 250px;
         }
 
         .builder-column {
@@ -1255,30 +1255,24 @@
             <div class="slide-content">
                 <h1 class="reveal">What if everyday objects could <span class="highlight">think and talk?</span></h1>
                 <h2 class="reveal delay-1">This is the core idea of the <strong>Internet of Things (IoT)</strong>. It's
-                    about giving a digital 'voice' to everything around us so they can talk to each other, and to us.
+                    about giving a digital 'voice' to everything around us so they can communicate.
                 </h2>
                 <div id="iot-diagram" class="reveal delay-2">
-                    <svg>
-                        <line class="connection-line" x1="50%" y1="50%" x2="25%" y2="25%" />
-                        <line class="connection-line" x1="50%" y1="50%" x2="75%" y2="25%" />
-                        <line class="connection-line" x1="50%" y1="50%" x2="25%" y2="75%" />
-                        <line class="connection-line" x1="50%" y1="50%" x2="75%" y2="75%" />
-                    </svg>
                     <div id="iot-brain" class="iot-node"><i class="material-icons">psychology</i></div>
                     <div class="iot-node iot-satellite"
-                        style="top: 25%; left: 25%; transform: translate(-50%, -50%); color: #fbbc05; animation-delay: 0.2s;">
+                        style="top: 50%; left: -25%; color: #fbbc05; animation-delay: 0.2s;">
                         <i class="material-icons">lightbulb</i>
                     </div>
                     <div class="iot-node iot-satellite"
-                        style="top: 25%; left: 75%; transform: translate(-50%, -50%); color: #ea4335; animation-delay: 0.4s;">
+                        style="top: 50%; left: 10%; color: #ea4335; animation-delay: 0.4s;">
                         <i class="material-icons">thermostat</i>
                     </div>
                     <div class="iot-node iot-satellite"
-                        style="top: 75%; left: 25%; transform: translate(-50%, -50%); color: #34a853; animation-delay: 0.6s;">
+                        style="top: 50%; left: 90%; color: #34a853; animation-delay: 0.6s;">
                         <i class="material-icons">lock</i>
                     </div>
                     <div class="iot-node iot-satellite"
-                        style="top: 75%; left: 75%; transform: translate(-50%, -50%); color: #e8eaed; animation-delay: 0.8s;">
+                        style="top: 50%; left: 125%; color: #e8eaed; animation-delay: 0.8s;">
                         <i class="material-icons">smartphone</i>
                     </div>
                 </div>
@@ -1346,18 +1340,8 @@
             </div>
         </section>
 
-        <!-- SLIDE 5: YOUR MISSION -->
+        <!-- SLIDE 5: NETWORK ARCHITECTURES -->
         <section id="slide-5" class="slide">
-            <div class="slide-content">
-                <h1 class="reveal">Your Mission: <span class="highlight">Build a Living Classroom</span></h1>
-                <h2 class="reveal delay-1">You are a team of specialists. Your goal is to bring a smart classroom to
-                    life. Each team has a critical system to build. When you're done, all your individual parts will
-                    work together as one intelligent system.</h2>
-            </div>
-        </section>
-
-        <!-- SLIDE 6: NETWORK ARCHITECTURES -->
-        <section id="slide-6" class="slide">
             <div class="slide-content">
                 <h1 class="reveal">How do devices talk?</h1>
                 <h2 class="reveal delay-1">For IoT, we need a special way for devices to communicate that is fast and
@@ -1381,8 +1365,8 @@
             </div>
         </section>
 
-        <!-- SLIDE 7: MQTT DEEP DIVE (FIXED) -->
-        <section id="slide-7" class="slide">
+        <!-- SLIDE 6: MQTT DEEP DIVE (FIXED) -->
+        <section id="slide-6" class="slide">
             <div class="slide-content">
                 <h1 class="reveal">Our Language: <span class="highlight">MQTT</span></h1>
                 <h2 class="reveal delay-1">We'll use Publish/Subscribe with MQTT. It's fast, lightweight, and perfect
@@ -1419,8 +1403,8 @@
             </div>
         </section>
 
-        <!-- SLIDE 8: REAL WORLD IOT -->
-        <section id="slide-8" class="slide">
+        <!-- SLIDE 7: REAL WORLD IOT -->
+        <section id="slide-7" class="slide">
             <div class="slide-content">
                 <h1 class="reveal">IoT is Everywhere</h1>
                 <h2 class="reveal delay-1">The concepts you're learning today power technology all around the world. Tap
@@ -1466,6 +1450,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: YOUR MISSION -->
+        <section id="slide-8" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Your Mission: <span class="highlight">Build a Living Classroom</span></h1>
+                <h2 class="reveal delay-1">You are a team of specialists. Your goal is to bring a smart classroom to
+                    life. Each team has a critical system to build. When you're done, all your individual parts will
+                    work together as one intelligent system.</h2>
             </div>
         </section>
 
@@ -1682,12 +1676,6 @@
         <section id="slide-15" class="slide">
             <div id="dashboard-container" class="slide-content">
                 <h1 class="reveal">Live Classroom Dashboard</h1>
-                <div id="dashboard-controls" class="reveal delay-1">
-                    <i class="material-icons" id="dash-refresh" title="Refresh">refresh</i>
-                    <i class="material-icons" id="dash-zoom-in" title="Zoom In">zoom_in</i>
-                    <i class="material-icons" id="dash-zoom-out" title="Zoom Out">zoom_out</i>
-                    <i class="material-icons" id="dash-zoom-reset" title="Reset Zoom">fullscreen</i>
-                </div>
                 <div id="dashboard-iframe-wrapper" class="reveal delay-2">
                     <iframe id="dashboard-iframe"
                         src="https://app.arduino.cc/dashboards/1a8b5e9a-4e44-4828-8583-8557347a550a"
@@ -1897,7 +1885,7 @@
                 }, 200);
             };
 
-            // --- Slide 7: MQTT Interactivity ---
+            // --- Slide 6: MQTT Interactivity ---
             let isMqttAnimating = false;
             let isLightOn = false;
             const mqttElements = {
