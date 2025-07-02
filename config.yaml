@@ -27,7 +27,7 @@ account_a:
     - name: "curtain"
       direction: "BIDIRECTIONAL"
       topic: "classroom/curtain"
-      type: "Boolean"
+      type: "Dimmed"
 
     - name: "thermostat"
       direction: "TO_CLOUD"
@@ -47,8 +47,8 @@ account_a:
 # --- Arduino Cloud Account B: Security ---
 account_b:
   enabled: true
-  device_id: "e6a92bb5-fd57-4251-aa15-346a3c988e1e"
-  secret_key: "2BVKUhsYLiUBcuynE?1r4lAiM"
+  device_id: "50b4aa68-002e-4e23-9cb2-445ad78065b5"
+  secret_key: "MPa1IMiy#DTXW!lj@vP4jNM!Q"
   variables:
     - name: "window"
       direction: "TO_CLOUD"
