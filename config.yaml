@@ -41,7 +41,7 @@ account_a:
 
     - name: "kettle"
       direction: "BIDIRECTIONAL"
-      topic: "classroom/kettle"
+      topic: "kitchen/kettle"
       type: "Boolean"
 
 # --- Arduino Cloud Account B: Security ---
@@ -57,20 +57,20 @@ account_b:
 
     - name: "light"
       direction: "BIDIRECTIONAL"
-      topic: "classroom/light"
+      topic: "entryway/light"
       type: "Dimmed"
 
     - name: "door"
       direction: "TO_CLOUD"
-      topic: "entrance/door"
+      topic: "front_door/door"
       type: "Boolean"
 
     - name: "lock"
       direction: "BIDIRECTIONAL"
-      topic: "entrance/lock"
+      topic: "front_door/lock"
       type: "Boolean"
 
     - name: "motion"
       direction: "TO_CLOUD"
-      topic: "classroom/motion"
+      topic: "backyard/motion"
       type: "Boolean"
