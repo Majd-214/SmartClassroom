@@ -532,7 +532,7 @@
             your device name and any communication topics it needs.</p>
           <pre><code><span class="sh-comment">// 3. CONFIGURATION</span>
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"My_Station_Device"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "Sarah_Door_Lock"</span>
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">BASE_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/some_device"</span>; <span class="sh-comment">// &lt;-- CHANGE for your station</span></code></pre>
+<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">BASE_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"some_room/some_device"</span>; <span class="sh-comment">// &lt;-- CHANGE for your station</span></code></pre>
         </li>
         <li>
           <b>Object Declarations:</b>
@@ -670,7 +670,7 @@
               <div
                 class="infographic-code-block mt-4 p-3 bg-background-dark rounded-lg font-mono text-sm text-secondary">
                 <code><span class="sh-keyword">const char*</span> <span class="sh-variable">DEVICE_NAME</span> = <span class="sh-string">"My_Station_Device"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code><br />
-                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"classroom/your_topic"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code>
+                <code><span class="sh-keyword">const char*</span> <span class="sh-variable">BASE_TOPIC</span> = <span class="sh-string">"some_room/your_topic"</span>;<span class="sh-comment"> // &lt;-- CHANGE!</span></code>
               </div>
             </div>
           </div>
@@ -833,7 +833,7 @@
 
 <span class="sh-comment">// 3. CONFIGURATION</span>
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"YourName_Appliances"</span>;
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">KETTLE_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/kettle"</span>;
+<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">KETTLE_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"kitchen/kettle"</span>;
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">HVAC_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/hvac"</span>;</code></pre>
         </li>
         <li><b><code>setupDevice()</code>:</b> Configure relay pins as outputs, ensure they start OFF, and subscribe to
@@ -918,7 +918,7 @@
 <span class="sh-comment">// 3. CONFIGURATION</span>
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"YourName_EnviroSense"</span>;
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">TEMP_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/thermostat"</span>;
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">MOTION_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/motion"</span>;
+<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">MOTION_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"backyard/motion"</span>;
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">WINDOW_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/window"</span>;
 
 <span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
@@ -1003,7 +1003,7 @@
 <span class="sh-comment">// 3. CONFIGURATION</span>
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"YourName_Lighting"</span>;
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">STRIP_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/lights"</span>;
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">BULB_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/light"</span>;
+<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">BULB_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"entryway/light"</span>;
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">LOCK_STATUS_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"entrance/lock"</span>; <span class="sh-comment">// Listen for lock status</span>
 
 <span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
@@ -1313,7 +1313,7 @@
 
 <span class="sh-comment">// 3. CONFIGURATION</span>
 <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"YourName_ControlPanel"</span>;
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">TOPICS</span>[] <span class="sh-operator">=</span> {<span class="sh-string">"classroom/lights"</span>, <span class="sh-string">"classroom/kettle"</span>, <span class="sh-string">"classroom/light"</span>, <span class="sh-string">"classroom/hvac"</span>};
+<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">TOPICS</span>[] <span class="sh-operator">=</span> {<span class="sh-string">"classroom/lights"</span>, <span class="sh-string">"kitchen/kettle"</span>, <span class="sh-string">"entryway/light"</span>, <span class="sh-string">"classroom/hvac"</span>};
 
 <span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
 <span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;</code></pre>
