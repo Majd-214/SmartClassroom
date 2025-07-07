@@ -59,10 +59,10 @@ def generic_on_write_callback(client, value, variable_config):
         if var_type == "Boolean":
             payload = "true" if value else "false"
         elif var_type == "Color":
-            payload_dict = {"swi": value.swi, "bri": int(value.bri), "hue": int(value.hue), "sat": int(value.sat)}
+            payload_dict = {"swi": bool(value.swi), "bri": int(value.bri), "hue": int(value.hue), "sat": int(value.sat)}
             payload = json.dumps(payload_dict)
         elif var_type == "Dimmed":
-            payload_dict = {"swi": value.swi, "bri": int(value.bri)}
+            payload_dict = {"swi": bool(value.swi), "bri": int(value.bri)}
             payload = json.dumps(payload_dict)
         else:
             payload = str(value)
