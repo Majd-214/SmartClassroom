@@ -1,691 +1,2019 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>McMaster Tinkercad Challenge - Student Handbook (Grades 7-9)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McMaster Engineering Camp - IoT Kickoff</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Product Sans (via cdnfonts), Fira Code, and Material Icons -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.cdnfonts.com/css/product-sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.cdnfonts.com/css/product-sans" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
 
-  <style>
-    /* --- McMaster Tinkercad Challenge Stylesheet --- */
-    body {
-      font-family: 'Product Sans', sans-serif;
-      background-color: #202124;
-      color: #e8eaed;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      line-height: 1.7;
-    }
+    <style>
+        /* ====================================================================
+           McMaster Smart Classroom - Presentation Stylesheet v12 (Polished)
+           ==================================================================== */
 
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-      animation: fadeIn 0.4s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* --- Scrollbar --- */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: #202124;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #3c4043;
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #5f6368;
-    }
-
-    /* --- Content Styles --- */
-    .page h1,
-    .page h2,
-    .page h3,
-    .page h4 {
-      color: #f1f3f4;
-      font-weight: 700;
-      border-bottom: 1px solid #3c4043;
-      padding-bottom: 8px;
-      margin-top: 24px;
-      margin-bottom: 16px;
-    }
-
-    .page h1 {
-      font-size: 2.5em;
-      padding-bottom: 12px;
-      text-align: center;
-    }
-
-    .page h2 {
-      font-size: 2.2em;
-    }
-
-    .page h3 {
-      font-size: 1.6em;
-      border-bottom: none;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .page p {
-      font-size: 1.1em;
-      margin-bottom: 16px;
-      color: #bdc1c6;
-    }
-
-    .page a {
-      color: #8ab4f8;
-      text-decoration: none;
-      transition: color 0.2s ease-in-out;
-    }
-
-    .page a:hover {
-      color: #a7c5f9;
-      text-decoration: underline;
-    }
-
-    .page ul,
-    .page ol {
-      padding-left: 20px;
-      margin-bottom: 16px;
-    }
-
-    .page li {
-      margin-bottom: 8px;
-      font-size: 1.1em;
-      color: #bdc1c6;
-    }
-
-    .page code {
-      background-color: #2d2e30;
-      border: 1px solid #4a4a4a;
-      padding: 3px 8px;
-      font-size: 0.9em;
-      border-radius: 6px;
-      font-family: monospace;
-      color: #8ab4f8;
-    }
-
-    .page hr {
-      border: none;
-      border-top: 1px solid #3c4043;
-      margin: 40px 0;
-    }
-
-    /* --- Custom Colored Highlight Boxes --- */
-    .highlight-box {
-      padding: 1.5rem;
-      border-radius: 0.75rem;
-      margin-bottom: 1rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      background-color: rgba(138, 180, 248, 0.05);
-      border-left-width: 4px;
-    }
-
-    .highlight-box:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .highlight-box-blue {
-      border-color: #8ab4f8;
-    }
-
-    .highlight-box-green {
-      border-color: #34a853;
-    }
-
-    .highlight-box-orange {
-      border-color: #fbbc04;
-    }
-
-    .code-logic-box {
-      background-color: #1e1e1e;
-      border: 1px solid #3c4043;
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      margin-top: 16px;
-      margin-bottom: 16px;
-    }
-
-    .code-logic-box h4 {
-      border-bottom: none;
-      margin-top: 0;
-      color: #8ab4f8;
-      font-size: 1.25em;
-    }
-
-    .code-logic-box ul {
-      list-style-type: '» ';
-      padding-left: 20px;
-    }
-
-    .code-logic-box li {
-      padding-left: 10px;
-      color: #e8eaed;
-    }
-
-    .code-logic-box li::marker {
-      color: #8ab4f8;
-    }
-  </style>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'custom-bg': '#202124',
-            'surface': '#2d2e30',
-            'primary': '#e8eaed',
-            'secondary': '#bdc1c6',
-            'accent': '#8ab4f8',
-            'custom-border': '#3c4043',
-            'custom-green': '#34a853',
-            'custom-orange': '#fbbc04',
-            'custom-red': '#ea4335',
-          },
-          fontFamily: {
-            product: ['Product Sans', 'sans-serif'],
-          }
+        /* --- Base Setup & Theming --- */
+        :root {
+            --bg-dark: #202124;
+            --bg-surface: #2d2e30;
+            --text-primary: #e8eaed;
+            --text-secondary: #bdc1c6;
+            --accent-blue: #8ab4f8;
+            --accent-green: #34a853;
+            --accent-red: #ea4335;
+            --accent-yellow: #fbbc05;
+            --mcmaster-maroon: #7A003C;
         }
-      }
-    }
-  </script>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Product Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+            overflow-x: hidden;
+            /* Prevent horizontal scrollbar */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .main-container {
+            height: 100vh;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory;
+            /* Add these three lines to hide the scrollbar */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .main-container::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, and Opera */
+        }
+
+        /* --- Navigation --- */
+        #slide-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-arrow {
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            font-size: 24px;
+        }
+
+        .nav-arrow:hover {
+            color: var(--text-primary);
+            transform: scale(1.2);
+        }
+
+        #nav-dots {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background-color: var(--accent-blue);
+            transform: scale(1.4);
+        }
+
+        /* --- Scroll-based Slides (CENTERED) --- */
+        .slide {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 4vw;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid #3c4043;
+            scroll-snap-align: start;
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+            align-content: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Typography & Common Elements --- */
+        h1 {
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            font-weight: 700;
+            margin: 0 0 0.8rem 0;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: clamp(1.1rem, 2vw, 1.6rem);
+            font-weight: 400;
+            margin: 0 0 1.5rem 0;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h3 {
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+        }
+
+        p {
+            font-size: clamp(1rem, 1.5vw, 1.25rem);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .highlight {
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        .material-icons {
+            font-size: inherit;
+            vertical-align: middle;
+        }
+
+        /* --- Animation Setup --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide.is-visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal.delay-1 {
+            transition-delay: 0.2s;
+        }
+
+        .reveal.delay-2 {
+            transition-delay: 0.4s;
+        }
+
+        .reveal.delay-3 {
+            transition-delay: 0.6s;
+        }
+
+        /* --- Specific Slide Styles --- */
+        #slide-1 #mcmaster-logo {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        #slide-1 .subtitle {
+            font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+            /* Makes subtitle larger */
+            margin-top: 1rem;
+            /* Adds space above the subtitle */
+            color: var(--accent-blue);
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        #iot-diagram {
+            position: relative;
+            width: 450px;
+            height: 200px;
+            margin: 2rem auto;
+        }
+
+        .iot-node {
+            position: absolute;
+            background-color: var(--bg-surface);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        .iot-node:hover {
+            transform: translate(-50%, -50%) scale(1.1) !important;
+            box-shadow: 0 0 30px var(--accent-blue);
+            animation-play-state: paused;
+        }
+
+        .iot-node .material-icons {
+            font-size: 3rem;
+        }
+
+        #iot-brain {
+            width: 160px;
+            height: 160px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            color: var(--accent-blue);
+            border: 4px solid var(--accent-blue);
+            animation-delay: 0s;
+        }
+
+        .iot-satellite {
+            width: 90px;
+            height: 90px;
+        }
+
+        #iot-diagram svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #iot-diagram .connection-line {
+            stroke: var(--accent-blue);
+            stroke-width: 2;
+            stroke-dasharray: 5;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #iot-diagram.is-visible .connection-line {
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(0.95);
+                box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.7);
+            }
+
+            70% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 0 10px rgba(138, 180, 248, 0);
+            }
+        }
+
+        /* Anatomy of a Message */
+        .message-anatomy-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .message-part {
+            background-color: var(--bg-surface);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+
+        .message-part:hover {
+            transform: translateY(-5px);
+        }
+
+        .message-part.topic {
+            border-color: var(--accent-red);
+        }
+
+        .message-part.payload {
+            border-color: var(--accent-yellow);
+        }
+
+        .message-part .label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .message-part .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        #message-explanation {
+            margin: 2rem auto 0 auto;
+            background-color: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 700px;
+            min-height: 100px;
+            transition: opacity 0.4s;
+        }
+
+        /* Code to Cloud */
+        #code-to-cloud-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            /* Align to top to position line correctly */
+            width: 100%;
+            max-width: 1000px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .arch-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 2;
+            width: 120px;
+            /* Give nodes a fixed width */
+        }
+
+        .arch-node .material-icons {
+            font-size: 5rem;
+            padding: 1rem;
+            background-color: var(--bg-surface);
+            border-radius: 50%;
+            height: 7rem;
+            /* 5rem font + 2rem padding */
+            width: 7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #code-to-cloud-diagram .line-container {
+            position: absolute;
+            top: 3rem;
+            /* Vertically center with icons (7rem / 2) */
+            left: 10%;
+            /* Adjust to align with nodes */
+            width: 80%;
+            height: 4px;
+            z-index: 1;
+        }
+
+        #code-to-cloud-diagram .line-container svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .data-packet {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            opacity: 0;
+            top: 2px;
+            /* Center packet on the line */
+            left: 0;
+            z-index: 5;
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            width: 100%;
+            margin-top: 3rem;
+        }
+
+        .grid-card {
+            background-color: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid #3c4043;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .grid-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-card h3 {
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grid-card .analogy {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            border-left: 3px solid var(--accent-green);
+            padding-left: 1rem;
+        }
+
+        /* MQTT Slide Redesign (FIXED) */
+        #mqtt-diagram {
+            position: relative;
+            background-color: var(--bg-dark);
+            border-radius: 16px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            align-items: center;
+            justify-items: center;
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #mqtt-diagram svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #mqtt-diagram .anim-path {
+            fill: none;
+            stroke: none;
+        }
+
+        .mqtt-element {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .mqtt-element:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .mqtt-element .material-icons {
+            font-size: 4rem;
+            transition: color 0.5s ease;
+        }
+
+        .mqtt-element.subscribed {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px var(--accent-green);
+        }
+
+        #mqtt-broker {
+            color: var(--accent-blue);
+            cursor: default;
+            grid-column: 2;
+            grid-row: 1 / 3;
+        }
+
+        #mqtt-broker:hover {
+            transform: none;
+            background-color: transparent;
+        }
+
+        #mqtt-sensor {
+            grid-column: 1;
+            grid-row: 1 / 3;
+        }
+
+        #mqtt-actuator {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        #mqtt-dashboard {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .message-bubble {
+            position: absolute;
+            /* This transform centers the bubble on the coordinates we provide. */
+            transform: translate(-50%, -50%);
+            background-color: var(--accent-green);
+            color: var(--bg-dark);
+            border-radius: 50%;
+            font-weight: bold;
+            opacity: 0;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .message-bubble .material-icons {
+            font-size: 24px;
+        }
+
+        .dashboard-display {
+            margin-top: 0.5rem;
+            font-family: 'Product Sans', sans-serif;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            background-color: var(--bg-surface);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+        }
+
+        /* Real World IoT */
+        .real-world-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 2rem;
+            perspective: 1000px;
+        }
+
+        /* Add this rule to center the main content blocks on their respective slides */
+        .real-world-grid,
+        #code-to-cloud-diagram,
+        .toolkit-container,
+        .component-grid,
+        .steps-grid,
+        #automation-container {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 280px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.is-flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        .flip-card-front .material-icons {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-back p {
+            font-size: 1rem;
+        }
+
+        /* Toolkit & Code Template */
+        .toolkit-container {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 2rem;
+        }
+
+        .toolkit-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .toolkit-item .material-icons {
+            font-size: 10rem;
+            color: var(--accent-blue);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .code-explanation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 2;
+        }
+
+        .code-view {
+            display: flex;
+            gap: 1rem;
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            text-align: left;
+            width: 100%;
+        }
+
+        .code-view pre {
+            margin: 0;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s, border-left-color 0.3s;
+            cursor: pointer;
+            border-left: 4px solid #3c4043;
+            flex: 1;
+            font-size: 0.8rem;
+        }
+
+        .code-view pre:hover,
+        .code-view pre.active {
+            background-color: rgba(138, 180, 248, 0.1);
+            border-left-color: var(--accent-blue);
+        }
+
+        .code-view .sh-keyword {
+            color: #569cd6;
+        }
+
+        .code-view .sh-function {
+            color: #dcdcaa;
+        }
+
+        .code-view .sh-type {
+            color: #4ec9b0;
+        }
+
+        .code-view .sh-comment {
+            color: #6a9955;
+        }
+
+        .code-view .sh-variable {
+            color: #9cdcfe;
+        }
+
+        .code-view .sh-string {
+            color: #ce9178;
+        }
+
+        .code-view .sh-literal {
+            color: #b5cea8;
+        }
+
+        .code-view .sh-operator {
+            color: #d4d4d4;
+        }
+
+        #code-explanation-box {
+            background-color: var(--bg-surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: left;
+            border-left: 4px solid var(--accent-green);
+            min-height: 120px;
+        }
+
+        #code-explanation-box h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--accent-green);
+        }
+
+        #code-explanation-box p {
+            margin: 0;
+            font-size: clamp(0.9rem, 1.2vw, 1rem);
+        }
+
+        /* Core Components Slide */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 2rem;
+        }
+
+        .component-card {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .component-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .component-card .material-icons {
+            font-size: 4rem;
+        }
+
+        .component-card h4 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .component-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Your First Steps Slide */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            background-color: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .step-card .material-icons {
+            font-size: 4rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+
+        .step-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .step-card p {
+            font-size: 1rem;
+        }
+
+        .step-card code {
+            background-color: var(--bg-dark);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+        }
+
+
+        /* Mission Grid (CENTERED) */
+        #mission-grid-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #mission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .mission-card {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .mission-card .material-icons {
+            font-size: 4rem;
+            color: var(--accent-blue);
+        }
+
+        .mission-card span {
+            font-weight: 500;
+        }
+
+        #mission-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        #mission-modal-overlay.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        #mission-modal {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 90vw;
+            width: 700px;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            transform: scale(0.8);
+            transition: transform 0.4s;
+            position: relative;
+        }
+
+        #mission-modal-overlay.visible #mission-modal {
+            transform: scale(1);
+        }
+
+        #mission-modal-img {
+            max-width: 250px;
+            border-radius: 12px;
+        }
+
+        #mission-modal-text {
+            text-align: left;
+        }
+
+        #mission-modal-text h3 {
+            color: var(--accent-blue);
+            margin-top: 0;
+        }
+
+        #mission-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-secondary);
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        #mission-modal-close:hover {
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        /* SLIDE 13: DIGITAL BRAIN (NEW CONCEPT) */
+        /* SLIDE 13: DIGITAL BRAIN (MATERIAL REDESIGN) */
+        #brain-container {
+            background-color: transparent;
+            padding: 1rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 2rem auto 0 auto;
+        }
+
+        #routine-builder-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 2rem;
+            min-height: 250px;
+        }
+
+        .builder-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .brain-node {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: var(--bg-surface);
+            padding: 1rem 1.5rem;
+            border-radius: 28px;
+            /* Material You pill shape */
+            border: 1px solid #3c4043;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+        }
+
+        .brain-node:hover {
+            transform: translateY(-4px);
+            background-color: #3c4043;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .brain-node .material-icons {
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+        }
+
+        /* Node States */
+        .brain-node.selected {
+            background-color: var(--accent-blue);
+            color: var(--bg-dark);
+            font-weight: bold;
+            border-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
+        .brain-node.selected .material-icons {
+            color: var(--bg-dark);
+        }
+
+        .brain-node.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            background-color: var(--bg-surface);
+        }
+
+
+        /* Central Hub */
+        #brain-hub {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            grid-column: 2;
+        }
+
+        #brain-hub-icon {
+            font-size: 8rem;
+            color: var(--accent-blue);
+            opacity: 0.4;
+            z-index: 1;
+            animation: pulse-hub 6s infinite ease-in-out;
+        }
+
+        @keyframes pulse-hub {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.6;
+            }
+        }
+
+        #brain-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            z-index: 2;
+        }
+
+        #routine-path-line {
+            fill: none;
+            stroke: var(--accent-yellow);
+            stroke-width: 5px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+
+        /* New Bottom Display Bar CSS */
+        #routine-display-bar {
+            background-color: var(--bg-dark);
+            border: 1px solid #3c4043;
+            border-radius: 16px;
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            min-height: 70px;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .routine-status-box {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #6c7177;
+            /* Dimmed text color */
+            transition: all 0.4s ease;
+        }
+
+        .routine-status-box:first-of-type {
+            border-right: 1px solid #3c4043;
+        }
+
+        /* Active state for the status boxes */
+        .routine-status-box.active {
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        #routine-if-box.active {
+            color: var(--accent-red);
+        }
+
+        #routine-then-box.active {
+            color: var(--accent-green);
+        }
+
+        #routine-reset {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            /* Ensure it's above the status boxes */
+        }
+
+        #routine-reset.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #routine-reset:hover {
+            color: var(--text-primary);
+            transform: translateY(-50%) rotate(180deg) scale(1.1);
+        }
+
+        /* Final CTA */
+        .cta-button {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-green));
+            color: var(--bg-dark);
+            font-weight: bold;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(138, 180, 248, 0.3);
+        }
+
+        #dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        #dashboard-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #dashboard-controls .material-icons {
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        #dashboard-controls .material-icons:hover {
+            color: var(--text-primary);
+            transform: scale(1.1);
+        }
+
+        #dashboard-iframe-wrapper {
+            width: 100%;
+            height: 75vh;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 0 2px var(--bg-surface);
+        }
+
+        #dashboard-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #fff;
+            transition: transform 0.3s ease;
+            /* filter: invert(1) hue-rotate(180deg); */
+        }
+    </style>
 </head>
 
-<body class="bg-custom-bg text-primary font-product">
+<body>
+    <div class="main-container">
+        <div id="slide-nav">
+            <i class="material-icons nav-arrow" id="nav-up">keyboard_arrow_up</i>
+            <div id="nav-dots"></div>
+            <i class="material-icons nav-arrow" id="nav-down">keyboard_arrow_down</i>
+        </div>
 
-  <nav class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-custom-border">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="flex items-center justify-center h-16">
-        <div class="flex items-center space-x-4">
-          <a href="#" data-page="home"
-            class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Home</a>
-          <div class="relative" id="dropdown-container">
-            <button id="nav-missions-btn" type="button"
-              class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-colors focus:outline-none">
-              <span>Mission Briefings</span>
-              <svg class="ml-2 h-4 w-4 transition-transform duration-200" id="dropdown-arrow"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clip-rule="evenodd" />
-              </svg>
-            </button>
-            <div id="dropdown-menu"
-              class="hidden absolute mt-2 w-64 bg-surface border border-custom-border rounded-xl shadow-lg py-1">
-              <a href="#" class="dropdown-item" data-page="project1">1: Smart Greenhouse</a>
-              <a href="#" class="dropdown-item" data-page="project2">2: Keypad Security Vault</a>
-              <a href="#" class="dropdown-item" data-page="project3">3: Avionic Control System</a>
-              <a href="#" class="dropdown-item" data-page="project4">4: Remote Controlled AC</a>
+        <!-- SLIDE 1: TITLE -->
+        <section id="slide-1" class="slide">
+            <div id="particles-js"></div>
+            <div class="slide-content">
+                <div id="logo-container" class="reveal">
+                    <img id="mcmaster-logo" src="Assets/McMaster Logo White.png"
+                        alt="McMaster W Booth School of Engineering Practice and Technology Logo">
+                </div>
+                <h1 class="reveal delay-1">Welcome, Future Engineers!</h1>
+                <h2 class="reveal delay-2 subtitle">Let's build something amazing together.</h2>
             </div>
-          </div>
+        </section>
+
+        <!-- SLIDE 2: THE "WHY" -->
+        <section id="slide-2" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">What if everyday objects could <span class="highlight">think and talk?</span></h1>
+                <h2 class="reveal delay-1">This is the core idea of the <strong>Internet of Things (IoT)</strong>. It's
+                    about giving a digital 'voice' to everything around us so they can communicate.
+                </h2>
+                <div id="iot-diagram" class="reveal delay-2">
+                    <div id="iot-brain" class="iot-node"><i class="material-icons">psychology</i></div>
+                    <div class="iot-node iot-satellite"
+                        style="top: 50%; left: -25%; color: #fbbc05; animation-delay: 0.2s;">
+                        <i class="material-icons">lightbulb</i>
+                    </div>
+                    <div class="iot-node iot-satellite"
+                        style="top: 50%; left: 10%; color: #ea4335; animation-delay: 0.4s;">
+                        <i class="material-icons">thermostat</i>
+                    </div>
+                    <div class="iot-node iot-satellite"
+                        style="top: 50%; left: 90%; color: #34a853; animation-delay: 0.6s;">
+                        <i class="material-icons">lock</i>
+                    </div>
+                    <div class="iot-node iot-satellite"
+                        style="top: 50%; left: 125%; color: #e8eaed; animation-delay: 0.8s;">
+                        <i class="material-icons">smartphone</i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: ANATOMY OF A MESSAGE -->
+        <section id="slide-3" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">The Anatomy of a Message</h1>
+                <h2 class="reveal delay-1">Every message sent in our system has two simple parts: a <span
+                        class="highlight">Topic</span> and a <span class="highlight">Payload</span>. Tap to learn more.
+                </h2>
+                <div class="message-anatomy-container reveal delay-2">
+                    <div class="message-part topic" onclick="showExplanation('topic')">
+                        <div class="label">Topic</div>
+                        <div class="value">"classroom/lights"</div>
+                    </div>
+                    <div class="message-part payload" onclick="showExplanation('payload')">
+                        <div class="label">Payload</div>
+                        <div class="value">"ON"</div>
+                    </div>
+                </div>
+                <div id="message-explanation" class="reveal delay-3">
+                    <p>Select a part to see its description.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: CODE TO CLOUD -->
+        <section id="slide-4" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">From Code to Cloud</h1>
+                <h2 class="reveal delay-1">Let's visualize the entire journey of a single piece of data, from your
+                    device to the dashboard.</h2>
+                <div id="code-to-cloud-diagram" class="reveal delay-2">
+                    <div class="arch-node">
+                        <i class="material-icons" style="color:var(--accent-blue)">code</i>
+                        <span>Your Code</span>
+                    </div>
+                    <div class="arch-node">
+                        <i class="material-icons" style="color:var(--accent-blue)">memory</i>
+                        <span>ESP8266</span>
+                    </div>
+                    <div class="arch-node">
+                        <i class="material-icons" style="color:var(--accent-yellow)">wifi</i>
+                        <span>Network</span>
+                    </div>
+                    <div class="arch-node">
+                        <i class="material-icons" style="color:var(--accent-red)">hub</i>
+                        <span>MQTT Hub</span>
+                    </div>
+                    <div class="arch-node">
+                        <i class="material-icons" style="color:var(--accent-green)">dashboard</i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="line-container">
+                        <svg>
+                            <path id="arch-path" d="M 0 2 H 800" stroke="#444" stroke-width="4" stroke-dasharray="10"
+                                fill="none" />
+                        </svg>
+                        <div class="data-packet"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: NETWORK ARCHITECTURES -->
+        <section id="slide-5" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">How do devices talk?</h1>
+                <h2 class="reveal delay-1">For IoT, we need a special way for devices to communicate that is fast and
+                    efficient.</h2>
+                <div class="comparison-grid">
+                    <div class="grid-card reveal delay-2">
+                        <h3><i class="material-icons">person</i>Client-Server Model</h3>
+                        <p>A client makes a direct request to a server. The server sends a direct response back to that
+                            one client.</p>
+                        <p class="analogy">Analogy: Ordering from a catalog. You know exactly who to ask, and they send
+                            the item directly back to you.</p>
+                    </div>
+                    <div class="grid-card reveal delay-3">
+                        <h3><i class="material-icons">forum</i>Publish/Subscribe Model</h3>
+                        <p>Devices "publish" messages to a central hub, not knowing who will receive them. Other devices
+                            "subscribe" to topics they care about.</p>
+                        <p class="analogy">Analogy: A smart post office. You drop mail in a mailbox (topic), and the
+                            post office (hub) delivers it to everyone who subscribed to that address.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: MQTT DEEP DIVE (FIXED) -->
+        <section id="slide-6" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Our Language: <span class="highlight">MQTT</span></h1>
+                <h2 class="reveal delay-1">We'll use Publish/Subscribe with MQTT. It's fast, lightweight, and perfect
+                    for our project. <br><strong>Tap the devices to see how they communicate!</strong></h2>
+                <div id="mqtt-container" class="reveal delay-2">
+                    <div id="mqtt-diagram">
+                        <svg>
+                            <path id="sensor-to-broker" class="anim-path"></path>
+                            <path id="broker-to-light" class="anim-path"></path>
+                            <path id="broker-to-dash" class="anim-path"></path>
+                            <path id="dash-to-broker" class="anim-path"></path>
+                        </svg>
+                        <div id="mqtt-sensor" class="mqtt-element"
+                            onclick="publishFrom(this, 'thermostat', 'sensor-to-broker')">
+                            <i class="material-icons" style="color: var(--accent-red);">thermostat</i>
+                            <span>Temp Sensor</span>
+                        </div>
+                        <div id="mqtt-broker" class="mqtt-element">
+                            <i class="material-icons" style="font-size: 6rem;">hub</i>
+                            <span>MQTT Hub</span>
+                        </div>
+                        <div id="mqtt-actuator" class="mqtt-element" onclick="toggleSubscription(this)">
+                            <i class="material-icons" style="color: var(--text-primary);">lightbulb</i>
+                            <span>Smart Light</span>
+                        </div>
+                        <div id="mqtt-dashboard" class="mqtt-element subscribed"
+                            onclick="publishFrom(this, 'lightbulb', 'dash-to-broker')">
+                            <i class="material-icons">smartphone</i>
+                            <span>Dashboard</span>
+                            <div class="dashboard-display">21.5°C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: REAL WORLD IOT -->
+        <section id="slide-7" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">IoT is Everywhere</h1>
+                <h2 class="reveal delay-1">The concepts you're learning today power technology all around the world. Tap
+                    the cards to see how.</h2>
+                <div class="real-world-grid reveal delay-2">
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="material-icons" style="color:var(--accent-green)">home</i>
+                                <h3>Smart Home</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>Smart Home</h3>
+                                <p>Devices like thermostats, lights, and locks talk to each other to automate your home
+                                    and save energy.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="material-icons" style="color:var(--accent-blue)">location_city</i>
+                                <h3>Smart Cities</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>Smart Cities</h3>
+                                <p>Sensors monitor traffic, manage streetlights, and check air quality to make cities
+                                    safer and more efficient.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="material-icons" style="color:var(--accent-red)">agriculture</i>
+                                <h3>Smart Agriculture</h3>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>Smart Agriculture</h3>
+                                <p>Soil sensors and automated irrigation systems help farmers grow more food while using
+                                    less water.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: YOUR MISSION -->
+        <section id="slide-8" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Your Mission: <span class="highlight">Build a Living Classroom</span></h1>
+                <h2 class="reveal delay-1">You are a team of specialists. Your goal is to bring a smart classroom to
+                    life. Each team has a critical system to build. When you're done, all your individual parts will
+                    work together as one intelligent system.</h2>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: TOOLKIT -->
+        <section id="slide-9" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Your Toolkit & Template</h1>
+                <h2 class="reveal delay-1">You have your brain (the ESP8266) and your language (the Arduino IDE). We've
+                    handled the complex networking, so you only need to focus on three core functions. Click each
+                    function to learn more!</h2>
+                <div class="toolkit-container reveal delay-2">
+                    <div class="toolkit-item">
+                        <i class="material-icons">memory</i>
+                        <h3>The Brain: ESP8266</h3>
+                    </div>
+                    <div class="code-explanation-container">
+                        <div class="code-view">
+                            <pre id="code-setup" onclick="highlightCode(this)"><code><span class="sh-comment">// Runs ONCE</span>
+<span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>(){
+  <span class="sh-comment">//...setup hardware...</span>
+}</code></pre>
+                            <pre id="code-read" onclick="highlightCode(this)"><code><span class="sh-comment">// Runs REPEATEDLY</span>
+<span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>(){
+  <span class="sh-comment">//...read & publish...</span>
+}</code></pre>
+                            <pre id="code-trigger" onclick="highlightCode(this)"><code><span class="sh-comment">// Runs ON COMMAND</span>
+<span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(){
+  <span class="sh-comment">//...react & control...</span>
+}</code></pre>
+                        </div>
+                        <div id="code-explanation-box">
+                            <h4 id="explanation-title"></h4>
+                            <p id="explanation-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: CORE COMPONENTS -->
+        <section id="slide-10" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Your Core Components</h1>
+                <h2 class="reveal delay-1">These are the building blocks you'll use to bring your station to life.</h2>
+                <div class="component-grid reveal delay-2">
+                    <div class="component-card">
+                        <i class="material-icons" style="color: var(--accent-blue);">memory</i>
+                        <h4>ESP8266</h4>
+                        <p>The Wi-Fi enabled microcontroller that acts as the brain for your device.</p>
+                    </div>
+                    <div class="component-card">
+                        <i class="material-icons" style="color: var(--accent-red);">sensors</i>
+                        <h4>Sensors</h4>
+                        <p>The 'senses' of your device. They read data from the environment (e.g., temperature, motion).
+                        </p>
+                    </div>
+                    <div class="component-card">
+                        <i class="material-icons" style="color: var(--accent-green);">toggle_on</i>
+                        <h4>Actuators</h4>
+                        <p>The 'muscles' of your device. They perform actions (e.g., turn on a light, move a motor).</p>
+                    </div>
+                    <div class="component-card">
+                        <i class="material-icons" style="color: var(--accent-yellow);">cable</i>
+                        <h4>I2C Modules</h4>
+                        <p>Pre-programmed controllers that handle complex tasks, managed by your ESP8266.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: NEW - YOUR FIRST STEPS -->
+        <section id="slide-11" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Your First Steps</h1>
+                <h2 class="reveal delay-1">Let's get your workstation ready for action.</h2>
+                <div class="steps-grid reveal delay-2">
+                    <div class="step-card">
+                        <i class="material-icons">build_circle</i>
+                        <h3>1. Check Your Kit</h3>
+                        <p>Make sure you have your ESP8266, USB cable, and all the specific hardware for your assigned
+                            station.</p>
+                    </div>
+                    <div class="step-card">
+                        <i class="material-icons">folder_open</i>
+                        <h3>2. Open the Template</h3>
+                        <p>In the Arduino IDE, go to
+                            <br><code>File > Examples </code><br><code> > SmartDevice </code><br><code> > UniversalDeviceTemplate</code>
+                        </p>
+                    </div>
+                    <div class="step-card">
+                        <i class="material-icons">edit_note</i>
+                        <h3>3. Find Your Sections</h3>
+                        <p>Scroll through the code. Your job is to fill in the 5 numbered sections. Don't touch the
+                            <code>System Engine</code>!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: MISSIONS (CENTERED) -->
+        <section id="slide-12" class="slide">
+            <div id="mission-grid-container" class="slide-content reveal">
+                <h1>One Team, Six Missions</h1>
+                <div id="mission-grid">
+                    <div class="mission-card" data-mission="1">
+                        <i class="material-icons">ac_unit</i>
+                        <span>HVAC & Appliances</span>
+                    </div>
+                    <div class="mission-card" data-mission="2">
+                        <i class="material-icons">thermostat</i>
+                        <span>Environmental Sensors</span>
+                    </div>
+                    <div class="mission-card" data-mission="3">
+                        <i class="material-icons">lightbulb</i>
+                        <span>Lighting & Indicators</span>
+                    </div>
+                    <div class="mission-card" data-mission="4">
+                        <i class="material-icons">lock</i>
+                        <span>Door Security</span>
+                    </div>
+                    <div class="mission-card" data-mission="5">
+                        <i class="material-icons">blinds_closed</i>
+                        <span>Automated Curtain</span>
+                    </div>
+                    <div class="mission-card" data-mission="6">
+                        <i class="material-icons">tune</i>
+                        <span>Master Control Panel</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 13: DIGITAL BRAIN -->
+        <section id="slide-13" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Routines: The Digital Brain</h1>
+                <h2 class="reveal delay-1">Smart devices follow simple rules: <span class="highlight">IF</span> a
+                    trigger happens, <span class="highlight">THEN</span> perform an action. <br>Build a routine by
+                    picking a trigger, then an action.</h2>
+
+                <div id="brain-container" class="reveal delay-2">
+                    <div id="routine-builder-grid">
+                        <div class="builder-column" id="trigger-column">
+                            <div class="brain-node trigger" onclick="selectBrainNode(this, 'trigger')">
+                                <i class="material-icons">directions_walk</i>
+                                <span class="brain-node-text">Motion is Detected</span>
+                            </div>
+                            <div class="brain-node trigger" onclick="selectBrainNode(this, 'trigger')">
+                                <i class="material-icons">schedule</i>
+                                <span class="brain-node-text">It's 7:00 PM</span>
+                            </div>
+                            <div class="brain-node trigger" onclick="selectBrainNode(this, 'trigger')">
+                                <i class="material-icons">thermostat</i>
+                                <span class="brain-node-text">Temp > 24°C</span>
+                            </div>
+                        </div>
+
+                        <div id="brain-hub">
+                            <svg id="brain-svg">
+                                <defs>
+                                    <filter id="routine-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur" />
+                                            <feMergeNode in="SourceGraphic" />
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <path id="routine-path-line" filter="url(#routine-glow)" />
+                            </svg>
+                            <i id="brain-hub-icon" class="material-icons">hub</i>
+                        </div>
+
+                        <div class="builder-column" id="action-column">
+                            <div class="brain-node action" onclick="selectBrainNode(this, 'action')">
+                                <i class="material-icons">lightbulb</i>
+                                <span class="brain-node-text">Turn on Lights</span>
+                            </div>
+                            <div class="brain-node action" onclick="selectBrainNode(this, 'action')">
+                                <i class="material-icons">lock</i>
+                                <span class="brain-node-text">Lock the Door</span>
+                            </div>
+                            <div class="brain-node action" onclick="selectBrainNode(this, 'action')">
+                                <i class="material-icons">wind_power</i>
+                                <span class="brain-node-text">Activate Fan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="routine-display-bar">
+                        <div id="routine-if-box" class="routine-status-box">
+                            <span>IF...</span>
+                        </div>
+                        <div id="routine-then-box" class="routine-status-box">
+                            <span>THEN...</span>
+                        </div>
+                        <i id="routine-reset" class="material-icons" onclick="resetBrainRoutine()">refresh</i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 14: FINAL -->
+        <section id="slide-14" class="slide">
+            <div class="slide-content">
+                <h1 class="reveal">Ready to Build the Future?</h1>
+                <h2 class="reveal delay-1" style="color: var(--accent-green);">Let's get started!</h2>
+                <a href="#slide-15" id="dashboard-cta" class="cta-button reveal delay-2">Go to Dashboard</a>
+            </div>
+        </section>
+
+        <!-- SLIDE 15: DASHBOARD -->
+        <section id="slide-15" class="slide">
+            <div id="dashboard-container" class="slide-content">
+                <h1 class="reveal">Live Classroom Dashboard</h1>
+                <div id="dashboard-iframe-wrapper" class="reveal delay-2">
+                    <iframe id="dashboard-iframe"
+                        src="https://app.arduino.cc/dashboards/1a8b5e9a-4e44-4828-8583-8557347a550a"
+                        frameborder="0"></iframe>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Mission Modal Structure -->
+    <div id="mission-modal-overlay">
+        <div id="mission-modal">
+            <i id="mission-modal-close" class="material-icons">close</i>
+            <img id="mission-modal-img" src="" alt="Mission Diagram">
+            <div id="mission-modal-text">
+                <h3 id="mission-modal-title"></h3>
+                <p id="mission-modal-desc"></p>
+                <p><strong>Hardware:</strong> <span id="mission-modal-hardware"></span></p>
+            </div>
         </div>
-      </div>
-    </div>
-  </nav>
-
-  <main class="max-w-4xl mx-auto p-4 md:p-8">
-    <!-- HOME PAGE -->
-    <div id="home" class="page">
-      <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">McMaster Tinkercad Challenge</h1>
-      <p class="text-center text-secondary text-lg mb-8">Welcome, Innovators! Your challenge is to build a cool, smart
-        device using a virtual electronics lab. You will use Tinkercad Circuits to build and code your project from
-        scratch.</p>
-      <hr />
-
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">How to Wire Your Components: A
-        Maker's Guide</h2>
-      <p class="text-secondary">In these projects, you won't be given a wiring diagram to copy. Instead, you will become
-        a digital detective! Your mission is to figure out how to connect the components yourself using the clues
-        available in Tinkercad. This is how real engineering works!</p>
-
-      <div class="highlight-box highlight-box-orange mt-6">
-        <h3 class="font-bold text-primary mt-0"><span class="material-icons text-custom-orange">lightbulb</span>The Big
-          Three: Power, Ground, and Signal</h3>
-        <p>Almost every component has three types of pins you need to know:</p>
-        <ul class="list-disc list-inside mt-4 space-y-2">
-          <li><strong>Power (VCC, 5V, 3.3V):</strong> This is the "food" for your component. It connects to the 5V or 3V
-            pin on your Arduino or Micro:bit.</li>
-          <li><strong>Ground (GND):</strong> This completes the electrical circuit. It ALWAYS connects to a GND pin on
-            your controller. All components in a circuit must share the same ground!</li>
-          <li><strong>Signal (S, SIG, IO, or a specific name):</strong> This is the "brain" connection. It's how the
-            Arduino sends or receives data from the component. This pin connects to one of the numbered I/O
-            (Input/Output) pins.</li>
-        </ul>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-6 mt-6">
-        <div class="highlight-box highlight-box-blue">
-          <h3 class="font-bold text-primary mt-0"><span class="material-icons text-accent">mouse</span>Reading the Pins
-            in Tinkercad</h3>
-          <p>Your best tool is your mouse! When you are in the Tinkercad editor, just <strong>hover your mouse over any
-              pin</strong> on a component. A label will pop up telling you exactly what that pin is (e.g., "Ground",
-            "Power", "Signal", "SDA").</p>
-        </div>
-        <div class="highlight-box highlight-box-green">
-          <h3 class="font-bold text-primary mt-0"><span class="material-icons text-custom-green">difference</span>Analog
-            vs. Digital Pins</h3>
-          <p>On the Arduino, you'll see "Digital" pins (like 2, 3, 4...) and "Analog In" pins (A0, A1, A2...).</p>
-          <ul class="list-disc list-inside mt-2">
-            <li><strong>Digital pins</strong> are for simple on/off signals (like a button or a standard LED).</li>
-            <li><strong>Analog pins</strong> are for reading sensors that give a range of values (like a temperature or
-              light sensor).</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="highlight-box highlight-box-red mt-6">
-        <h3 class="font-bold text-primary mt-0"><span class="material-icons text-custom-red">hub</span>Special Case: I2C
-          Communication</h3>
-        <p>Some advanced components, like the <strong>I2C LCD screen</strong>, use a special two-wire communication
-          protocol. Instead of many wires, they only need four:</p>
-        <ul class="list-disc list-inside mt-2">
-          <li><strong>GND</strong> and <strong>VCC</strong> for power.</li>
-          <li><strong>SDA (Data):</strong> This connects to the Arduino's dedicated SDA pin (A4).</li>
-          <li><strong>SCL (Clock):</strong> This connects to the Arduino's dedicated SCL pin (A5).</li>
-        </ul>
-        <p class="mt-2">This makes wiring much cleaner. Just match the pins: SDA to SDA, SCL to SCL!</p>
-      </div>
     </div>
 
-    <!-- PROJECT 1: SMART GREENHOUSE -->
-    <div id="project1" class="page">
-      <h2>Project 1: The Automated Smart Greenhouse</h2>
-      <h3><span class="material-icons text-custom-green">eco</span>Your Mission: Digital Farmer</h3>
-      <p>Create a fully automated greenhouse that provides the perfect environment for plants to grow. It will monitor
-        temperature, soil moisture, and ambient light, displaying all the data on an I2C LCD screen. It will
-        automatically water the plants when the soil is dry and turn on a special "grow light" when it's too dark.</p>
 
-      <h3 class="font-bold text-accent mt-6 mb-3"><span class="material-icons text-accent">public</span>Real-World
-        Application:</h3>
-      <p>This technology is used in "vertical farms" and advanced agricultural centers to grow food efficiently with
-        less water, year-round, even in cities. You're building a miniature version of a high-tech farm!</p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // --- SLIDE 13: GLOBAL VARIABLES & FUNCTIONS ---
+        // These are defined globally so the HTML onclick attributes can find them.
+        const brainRoutineState = {
+            trigger: null,
+            action: null,
+            isAnimating: false
+        };
+        let brainNodes = {}; // This will be populated once the DOM is loaded.
 
-      <div class="highlight-box highlight-box-blue mt-6">
-        <h3 class="font-bold text-primary mt-0"><span class="material-icons text-accent">build</span>Tinkercad
-          Components</h3>
-        <ul class="list-disc list-inside">
-          <li>1x Arduino Uno</li>
-          <li>1x LCD 16x2 I2C Display</li>
-          <li>1x Temperature Sensor (TMP36)</li>
-          <li>1x Soil Moisture Sensor</li>
-          <li>1x Photoresistor (for light sensing)</li>
-          <li>1x NeoPixel Ring (12 LEDs)</li>
-          <li>1x DC Motor (to act as a water pump)</li>
-          <li>1x 10k Ohm Resistor</li>
-        </ul>
-      </div>
+        window.selectBrainNode = function (el, type) {
+            if (brainRoutineState.isAnimating) return;
+            if (type === 'trigger' && brainRoutineState.trigger) return;
+            if (type === 'action' && !brainRoutineState.trigger) return;
 
-      <div class="highlight-box highlight-box-orange mt-6">
-        <h3 class="font-bold text-primary mt-0"><span
-            class="material-icons text-custom-orange">electrical_services</span>Wiring Guide</h3>
-        <p>Use your detective skills! Find the Power, Ground, and Signal pins for each component and connect them to the
-          correct places on the Arduino.</p>
-        <ol class="list-decimal list-inside">
-          <li><strong>I2C LCD Display:</strong> This is a special component. Connect its GND and VCC pins to power.
-            Connect the <code>SDA</code> pin to Arduino pin <code>A4</code> and the <code>SCL</code> pin to Arduino pin
-            <code>A5</code>.</li>
-          <li><strong>Sensors:</strong> Connect the Temperature, Moisture, and Photoresistor sensors to three different
-            Analog In pins (<code>A0</code>, <code>A1</code>, <code>A2</code>). Remember to give them power and ground!
-          </li>
-          <li><strong>NeoPixel Ring:</strong> This needs a Digital pin. Connect its 'IN' pin to pin <code>6</code>.</li>
-          <li><strong>DC Motor "Pump":</strong> Connect to Digital pin <code>9</code> and a GND pin.</li>
-        </ol>
-      </div>
+            el.classList.add('selected');
+            const nodeText = el.querySelector('.brain-node-text').textContent;
 
-      <h3 class="font-bold text-custom-green mt-8 mb-3"><span
-          class="material-icons text-custom-green">psychology</span>Codeblocks Logic</h3>
-      <p>Your code will continuously check the environment and react to keep the plants happy.</p>
-      <div class="code-logic-box">
-        <h4>On Start</h4>
-        <ul>
-          <li>Initialize the I2C LCD (make sure to set its address, usually <code>0x27</code>).</li>
-          <li>Initialize the NeoPixel Ring.</li>
-          <li>Show a "Greenhouse Ready!" message on the LCD.</li>
-        </ul>
-        <h4>Forever Loop</h4>
-        <ul>
-          <li><strong>Read All Sensors & Update Display:</strong> Read values from the three sensors and print them
-            neatly on the LCD.</li>
-          <li><strong>Watering Logic:</strong> If the moisture level is too low, turn on the DC motor on pin 9 for 2
-            seconds, then turn it off.</li>
-          <li><strong>Grow Light Logic:</strong> If the light level is too low, set the NeoPixel ring to a purple color.
-            Otherwise, turn the NeoPixels off.</li>
-          <li>Wait for 1 second before the loop repeats to keep the LCD readable.</li>
-        </ul>
-      </div>
-    </div>
+            if (type === 'trigger') {
+                brainRoutineState.trigger = { el: el, text: nodeText };
+                brainNodes.displayIf.classList.add('active');
+                brainNodes.displayIf.querySelector('span').textContent = `IF: ${nodeText}`;
+                brainNodes.triggers.forEach(n => { if (n !== el) n.classList.add('disabled'); });
+                brainNodes.actions.forEach(n => n.classList.remove('disabled'));
+            } else {
+                brainRoutineState.action = { el: el, text: nodeText };
+                brainNodes.displayThen.classList.add('active');
+                brainNodes.displayThen.querySelector('span').textContent = `THEN: ${nodeText}`;
+                brainNodes.actions.forEach(n => { if (n !== el) n.classList.add('disabled'); });
+                createRoutinePath();
+            }
+        };
 
-    <!-- PROJECT 2: KEYPAD SECURITY VAULT -->
-    <div id="project2" class="page">
-      <h2>Project 2: The Keypad Security Vault</h2>
-      <h3><span class="material-icons text-custom-red">security</span>Your Mission: Virtual Security Expert</h3>
-      <p>Go beyond a simple alarm and build a sophisticated security vault. This system is armed and disarmed using a
-        secret passcode on a 4x4 keypad. When armed, a servo motor locks the vault door. If a PIR sensor detects an
-        intruder, a loud alarm will sound and a light will flash, but only the correct passcode can silence it!</p>
+        window.resetBrainRoutine = function () {
+            if (brainRoutineState.isAnimating) return;
 
-      <h3 class="font-bold text-accent mt-6 mb-3"><span class="material-icons text-accent">public</span>Real-World
-        Application:</h3>
-      <p>This is how real-world safes, secure rooms, and alarm systems work. They require a specific code for access
-        (authentication) and have sensors to detect unauthorized entry. You're learning the fundamentals of electronic
-        security.</p>
+            brainRoutineState.trigger = null;
+            brainRoutineState.action = null;
 
-      <div class="highlight-box highlight-box-blue mt-6">
-        <h3 class="font-bold text-primary mt-0"><span class="material-icons text-accent">build</span>Tinkercad
-          Components</h3>
-        <ul class="list-disc list-inside">
-          <li>1x Arduino Uno</li>
-          <li>1x 4x4 Matrix Keypad</li>
-          <li>1x PIR Motion Sensor</li>
-          <li>1x Servo Motor</li>
-          <li>1x RGB LED</li>
-          <li>1x Piezo Buzzer</li>
-        </ul>
-      </div>
+            brainNodes.triggers.forEach(n => n.classList.remove('selected', 'disabled'));
+            brainNodes.actions.forEach(n => n.classList.remove('selected', 'disabled'));
+            brainNodes.actions.forEach(n => n.classList.add('disabled'));
 
-      <div class="highlight-box highlight-box-orange mt-6">
-        <h3 class="font-bold text-primary mt-0"><span
-            class="material-icons text-custom-orange">electrical_services</span>Wiring Guide</h3>
-        <p>The keypad is the trickiest part of this circuit. The rest use the standard Power, Ground, and Signal
-          connections.</p>
-        <ol class="list-decimal list-inside">
-          <li><strong>Keypad:</strong> This component has 8 signal pins. Connect them in order to a block of 8 digital
-            pins on the Arduino (e.g., pins <code>9</code> down to <code>2</code>).</li>
-          <li><strong>PIR Sensor:</strong> Connect its signal pin to an Analog pin like <code>A0</code>.</li>
-          <li><strong>Servo "Lock":</strong> Connect its signal wire to a Digital PWM pin (marked with a '~'), like pin
-            <code>10</code>.</li>
-          <li><strong>RGB LED & Buzzer:</strong> Connect each of their signal pins to different digital pins.</li>
-        </ol>
-      </div>
+            brainNodes.displayIf.classList.remove('active');
+            brainNodes.displayIf.querySelector('span').textContent = 'IF...';
+            brainNodes.displayThen.classList.remove('active');
+            brainNodes.displayThen.querySelector('span').textContent = 'THEN...';
+            brainNodes.resetBtn.classList.remove('visible');
 
-      <h3 class="font-bold text-custom-green mt-8 mb-3"><span
-          class="material-icons text-custom-green">psychology</span>Codeblocks Logic</h3>
-      <p>You'll need variables for your secret code, the code the user enters, and the system's state (e.g.,
-        <code>isArmed</code>).</p>
-      <div class="code-logic-box">
-        <h4>On Start</h4>
-        <ul>
-          <li>Create variables: <code>secretCode</code> (e.g., "1234"), <code>enteredCode</code> (empty), and
-            <code>isArmed</code> (false).</li>
-          <li>Set the RGB LED to green (disarmed) and unlock the servo.</li>
-        </ul>
-        <h4>Forever Loop</h4>
-        <ul>
-          <li><strong>Get Keypress:</strong> Read the keypad. If a number is pressed, add it to
-            <code>enteredCode</code>. If '*' is pressed, check if <code>enteredCode</code> matches
-            <code>secretCode</code>. If it does, toggle the <code>isArmed</code> state. If not, play a fail sound. Clear
-            the <code>enteredCode</code> after checking.</li>
-          <li><strong>System State Logic:</strong>
-            <ul>
-              <li><strong>If</strong> <code>isArmed</code> is <code>true</code>: Lock the servo, set the light to blue,
-                and monitor the PIR sensor. If motion is detected, trigger a loud, flashing alarm that stays on.</li>
-              <li><strong>Else</strong> (if <code>isArmed</code> is <code>false</code>): Unlock the servo, set the light
-                to green, and make sure the alarm is off.</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
+            anime({
+                targets: brainNodes.path,
+                strokeDashoffset: [anime.setDashoffset, anime.setDashoffset],
+                duration: 400,
+                easing: 'easeInOutSine',
+                complete: () => {
+                    brainNodes.path.setAttribute('d', '');
+                }
+            });
+        };
 
-    <!-- PROJECT 3: AVIONIC CONTROL SYSTEM -->
-    <div id="project3" class="page">
-      <h2>Project 3: The Avionic Control System</h2>
-      <h3><span class="material-icons text-blue-400">flight</span>Your Mission: Flight Systems Engineer</h3>
-      <p>Construct the electronic brain of a model airplane! Using the Micro:bit, you will build a flight control system
-        that manages engine throttle, landing gear, navigation lights, and a crucial flight instrument: the artificial
-        horizon. This system will react to your commands and the plane's orientation, just like a real aircraft.</p>
+        // Corrected Path Creation Function
+        function createRoutinePath() {
+            brainRoutineState.isAnimating = true;
 
-      <h3 class="font-bold text-accent mt-6 mb-3"><span class="material-icons text-accent">public</span>Real-World
-        Application:</h3>
-      <p>You are building a "fly-by-wire" system. Modern jets don't have direct cables from the pilot's controls to the
-        wings; they have computers that interpret commands and manage the plane's systems. The artificial horizon you'll
-        create is the most important instrument in a real cockpit for flying in clouds or at night.</p>
+            const svgRect = brainNodes.svg.getBoundingClientRect();
+            const triggerRect = brainRoutineState.trigger.el.getBoundingClientRect();
+            const actionRect = brainRoutineState.action.el.getBoundingClientRect();
+            const hubRect = brainNodes.hub.getBoundingClientRect();
 
-      <div class="highlight-box highlight-box-blue mt-6">
-        <h3 class="font-bold text-primary mt-0"><span class="material-icons text-accent">build</span>Tinkercad
-          Components</h3>
-        <ul class="list-disc list-inside">
-          <li>1x Micro:bit</li>
-          <li>1x DC Motor (for the propeller)</li>
-          <li>1x Servo Motor (for the landing gear)</li>
-          <li>1x Red LED & 1x Green LED (for navigation lights)</li>
-          <li>2x White LEDs (for landing lights)</li>
-          <li>1x Piezo Buzzer (for stall warnings)</li>
-          <li>1x Button (for landing gear control)</li>
-          <li>Resistors for the LEDs (e.g., 220 Ohm)</li>
-        </ul>
-      </div>
+            // Convert all coordinates to be relative to the SVG container's top-left corner
+            const hubCenter = {
+                x: hubRect.left + hubRect.width / 2 - svgRect.left,
+                y: hubRect.top + hubRect.height / 2 - svgRect.top
+            };
+            const startPoint = {
+                x: triggerRect.right - svgRect.left,
+                y: triggerRect.top + triggerRect.height / 2 - svgRect.top
+            };
+            const endPoint = {
+                x: actionRect.left - svgRect.left,
+                y: actionRect.top + actionRect.height / 2 - svgRect.top
+            };
 
-      <div class="highlight-box highlight-box-orange mt-6">
-        <h3 class="font-bold text-primary mt-0"><span
-            class="material-icons text-custom-orange">electrical_services</span>Wiring Guide</h3>
-        <p>The Micro:bit has fewer pins, so choose them wisely! Remember to provide power and ground to all external
-          components.</p>
-        <ol class="list-decimal list-inside">
-          <li><strong>Motors:</strong> Connect the DC Motor (propeller) to pin <code>P0</code> and the Servo Motor
-            (landing gear) to pin <code>P1</code>.</li>
-          <li><strong>Lights:</strong> Connect the Green navigation light to pin <code>P8</code> and the Red one to pin
-            <code>P12</code>. Connect both White landing lights to pin <code>P16</code>.</li>
-          <li><strong>Inputs/Outputs:</strong> Connect the external Button to pin <code>P2</code> and the Piezo Buzzer
-            to pin <code>P14</code>.</li>
-        </ol>
-      </div>
+            // Create a smooth quadratic curve through the hub
+            // M = Move to start
+            // Q = Quadratic bezier curve (control point, end point)
+            const pathData = `M ${startPoint.x} ${startPoint.y} Q ${hubCenter.x} ${hubCenter.y} ${endPoint.x} ${endPoint.y}`;
+            brainNodes.path.setAttribute('d', pathData);
 
-      <h3 class="font-bold text-custom-green mt-8 mb-3"><span
-          class="material-icons text-custom-green">psychology</span>Codeblocks Logic</h3>
-      <p>This system uses a mix of event-driven blocks and a main loop for real-time feedback. You'll need variables for
-        <code>throttle</code> (0-100) and <code>isGearDown</code> (true/false).</p>
-      <div class="code-logic-box">
-        <h4>On Start</h4>
-        <ul>
-          <li>Set <code>throttle</code> to 0. Set <code>isGearDown</code> to <code>true</code>.</li>
-          <li>Turn on the Red and Green navigation lights. Retract the landing gear (servo to 0 degrees).</li>
-        </ul>
-        <h4>Events</h4>
-        <ul>
-          <li><strong>On Button A Pressed:</strong> Decrease <code>throttle</code> by 10 (but not below 0).</li>
-          <li><strong>On Button B Pressed:</strong> Increase <code>throttle</code> by 10 (but not over 100).</li>
-          <li><strong>On External Button (P2) Pressed:</strong> Toggle the <code>isGearDown</code> variable.</li>
-        </ul>
-        <h4>Forever Loop</h4>
-        <ul>
-          <li><strong>Artificial Horizon:</strong> Read the accelerometer's tilt and map it to a single blinking LED on
-            the matrix. Keeping it in the center means you're flying level!</li>
-          <li><strong>Engine Control:</strong> Map the <code>throttle</code> variable to control the propeller speed on
-            pin <code>P0</code>.</li>
-          <li><strong>Stall Warning:</strong> If the accelerometer detects a sharp tilt (e.g., "roll" angle > 45
-            degrees), play a loud warning beep.</li>
-          <li><strong>Landing Gear System:</strong> If <code>isGearDown</code> is true, lower the servo and turn on the
-            landing lights. If false, raise the servo and turn them off.</li>
-        </ul>
-      </div>
-    </div>
+            // Animate the path drawing
+            anime({
+                targets: brainNodes.path,
+                strokeDashoffset: [anime.setDashoffset, 0],
+                duration: 1200,
+                easing: 'easeInOutCubic',
+                complete: () => {
+                    brainRoutineState.isAnimating = false;
+                    brainNodes.resetBtn.classList.add('visible');
+                }
+            });
+        }
 
-    <!-- PROJECT 4: IR REMOTE AC -->
-    <div id="project4" class="page">
-      <h2>Project 4: The IR Remote-Controlled A/C Unit</h2>
-      <h3><span class="material-icons" style="color: #669df6;">air</span>Your Mission: Comfort Engineer</h3>
-      <p>Build a fully functional model of an air conditioning unit. Using a standard IR remote, you will be able to
-        turn the unit on/off, change its mode (Cool or Fan), adjust the target temperature, and make the air vent swing
-        back and forth. All the current settings will be displayed on an I2C LCD screen.</p>
+        // --- MAIN SCRIPT INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainContainer = document.querySelector('.main-container');
+            const slides = document.querySelectorAll('.slide');
+            const navDotsContainer = document.getElementById('nav-dots');
+            let currentSlide = 0;
 
-      <h3 class="font-bold text-accent mt-6 mb-3"><span class="material-icons text-accent">public</span>Real-World
-        Application:</h3>
-      <p>Every remote-controlled device you've ever used, from your TV to a garage door opener, works on these
-        principles. You are learning how devices receive wireless commands and change their behavior, a key concept in
-        all of consumer electronics.</p>
+            // --- Particle JS ---
+            if (document.getElementById('particles-js')) {
+                particlesJS('particles-js', { particles: { number: { value: 60, density: { enable: true, value_area: 800 } }, color: { value: "#8ab4f8" }, shape: { type: "circle" }, opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } }, size: { value: 3, random: true }, line_linked: { enable: true, distance: 150, color: "#8ab4f8", opacity: 0.3, width: 1 }, move: { enable: true, speed: 1, direction: "none", random: false, straight: false, out_mode: "out" } }, interactivity: { detect_on: "canvas", events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: false }, resize: true }, modes: { grab: { distance: 140, line_linked: { opacity: 0.8 } } } }, retina_detect: true });
+            }
 
-      <div class="highlight-box highlight-box-blue mt-6">
-        <h3 class="font-bold text-primary mt-0"><span class="material-icons text-accent">build</span>Tinkercad
-          Components</h3>
-        <ul class="list-disc list-inside">
-          <li>1x Arduino Uno</li>
-          <li>1x IR Remote and IR Receiver</li>
-          <li>1x LCD 16x2 I2C Display</li>
-          <li>1x Temperature Sensor (TMP36)</li>
-          <li>1x DC Motor (for the fan)</li>
-          <li>1x Servo Motor (for the swinging vent)</li>
-        </ul>
-      </div>
+            // --- Slide Navigation ---
+            const updateNav = () => {
+                const scrollPosition = mainContainer.scrollTop;
+                const newSlideIndex = Math.round(scrollPosition / window.innerHeight);
 
-      <div class="highlight-box highlight-box-orange mt-6">
-        <h3 class="font-bold text-primary mt-0"><span
-            class="material-icons text-custom-orange">electrical_services</span>Wiring Guide</h3>
-        <p>Use your wiring knowledge to connect all the parts. Remember the special connections for the I2C LCD!</p>
-        <ol class="list-decimal list-inside">
-          <li><strong>I2C LCD Display:</strong> Connect GND/VCC to power, <code>SDA</code> to pin <code>A4</code>, and
-            <code>SCL</code> to pin <code>A5</code>.</li>
-          <li><strong>IR Receiver:</strong> Connect its signal pin to a digital pin, for example, pin <code>11</code>.
-          </li>
-          <li><strong>Temperature Sensor:</strong> Connect its signal to an analog pin, like <code>A0</code>.</li>
-          <li><strong>Motors:</strong> Connect the DC Motor fan to pin <code>9</code> and the Servo vent to pin
-            <code>10</code>.</li>
-        </ol>
-      </div>
+                if (currentSlide !== newSlideIndex) {
+                    currentSlide = newSlideIndex;
+                    document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                        dot.classList.toggle('active', index === currentSlide);
+                    });
+                }
+            };
 
-      <h3 class="font-bold text-custom-green mt-8 mb-3"><span
-          class="material-icons text-custom-green">psychology</span>Codeblocks Logic</h3>
-      <p>This complex project needs several variables: <code>isACOn</code>, <code>targetTemp</code>, <code>mode</code>
-        (1 for Cool, 2 for Fan), and <code>isSwinging</code>.</p>
-      <div class="code-logic-box">
-        <h4>On Start</h4>
-        <ul>
-          <li>Initialize the I2C LCD and set all variables to their default off-state (e.g.,
-            <code>isACOn = false</code>, <code>targetTemp = 22</code>).</li>
-        </ul>
-        <h4>Forever Loop</h4>
-        <ul>
-          <li><strong>Check Remote:</strong> Check if an IR signal is received. Use a big "if/else if" block to check
-            which button was pressed (Power, Temp+, Temp-, Mode, etc.) and change the corresponding variable.</li>
-          <li><strong>A/C Logic:</strong> Check if <code>isACOn</code> is <code>true</code>.
-            <ul>
-              <li>If it is, read the current temperature and update the LCD with all the info (Mode, Target Temp, Room
-                Temp).</li>
-              <li>Control the fan motor based on the mode and whether the room temp is above the target temp.</li>
-              <li>Control the servo vent based on the <code>isSwinging</code> variable.</li>
-            </ul>
-          </li>
-          <li><strong>If <code>isACOn</code> is <code>false</code>:</strong> Turn off all motors and clear the LCD or
-            show an "OFF" message.</li>
-        </ul>
-      </div>
-    </div>
+            slides.forEach((slide, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('nav-dot');
+                dot.addEventListener('click', () => {
+                    mainContainer.scrollTo({ top: index * window.innerHeight, behavior: 'smooth' });
+                });
+                navDotsContainer.appendChild(dot);
+            });
 
-  </main>
+            document.getElementById('nav-up').addEventListener('click', () => mainContainer.scrollTo({ top: Math.max(0, currentSlide - 1) * window.innerHeight, behavior: 'smooth' }));
+            document.getElementById('nav-down').addEventListener('click', () => mainContainer.scrollTo({ top: Math.min(slides.length - 1, currentSlide + 1) * window.innerHeight, behavior: 'smooth' }));
+            document.getElementById('dashboard-cta').addEventListener('click', (e) => {
+                e.preventDefault();
+                mainContainer.scrollTo({ top: (slides.length - 1) * window.innerHeight, behavior: 'smooth' });
+            });
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const pages = document.querySelectorAll('.page');
-      const navLinks = document.querySelectorAll('.nav-item, .dropdown-item');
-      const dropdownContainer = document.getElementById('dropdown-container');
-      const dropdownButton = document.getElementById('nav-missions-btn');
-      const dropdownMenu = document.getElementById('dropdown-menu');
-      const dropdownArrow = document.getElementById('dropdown-arrow');
+            mainContainer.addEventListener('scroll', updateNav);
+            updateNav();
 
-      function showPage(pageId) {
-        pages.forEach(page => page.classList.remove('active'));
-        const activePage = document.getElementById(pageId);
-        if (activePage) activePage.classList.add('active');
+            // --- Intersection Observer for Animations ---
+            let codeToCloudAnim = null;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        if (entry.target.id === 'slide-4' && !codeToCloudAnim) {
+                            const packet = document.querySelector('.data-packet');
+                            packet.style.opacity = 1;
+                            codeToCloudAnim = anime({
+                                targets: packet,
+                                translateX: anime.path('#arch-path')('x'),
+                                easing: 'easeInOutSine',
+                                duration: 5000,
+                                loop: true,
+                            });
+                        }
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, { threshold: 0.6 });
+            slides.forEach(slide => observer.observe(slide));
 
-        navLinks.forEach(link => {
-          const isDropdownButton = link.id === 'nav-missions-btn';
-          const isForCurrentPage = link.dataset.page === pageId;
-          const isDropdownPageActive = activePage && (link.parentElement.id === 'dropdown-menu');
+            // --- Slide 3: Message Anatomy ---
+            const msgExplanations = {
+                topic: { title: "The Topic is the Address", text: "It tells the MQTT Hub exactly where to deliver the message. Other devices subscribe to this specific address to receive the data." },
+                payload: { title: "The Payload is the Data", text: "This is the actual information being sent. It can be a simple string like 'ON', a number for a sensor reading, or even complex data." }
+            };
+            window.showExplanation = (part) => {
+                const explanationBox = document.getElementById('message-explanation');
+                explanationBox.style.opacity = 0;
+                setTimeout(() => {
+                    explanationBox.innerHTML = `<h3>${msgExplanations[part].title}</h3><p>${msgExplanations[part].text}</p>`;
+                    explanationBox.style.opacity = 1;
+                }, 200);
+            };
 
-          link.classList.remove('bg-accent', 'text-custom-bg', 'font-bold');
-          if (!isDropdownButton) {
-            link.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
-          }
+            // --- Slide 6: MQTT Interactivity ---
+            let isMqttAnimating = false;
+            let isLightOn = false;
+            const mqttElements = {
+                actuator: document.getElementById('mqtt-actuator'),
+                dashboard: document.getElementById('mqtt-dashboard'),
+                broker: document.getElementById('mqtt-broker')
+            };
+            const lightIcon = mqttElements.actuator.querySelector('.material-icons');
+            const dashboardDisplay = mqttElements.dashboard.querySelector('.dashboard-display');
 
-          if (isForCurrentPage && !link.classList.contains('dropdown-item')) {
-            link.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
-            link.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
-          } else if (isDropdownButton && isDropdownPageActive) {
-            dropdownButton.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
-            dropdownButton.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
-          }
+            function animateBubble(startElement, endElement, icon, onComplete) {
+                const diagram = document.getElementById('mqtt-diagram');
+                const bubble = document.createElement('div');
+                bubble.classList.add('message-bubble');
+                bubble.innerHTML = `<i class="material-icons">${icon}</i>`;
+                diagram.appendChild(bubble);
+
+                const diagramRect = diagram.getBoundingClientRect();
+                const startRect = startElement.getBoundingClientRect();
+                const endRect = endElement.getBoundingClientRect();
+                const startPos = { x: startRect.left + startRect.width / 2 - diagramRect.left, y: startRect.top + startRect.height / 2 - diagramRect.top };
+                const endPos = { x: endRect.left + endRect.width / 2 - diagramRect.left, y: endRect.top + endRect.height / 2 - diagramRect.top };
+
+                bubble.style.opacity = 1;
+                anime({
+                    targets: bubble, left: [startPos.x, endPos.x], top: [startPos.y, endPos.y], opacity: [1, 0], duration: 1200, easing: 'easeInOutCubic',
+                    complete: () => {
+                        bubble.remove();
+                        if (onComplete) onComplete();
+                    }
+                });
+            }
+            window.publishFrom = (sourceDiv, icon) => {
+                if (isMqttAnimating) return;
+                isMqttAnimating = true;
+                const sourceIcon = sourceDiv.querySelector('.material-icons');
+                const brokerIcon = mqttElements.broker.querySelector('.material-icons');
+                animateBubble(sourceIcon, brokerIcon, icon, () => {
+                    anime({ targets: mqttElements.broker, scale: [1, 1.1, 1], duration: 500 });
+                    if (icon === 'thermostat' && mqttElements.dashboard.classList.contains('subscribed')) {
+                        dashboardDisplay.textContent = `${(Math.random() * 5 + 20).toFixed(1)}°C`;
+                        animateBubble(brokerIcon, mqttElements.dashboard.querySelector('.material-icons'), 'thermostat');
+                    }
+                    if (icon === 'lightbulb' && mqttElements.actuator.classList.contains('subscribed')) {
+                        animateBubble(brokerIcon, mqttElements.actuator.querySelector('.material-icons'), 'lightbulb', () => {
+                            isLightOn = !isLightOn;
+                            lightIcon.style.color = isLightOn ? 'var(--accent-yellow)' : 'var(--text-primary)';
+                        });
+                    }
+                    setTimeout(() => { isMqttAnimating = false; }, 800);
+                });
+            };
+            window.toggleSubscription = (el) => el.classList.toggle('subscribed');
+
+            // --- Slide 9: Code View Highlighting ---
+            const explanations = {
+                setup: { title: "setupDevice() - The Foundation", text: "This function runs only ONCE when your device first powers on. Use it to prepare your hardware, like setting pin modes for LEDs and sensors, and telling the hub which MQTT topics you want to listen to." },
+                read: { title: "readSensor() - The Observer", text: "This function runs REPEATEDLY in a loop. It's perfect for constantly checking sensor values (like temperature) and 'publishing' that data to the hub for everyone else to see." },
+                trigger: { title: "triggerActuator() - The Reactor", text: "This function only runs ON COMMAND, when a message arrives from a topic you subscribed to. Use this to react to commands and control actuators, like turning a light on or off." }
+            };
+            const explanationTitleEl = document.getElementById('explanation-title');
+            const explanationTextEl = document.getElementById('explanation-text');
+            window.highlightCode = (el) => {
+                document.querySelectorAll('.code-view pre').forEach(e => e.classList.remove('active'));
+                el.classList.add('active');
+                const key = el.id.split('-')[1];
+                explanationTitleEl.textContent = explanations[key].title;
+                explanationTextEl.textContent = explanations[key].text;
+            };
+            highlightCode(document.getElementById('code-setup'));
+
+            // --- Slide 12: Mission Modal ---
+            const missionData = {
+                1: { title: "HVAC & Appliances", desc: "Control high-power devices like a fan and kettle using relay modules, which act as smart switches.", hardware: "ESP8266, Relay Modules", img: "Assets/station1-diagram.png" },
+                2: { title: "Environmental Sensors", desc: "Monitor the classroom’s temperature, humidity, and motion, sending all data to the central hub for automated responses.", hardware: "ESP8266, DHT11, PIR Sensor", img: "Assets/station2-diagram.png" },
+                3: { title: "Lighting & Indicators", desc: "Control multi-color LED strips and the main security tower light, responding to commands from the cloud to change color and brightness.", hardware: "ESP8266, NeoPixel Strip, Tower Light", img: "Assets/station3-diagram.png" },
+                4: { title: "Door Security", desc: "Act as the brains of the security system, communicating over the I2C protocol with a dedicated door controller to manage locks.", hardware: "ESP8266, I2C Door Controller", img: "Assets/station4-diagram.png" },
+                5: { title: "Automated Curtain", desc: "Manage a high-precision stepper motor by commanding a dedicated I2C controller to calibrate and move to specific percentages.", hardware: "ESP8266, I2C Stepper Controller", img: "Assets/station5-diagram.png" },
+                6: { title: "Master Control Panel", desc: "Build a universal remote that sends commands to all other stations and uses relays to light up indicators showing their status.", hardware: "ESP8266, Buttons, 4-Ch Relay", img: "Assets/station6-diagram.png" }
+            };
+            const modalOverlay = document.getElementById('mission-modal-overlay');
+            document.querySelectorAll('.mission-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const missionId = card.dataset.mission;
+                    const data = missionData[missionId];
+                    document.getElementById('mission-modal-title').textContent = data.title;
+                    document.getElementById('mission-modal-desc').textContent = data.desc;
+                    document.getElementById('mission-modal-hardware').textContent = data.hardware;
+                    document.getElementById('mission-modal-img').src = data.img;
+                    modalOverlay.classList.add('visible');
+                });
+            });
+            document.getElementById('mission-modal-close').addEventListener('click', () => modalOverlay.classList.remove('visible'));
+            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove('visible'); });
+
+            // --- SLIDE 13: INITIALIZATION ---
+            const slide13El = document.getElementById('slide-13');
+            if (slide13El) {
+                brainNodes = {
+                    triggers: slide13El.querySelectorAll('.brain-node.trigger'),
+                    actions: slide13El.querySelectorAll('.brain-node.action'),
+                    displayIf: slide13El.querySelector('#routine-if-box'),
+                    displayThen: slide13El.querySelector('#routine-then-box'),
+                    resetBtn: slide13El.querySelector('#routine-reset'),
+                    path: slide13El.querySelector('#routine-path-line'),
+                    svg: slide13El.querySelector('#brain-svg'),
+                    hub: slide13El.querySelector('#brain-hub-icon')
+                };
+                brainNodes.actions.forEach(n => n.classList.add('disabled'));
+                const slide13Observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (!entry.isIntersecting && brainRoutineState.trigger) {
+                            setTimeout(window.resetBrainRoutine, 200);
+                        }
+                    });
+                }, { threshold: 0.5 });
+                slide13Observer.observe(slide13El);
+            }
+
+            // --- Final Slide: Dashboard Controls ---
+            const iframe = document.getElementById('dashboard-iframe');
+            let currentZoom = 1;
+            document.getElementById('dash-refresh').addEventListener('click', () => { iframe.src = iframe.src; });
+            document.getElementById('dash-zoom-in').addEventListener('click', () => { currentZoom += 0.1; iframe.style.transform = `scale(${currentZoom})`; });
+            document.getElementById('dash-zoom-out').addEventListener('click', () => { currentZoom = Math.max(0.5, currentZoom - 0.1); iframe.style.transform = `scale(${currentZoom})`; });
+            document.getElementById('dash-zoom-reset').addEventListener('click', () => { currentZoom = 1; iframe.style.transform = `scale(${currentZoom})`; });
         });
-
-        if (activePage && activePage.parentElement.id !== 'dropdown-menu') {
-          dropdownButton.classList.remove('bg-accent', 'text-custom-bg', 'font-bold');
-          dropdownButton.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
-        }
-
-        closeDropdown();
-      }
-
-      function openDropdown() {
-        dropdownMenu.classList.remove('hidden');
-        dropdownArrow.style.transform = 'rotate(180deg)';
-      }
-
-      function closeDropdown() {
-        dropdownMenu.classList.add('hidden');
-        dropdownArrow.style.transform = 'rotate(0deg)';
-      }
-
-      navLinks.forEach(link => {
-        if (link.dataset.page) {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            showPage(link.dataset.page);
-            window.scrollTo(0, 0);
-          });
-        }
-      });
-
-      dropdownButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        const isHidden = dropdownMenu.classList.contains('hidden');
-        if (isHidden) openDropdown();
-        else closeDropdown();
-      });
-
-      window.addEventListener('click', (event) => {
-        if (!dropdownContainer.contains(event.target)) {
-          closeDropdown();
-        }
-      });
-
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary', 'transition-colors', 'duration-200');
-      });
-      document.querySelectorAll('.dropdown-item').forEach(item => {
-        item.classList.add('block', 'w-full', 'text-left', 'px-4', 'py-2', 'text-sm', 'text-primary', 'hover:bg-accent', 'hover:text-custom-bg', 'transition-colors', 'rounded-lg');
-      });
-
-      showPage('home');
-    });
-  </script>
-
+    </script>
 </body>
 
 </html>
