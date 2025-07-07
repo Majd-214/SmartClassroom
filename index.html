@@ -531,6 +531,32 @@
         .mqtt-element.subscribed {
             border-color: var(--accent-green);
             box-shadow: 0 0 15px var(--accent-green);
+            /* Add a transition for the box-shadow to make it smooth */
+            transition: box-shadow 0.4s ease-in-out;
+        }
+
+        .mqtt-element.data-received-glow {
+            animation: receive-data-pulse 1.4s ease-in-out;
+        }
+
+        @keyframes receive-data-pulse {
+            0% {
+                box-shadow: 0 0 15px var(--accent-green);
+                /* Start with original subscribed glow */
+            }
+
+            50% {
+                box-shadow: 0 0 35px var(--accent-yellow),
+                    /* A brighter, different colored outer glow */
+                    0 0 15px var(--accent-yellow) inset;
+                /* An inner glow for a "filled" effect */
+                border-color: var(--accent-yellow);
+            }
+
+            100% {
+                box-shadow: 0 0 15px var(--accent-green);
+                /* Return to the original glow */
+            }
         }
 
         #mqtt-broker {
@@ -1393,7 +1419,7 @@
                         </div>
                         <div id="mqtt-dashboard" class="mqtt-element subscribed"
                             onclick="publishFrom(this, 'lightbulb', 'dash-to-broker')">
-                            <i class="material-icons">smartphone</i>
+                            <i class="material-icons">devices_other</i>
                             <span>Dashboard</span>
                             <div class="dashboard-display">21.5°C</div>
                         </div>
@@ -1884,7 +1910,7 @@
                 }, 200);
             };
 
-            // --- Slide 6: MQTT Interactivity ---
+            // --- Slide 6: MQTT Interactivity (Modified) ---
             let isMqttAnimating = false;
             let isLightOn = false;
             const mqttElements = {
@@ -1905,36 +1931,89 @@
                 const diagramRect = diagram.getBoundingClientRect();
                 const startRect = startElement.getBoundingClientRect();
                 const endRect = endElement.getBoundingClientRect();
-                const startPos = { x: startRect.left + startRect.width / 2 - diagramRect.left, y: startRect.top + startRect.height / 2 - diagramRect.top };
-                const endPos = { x: endRect.left + endRect.width / 2 - diagramRect.left, y: endRect.top + endRect.height / 2 - diagramRect.top };
+                const startPos = {
+                    x: startRect.left + startRect.width / 2 - diagramRect.left,
+                    y: startRect.top + startRect.height / 2 - diagramRect.top
+                };
+                const endPos = {
+                    x: endRect.left + endRect.width / 2 - diagramRect.left,
+                    y: endRect.top + endRect.height / 2 - diagramRect.top
+                };
+                
+                // Set the initial state of the bubble
+                bubble.style.left = `${startPos.x}px`;
+                bubble.style.top = `${startPos.y}px`;
+                bubble.style.opacity = 0; // Start invisible for the fade-in
 
-                bubble.style.opacity = 1;
+                // --- 1. Fade-In Animation ---
                 anime({
-                    targets: bubble, left: [startPos.x, endPos.x], top: [startPos.y, endPos.y], opacity: [1, 0], duration: 1200, easing: 'easeInOutCubic',
+                    targets: bubble,
+                    opacity: [0, 1], // Animate from invisible to visible
+                    duration: 600,
+                    easing: 'easeInOutCubic',
                     complete: () => {
-                        bubble.remove();
-                        if (onComplete) onComplete();
+                        // --- 2. Movement Animation (runs after fade-in) ---
+                        anime({
+                            targets: bubble,
+                            left: endPos.x,
+                            top: endPos.y,
+                            duration: 1800,
+                            easing: 'easeInOutCubic',
+                            complete: () => {
+                                // --- 3. Fade-Out Animation (runs after movement) ---
+                                anime({
+                                    targets: bubble,
+                                    opacity: [1, 0],
+                                    duration: 600,
+                                    easing: 'easeInOutCubic',
+                                    complete: () => {
+                                        // Finally, remove the bubble and call the next function
+                                        bubble.remove();
+                                        if (onComplete) onComplete();
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
+
             window.publishFrom = (sourceDiv, icon) => {
                 if (isMqttAnimating) return;
                 isMqttAnimating = true;
                 const sourceIcon = sourceDiv.querySelector('.material-icons');
                 const brokerIcon = mqttElements.broker.querySelector('.material-icons');
+
                 animateBubble(sourceIcon, brokerIcon, icon, () => {
-                    anime({ targets: mqttElements.broker, scale: [1, 1.1, 1], duration: 500 });
+                    anime({
+                        targets: mqttElements.broker,
+                        scale: [1, 1.1, 1],
+                        duration: 800
+                    });
+
+                    // Dashboard update logic
                     if (icon === 'thermostat' && mqttElements.dashboard.classList.contains('subscribed')) {
-                        dashboardDisplay.textContent = `${(Math.random() * 5 + 20).toFixed(1)}°C`;
-                        animateBubble(brokerIcon, mqttElements.dashboard.querySelector('.material-icons'), 'thermostat');
+                        animateBubble(brokerIcon, mqttElements.dashboard.querySelector('.material-icons'), 'thermostat', () => {
+                            // *** This is the core change: The update happens inside the completion callback ***
+                            dashboardDisplay.textContent = `${(Math.random() * 5 + 20).toFixed(1)}°C`;
+                            mqttElements.dashboard.classList.add('data-received-glow'); // Trigger the new CSS animation
+                            // Remove the class after the animation is done to allow it to be re-triggered
+                            setTimeout(() => {
+                                mqttElements.dashboard.classList.remove('data-received-glow');
+                            }, 1400); // Match this duration to your CSS animation
+                        });
                     }
+
+                    // Light update logic
                     if (icon === 'lightbulb' && mqttElements.actuator.classList.contains('subscribed')) {
                         animateBubble(brokerIcon, mqttElements.actuator.querySelector('.material-icons'), 'lightbulb', () => {
                             isLightOn = !isLightOn;
                             lightIcon.style.color = isLightOn ? 'var(--accent-yellow)' : 'var(--text-primary)';
                         });
                     }
-                    setTimeout(() => { isMqttAnimating = false; }, 800);
+                    setTimeout(() => {
+                        isMqttAnimating = false;
+                    }, 800);
                 });
             };
             window.toggleSubscription = (el) => el.classList.toggle('subscribed');

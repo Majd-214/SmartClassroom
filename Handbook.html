@@ -1167,13 +1167,12 @@
     </div>
 
     <div id="station5" class="page">
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Calibrated Curtain
-        (Advanced)</h2>
+      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Station 5: Automated Curtain
+        (Simplified I2C)</h2>
       <h3 class="text-xl font-bold text-primary mb-3">Your Mission: The Precision Engineers</h3>
-      <p class="text-secondary">Your team will integrate a high-precision curtain system. Your ESP8266 will manage a
-        dedicated <strong>I2C Stepper Controller</strong> that handles a stepper motor. Your main tasks are to command
-        the controller to <strong>calibrate</strong> itself using limit switches (photointerrupters) and then control
-        the curtain's position with a percentage (0-100%), just like a dimmable light.</p>
+      <p class="text-secondary">Your team will integrate a high-precision curtain system. Your ESP8266 will act as a
+        manager, sending commands to a dedicated <strong>I2C Stepper Controller</strong>. Your task is to send a
+        percentage value (0-100) to the controller to precisely position the curtain, just like a dimmable light.</p>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Real-World Application:</h4>
       <p class="text-secondary">This is how precise automated systems, from 3D printers to robotic arms, work. A main
         computer sends high-level goals (e.g., "go to 50%"), and a dedicated controller handles the complex, real-time
@@ -1200,8 +1199,8 @@
         </li>
       </ol>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Coding Mission: The ESP8266 Manager</h4>
-      <p class="text-secondary">Your code will tell the controller to calibrate, send it percentage-based commands, and
-        request its current status to report back to the cloud.</p>
+      <p class="text-secondary">Your code will send percentage-based commands to the controller and request its current
+        status to report back to the cloud.</p>
       <ul class="list-disc list-inside pl-4 space-y-4">
         <li><b>Libraries, Variables, & Config:</b> Add <code>Wire.h</code> and set the controller's I2C address.
           <pre><code class="language-cpp"><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
@@ -1219,48 +1218,32 @@
 <span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
 <span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>;</code></pre>
         </li>
-        <li><b><code>setupDevice()</code>:</b> Initialize I2C and send the initial calibration command.
+        <li><b><code>setupDevice()</code>:</b> Initialize the I2C bus and subscribe to your topic.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
   <span class="sh-class">Wire</span>.<span class="sh-function">begin</span>(<span class="sh-keyword">PIN_D2</span>, <span class="sh-keyword">PIN_D1</span>); <span class="sh-comment">// SDA, SCL</span>
   <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">CURTAIN_TOPIC</span>);
-  
-  <span class="sh-comment">// Tell the controller to start its calibration routine</span>
-  <span class="sh-class">Wire</span>.<span class="sh-function">beginTransmission</span>(<span class="sh-variable">CURTAIN_CONTROLLER_ADDRESS</span>);
-  <span class="sh-class">Wire</span>.<span class="sh-function">write</span>(<span class="sh-string">'C'</span>); <span class="sh-comment">// 'C' for Calibrate</span>
-  <span class="sh-class">Wire</span>.<span class="sh-function">endTransmission</span>();
 }</code></pre>
         </li>
-        <li><b><code>readSensor()</code>:</b> Periodically ask the controller for its current position and report it.
-          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
-  <span class="sh-class">Wire</span>.<span class="sh-function">requestFrom</span>(<span class="sh-variable">CURTAIN_CONTROLLER_ADDRESS</span>, <span class="sh-literal">1</span>);
-  <span class="sh-keyword">if</span> (<span class="sh-class">Wire</span>.<span class="sh-function">available</span>()) {
-    <span class="sh-keyword">int</span> <span class="sh-variable">currentPercent</span> <span class="sh-operator">=</span> <span class="sh-class">Wire</span>.<span class="sh-function">read</span>();
-    <span class="sh-keyword">if</span> (<span class="sh-variable">currentPercent</span> <span class="sh-operator">!=</span> <span class="sh-variable">lastReportedPercent</span>) {
-      <span class="sh-comment">// For the cloud, we send a DimmedLight-compatible JSON command</span>
-      <span class="sh-type">String</span> <span class="sh-variable">payload</span> <span class="sh-operator">=</span> <span class="sh-string">"{\"swi\":true, \"bri\":"</span> <span class="sh-operator">+</span> <span class="sh-function">String</span>(<span class="sh-variable">currentPercent</span>) <span class="sh-operator">+</span> <span class="sh-string">"}"</span>;
-      <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">CURTAIN_TOPIC</span>, <span class="sh-variable">payload</span>);
-      <span class="sh-variable">lastReportedPercent</span> <span class="sh-operator">=</span> <span class="sh-variable">currentPercent</span>;
-    }
-  }
-}</code></pre>
+        <li><b><code>readSensor()</code>:</b> No need to update position as variable is from cloud only.
+          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {}</code></pre>
         </li>
-        <li><b><code>triggerActuator()</code>:</b> When a "DimmedLight" command comes from the cloud, extract the
-          brightness and send it as a percentage to the controller.
+        <li><b><code>triggerActuator()</code>:</b> When a "DimmedLight" command comes from the hub, extract the
+          brightness and send it directly to the controller as the new percentage.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
   <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">CURTAIN_TOPIC</span>) {
     <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">curtainCmd</span> <span class="sh-operator">=</span> <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
     
+    <span class="sh-comment">// Send the desired percentage (0-100) to the controller</span>
     <span class="sh-class">Wire</span>.<span class="sh-function">beginTransmission</span>(<span class="sh-variable">CURTAIN_CONTROLLER_ADDRESS</span>);
-    <span class="sh-class">Wire</span>.<span class="sh-function">write</span>(<span class="sh-string">'P'</span>); <span class="sh-comment">// 'P' for Set Percent</span>
-    <span class="sh-class">Wire</span>.<span class="sh-function">write</span>((<span class="sh-keyword">byte</span>)<span class="sh-variable">curtainCmd</span>.<span class="sh-variable">brightness</span>); <span class="sh-comment">// Send brightness (0-100) as the percentage</span>
+    <span class="sh-class">Wire</span>.<span class="sh-function">write</span>((<span class="sh-keyword">byte</span>)<span class="sh-variable">curtainCmd</span>.<span class="sh-variable">brightness</span>); 
     <span class="sh-class">Wire</span>.<span class="sh-function">endTransmission</span>();
   }
 }</code></pre>
         </li>
       </ul>
       <h4 class="text-lg font-bold text-accent mt-6 mb-3">Success Criteria</h4>
-      <p class="text-secondary">Your mission succeeds when the curtain calibrates on startup, and you can precisely
-        control its position from 0% to 100% using the slider on the central dashboard.</p>
+      <p class="text-secondary">Your mission succeeds when you can precisely control the curtain's position from 0% to
+        100% using the slider on the central dashboard, and the dashboard status updates correctly.</p>
     </div>
 
     <div id="station6" class="page">
