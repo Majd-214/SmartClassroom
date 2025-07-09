@@ -20,12 +20,12 @@ account_a:
   secret_key: "?bWig6rFqOJquyU@IgClVQeNL"
   variables:
     - name: "lights"
-      direction: "BIDIRECTIONAL"
+      direction: "FROM_CLOUD"
       topic: "classroom/lights"
       type: "Color"
 
     - name: "curtain"
-      direction: "BIDIRECTIONAL"
+      direction: "FROM_CLOUD"
       topic: "classroom/curtain"
       type: "Dimmed"
 
@@ -56,7 +56,7 @@ account_b:
       type: "Boolean"
 
     - name: "light"
-      direction: "BIDIRECTIONAL"
+      direction: "FROM_CLOUD"
       topic: "entryway/light"
       type: "Dimmed"
 
