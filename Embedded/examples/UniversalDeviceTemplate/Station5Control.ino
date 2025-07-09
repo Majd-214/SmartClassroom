@@ -21,10 +21,10 @@ const int I2C_ADDRESS = 0x09;
 const int STEP_PIN = 2;
 const int DIR_PIN = 3;
 const int EN_PIN = 4;
+const int LM_PIN = 11;
 
 // --- Stepper Motor Configuration ---
-const int STEPS_PER_REVOLUTION = 200 * 8;
-const int POSITION_FACTOR = STEPS_PER_REVOLUTION * 8;
+int calibration = 0;
 AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
 
 // --- State and Calibration Variables ---
@@ -35,20 +35,31 @@ int pos = 0;
 // ====================================================================
 void setup()
 {
-    Serial.begin(9600);
-    Serial.println("I2C Stepper Controller Initializing...");
+  Serial.begin(9600);
+  Serial.println("I2C Stepper Controller Initializing...");
 
-    // Configure Stepper
-    stepper.setEnablePin(EN_PIN);
-    stepper.setPinsInverted(false, true, true);
-    stepper.setMaxSpeed(2400);
-    stepper.setAcceleration(5600);
+  // Configure Stepper
+  stepper.setEnablePin(EN_PIN);
+  stepper.setPinsInverted(false, true, true);
+  stepper.setMaxSpeed(2400);
+  stepper.setAcceleration(5600);
 
-    // Initialize I2C
-    Wire.begin(I2C_ADDRESS);
-    Wire.onReceive(receiveEvent);
+  // Configure Limit Switch
+  pinMode(LM_PIN, INPUT);
 
-    Serial.println("Waiting for I2C commands from ESP8266...");
+  // Calibrate Curtain
+  Serial.println("Calibrating...");
+  calibrate();
+  Serial.println("Calibration Complete!");
+
+  // Initialize I2C
+  Wire.begin(I2C_ADDRESS);
+  Wire.onReceive(receiveEvent);
+
+  // Enable Curtain Motor
+  stepper.enableOutputs();
+
+  Serial.println("Waiting for I2C commands from ESP8266...");
 }
 
 // ====================================================================
@@ -56,9 +67,7 @@ void setup()
 // ====================================================================
 void loop()
 {
-    if (stepper.distanceToGo() != 0) stepper.enableOutputs();
-    else stepper.disableOutputs();
-    stepper.run();
+  stepper.run();
 }
 
 // ====================================================================
@@ -67,13 +76,38 @@ void loop()
 
 void receiveEvent(int numBytes)
 {
-    if (!Wire.available()) return;
+  if (!Wire.available()) return;
 
-    pos = constrain((int) Wire.read(), 0, 100); // Read the command character
-    
-    Serial.print("Setting Curtain Position to: ");
-    Serial.print(pos);
-    Serial.println("%");
+  pos = constrain((int)Wire.read(), 0, 100); // Read the command character
 
-    stepper.moveTo(POSITION_FACTOR * pos / 100);
+  Serial.print("Setting Curtain Position to: ");
+  Serial.print(pos);
+  Serial.println("%");
+
+  stepper.moveTo(calibration * pos / 100);
+}
+
+// ====================================================================
+//                            CALIBRATE
+// ====================================================================
+void calibrate()
+{
+  // Roll curtain up until limit switch no longer sees it
+  stepper.moveTo(10000);
+  while (!digitalRead(LM_PIN)) stepper.run();
+
+  // Record motor position
+  calibration = stepper.currentPosition();
+
+  // Print calibration value
+  Serial.print("Calibrated position to: ");
+  Serial.print(calibration);
+  Serial.println(" motor steps.");
+
+  // Reset curatin to closed position
+  stepper.moveTo(0);
+  while (stepper.distanceToGo()) stepper.run();
+
+  // Turn OFF the motor
+  stepper.disableOutputs();
 }

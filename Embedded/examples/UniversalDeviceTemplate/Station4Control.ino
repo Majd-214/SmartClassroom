@@ -1,7 +1,7 @@
 /*
-====================================================================
+  ====================================================================
   I2C Door Controller for McMaster Smart Classroom (v2)
-====================================================================
+  ====================================================================
   - This code runs on a dedicated Arduino (e.g., Nano/Uno) which
     controls all hardware for the smart door.
   - It communicates with the main ESP8266 via the I2C protocol.
@@ -10,7 +10,7 @@
     - Two servos for the door locks.
     - A door contact switch for status.
   - I2C Address: 0x08
-====================================================================
+  ====================================================================
 */
 
 #include <Wire.h>
@@ -21,9 +21,9 @@
 const int I2C_ADDRESS = 0x08;
 
 // --- Component Pin Definitions ---
-const int SERVO_1_PIN = 9;
-const int SERVO_2_PIN = 10;
-const int DOOR_SWITCH_PIN = 2;
+const int SERVO_1_PIN = 3;
+const int SERVO_2_PIN = 11;
+const int DOOR_SWITCH_PIN = 13;
 
 // --- Keypad Configuration ---
 const byte ROWS = 4; // four rows
@@ -33,8 +33,8 @@ char keys[ROWS][COLS] = {
     {'4', '5', '6'},
     {'7', '8', '9'},
     {'*', '0', '#'}};
-byte rowPins[ROWS] = {A0, A1, A2, A3};
-byte colPins[COLS] = {13, 12, 11};
+byte rowPins[ROWS] = {4, 5, 6, 7};
+byte colPins[COLS] = {8, 9, 10};
 
 // --- Object Declarations ---
 Keypad customKeypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
