@@ -14,7 +14,7 @@ set "ARDUINO_CLI_PATH="
 
 where arduino-cli >nul 2>nul
 if %errorlevel%==0 (
-    echo    --> Found arduino-cli in system PATH.
+    echo    Found arduino-cli in system PATH.
     set ARDUINO_CLI_PATH=FOUND
 )
 
@@ -24,20 +24,20 @@ if not defined ARDUINO_CLI_PATH (
     if exist "%LOCALAPPDATA%\Arduino15\arduino-cli.exe" set "ARDUINO_CLI_PATH=%LOCALAPPDATA%\Arduino15"
     
     if defined ARDUINO_CLI_PATH (
-        echo    --> Found arduino-cli at: %ARDUINO_CLI_PATH%
+        echo    Found arduino-cli at: %ARDUINO_CLI_PATH%
         set "PATH=%PATH%;%ARDUINO_CLI_PATH%"
     )
 )
 
 if not defined ARDUINO_CLI_PATH (
     if exist ".\arduino_cli\arduino-cli.exe" (
-        echo    --> Found local CLI in .\arduino_cli
+        echo    Found local CLI in .\arduino_cli
         set "PATH=%PATH%;%CD%\arduino_cli"
     ) else (
-        echo    --> Arduino CLI not found. Attempting to download...
+        echo    Arduino CLI not found. Attempting to download...
         powershell -NoProfile -ExecutionPolicy Bypass -Command "& { mkdir -p '.\arduino_cli'; $url = 'https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip'; $zipPath = '.\arduino_cli\arduino-cli.zip'; Write-Host 'Downloading from ' $url; Invoke-WebRequest -Uri $url -OutFile $zipPath; Write-Host 'Extracting...'; Expand-Archive -Path $zipPath -DestinationPath '.\arduino_cli' -Force; Remove-Item $zipPath; }"
         if exist ".\arduino_cli\arduino-cli.exe" (
-            echo    --> Download and extraction complete.
+            echo    Download and extraction complete.
             set "PATH=%PATH%;%CD%\arduino_cli"
         ) else (
             echo.
@@ -90,7 +90,7 @@ if %errorlevel% neq 0 (
 )
 
 del ".\SmartDevice.zip"
-echo    --> SmartDevice library installed successfully.
+echo    SmartDevice library installed successfully.
 arduino-cli config set library.enable_unsafe_install false
 
 echo.

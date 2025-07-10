@@ -14,13 +14,13 @@ set "CLI_DIR=%CD%\arduino_cli"
 set "ARDUINO_CLI_PATH="
 where arduino-cli >nul 2>nul
 if %errorlevel%==0 (
-    echo    --> Found arduino-cli in system PATH.
+    echo    Found arduino-cli in system PATH.
     set ARDUINO_CLI_PATH=FOUND
 )
 
 if not defined ARDUINO_CLI_PATH (
     if exist "%CLI_DIR%\arduino-cli.exe" (
-        echo    --> Found local CLI in %CLI_DIR%
+        echo    Found local CLI in %CLI_DIR%
         set "PATH=%PATH%;%CLI_DIR%"
     )
 )
@@ -48,9 +48,9 @@ echo.
 echo [3/3] Deleting temporary CLI folder...
 if exist "%CLI_DIR%" (
     rmdir /s /q "%CLI_DIR%"
-    echo    --> Folder '%CLI_DIR%' has been removed.
+    echo    Folder '%CLI_DIR%' has been removed.
 ) else (
-    echo    --> No local CLI folder to remove.
+    echo    No local CLI folder to remove.
 )
 
 echo.
