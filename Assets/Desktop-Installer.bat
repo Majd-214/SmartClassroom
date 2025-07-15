@@ -12,7 +12,7 @@ setlocal enabledelayedexpansion
 :: 6. Self-destructs.
 :: =================================================================
 
-set "GITHUB_REPO_URL=https://github.com/majd-214/smartclassroom/archive/refs/heads/main.zip"
+set "GITHUB_REPO_URL=https://github.com/majd-214/smartclassroom/archive/refs/heads/master.zip"
 set "REPO_NAME=SmartClassroom-main"
 set "DESKTOP_PATH=%USERPROFILE%\Desktop"
 set "PROJECT_FOLDER=%DESKTOP_PATH%\SmartClassroom-Project"
