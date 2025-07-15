@@ -6,7 +6,7 @@ setlocal enabledelayedexpansion
 :: =================================================================
 
 set "GITHUB_REPO_URL=https://github.com/Majd-214/SmartClassroom/archive/refs/heads/master.zip"
-set "REPO_FOLDER_NAME=SmartClassroom-3fa4168a3424f2cbcc5a3b10c67077607f5d2977"
+set "REPO_FOLDER_NAME=SmartClassroom-master"
 set "DESKTOP_PATH=%USERPROFILE%\Desktop"
 set "PROJECT_FOLDER=%DESKTOP_PATH%\%REPO_FOLDER_NAME%"
 set "HANDBOOK_FILE=%PROJECT_FOLDER%\Handbook.html"
