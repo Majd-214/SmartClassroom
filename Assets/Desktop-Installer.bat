@@ -2,16 +2,19 @@
 setlocal enabledelayedexpansion
 
 :: =================================================================
-:: Desktop-Installer.bat (Final Version with File Creation Fix)
+:: Desktop-Installer.bat (Final Version with Folder and Exit Fix)
 :: =================================================================
 
 set "GITHUB_REPO_URL=https://github.com/Majd-214/SmartClassroom/archive/refs/heads/master.zip"
-set "REPO_FOLDER_NAME=SmartClassroom-master"
+set "REPO_FOLDER_NAME=SmartClassroom"
 set "DESKTOP_PATH=%USERPROFILE%\Desktop"
 set "PROJECT_FOLDER=%DESKTOP_PATH%\%REPO_FOLDER_NAME%"
 set "HANDBOOK_FILE=%PROJECT_FOLDER%\Handbook.html"
 set "TEMPLATE_FILE=%PROJECT_FOLDER%\Embedded\examples\UniversalDeviceTemplate\UniversalDeviceTemplate.ino"
-set "NEW_SKETCH_FILE=%DESKTOP_PATH%\Station_Run.ino"
+
+:: --- FIX #1: Define the sketch folder and the file path inside it ---
+set "SKETCH_FOLDER=%DESKTOP_PATH%\Station"
+set "NEW_SKETCH_FILE=%SKETCH_FOLDER%\Station.ino"
 
 cls
 echo.
@@ -40,12 +43,15 @@ if %errorlevel% neq 0 (
     goto :cleanup
 )
 
-:: --- FIX: Add a short delay to allow the file system to catch up ---
 echo [INFO] Verifying files...
 timeout /t 2 /nobreak > nul
 
-:: --- Step 3: Create Sketch and Open Files ---
+:: --- Step 3: Create Sketch in its own folder and Open Files ---
 echo [STEP 3/4] Creating sketch and opening handbook...
+
+:: --- FIX #1 (continued): Create the directory first ---
+if not exist "%SKETCH_FOLDER%" mkdir "%SKETCH_FOLDER%"
+
 if exist "%TEMPLATE_FILE%" (
     copy "%TEMPLATE_FILE%" "%NEW_SKETCH_FILE%" > nul
     start "" "%NEW_SKETCH_FILE%"
@@ -65,6 +71,10 @@ if exist "%DESKTOP_PATH%\repo.zip" del "%DESKTOP_PATH%\repo.zip" > nul
 
 echo.
 echo [SUCCESS] Setup is complete! This window will now close.
-timeout /t 5 > nul
+timeout /t 3 > nul
 
-(goto) 2>nul & del "%~f0"
+:: --- FIX #2: More robust self-deletion and exit ---
+:: Start a new, hidden command prompt that waits 1 second, then deletes the original script.
+:: The main script then exits immediately, closing the window.
+start "Delete" /B cmd /c "timeout /t 1 /nobreak > nul & del /F /A:H "%~f0""
+exit
