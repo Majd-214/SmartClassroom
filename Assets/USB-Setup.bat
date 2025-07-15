@@ -2,7 +2,7 @@
 setlocal
 
 :: ===================================================================
-::   McMaster Smart Classroom - Project Launcher v3.0
+::   McMaster Smart Classroom - Project Launcher v4.0
 ::   (Place this file on the root of your USB drive)
 :: ===================================================================
 
@@ -15,7 +15,8 @@ set "REPO_URL=https://github.com/Majd-214/SmartClassroom/archive/refs/heads/mast
 set "ZIP_FILE=%USERPROFILE%\Desktop\SmartClassroom-master.zip"
 set "EXTRACT_DIR=%USERPROFILE%\Desktop"
 set "PROJECT_FOLDER=%USERPROFILE%\Desktop\SmartClassroom-master"
-set "INO_FILE=%PROJECT_FOLDER%\Embedded\UniversalDeviceTemplate\UniversalDeviceTemplate.ino"
+set "TEMPLATE_INO=%PROJECT_FOLDER%\Embedded\UniversalDeviceTemplate\UniversalDeviceTemplate.ino"
+set "DESKTOP_INO=%USERPROFILE%\Desktop\Station_run.ino"
 
 :: --- 2. Download and Unzip the GitHub Repository to the Desktop ---
 echo [+] Downloading latest version from GitHub to your Desktop...
@@ -46,14 +47,22 @@ if %errorlevel% neq 0 (
 echo    [INFO] Setup script completed successfully!
 echo.
 
-:: --- 4. Launch Handbook and Arduino IDE ---
-echo [+] Launching Handbook and Arduino IDE...
+:: --- 4. Copy Template and Launch ---
+echo [+] Preparing sketch and launching applications...
+
+:: Copy the template to the desktop with the new name
+echo    [INFO] Creating your personal sketch file on the Desktop...
+copy "%TEMPLATE_INO%" "%DESKTOP_INO%" >nul
+if %errorlevel% neq 0 (
+    echo ERROR: Could not create Station_run.ino on the Desktop.
+    goto :cleanup_and_end
+)
 
 :: Launch the handbook
 echo    [INFO] Opening Handbook.html...
 start "" "%PROJECT_FOLDER%\Handbook.html"
 
-:: Find and launch Arduino IDE with the universal template
+:: Find and launch Arduino IDE with the new sketch
 set "ARDUINO_EXE_PATH="
 if exist "%ProgramFiles(x86)%\Arduino IDE\arduino.exe" set "ARDUINO_EXE_PATH=%ProgramFiles(x86)%\Arduino IDE\arduino.exe"
 if exist "%ProgramFiles%\Arduino IDE\arduino.exe" set "ARDUINO_EXE_PATH=%ProgramFiles%\Arduino IDE\arduino.exe"
@@ -61,11 +70,11 @@ if exist "%ProgramFiles(x86)%\Arduino\arduino.exe" set "ARDUINO_EXE_PATH=%Progra
 if exist "%ProgramFiles%\Arduino\arduino.exe" set "ARDUINO_EXE_PATH=%ProgramFiles%\Arduino\arduino.exe"
 
 if defined ARDUINO_EXE_PATH (
-    echo    [INFO] Opening UniversalDeviceTemplate in the Arduino IDE...
-    start "Arduino" "%ARDUINO_EXE_PATH%" "%INO_FILE%"
+    echo    [INFO] Opening your Station_run.ino sketch...
+    start "Arduino" "%ARDUINO_EXE_PATH%" "%DESKTOP_INO%"
 ) else (
-    echo WARNING: Could not find arduino.exe. Please open the template manually.
-    echo          The template is located on your Desktop in the SmartClassroom-master folder.
+    echo WARNING: Could not find arduino.exe. Please open your sketch manually.
+    echo          The file is named Station_run.ino and is on your Desktop.
 )
 
 :: --- 5. Cleanup and Eject ---
