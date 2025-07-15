@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDevice UniversalDeviceTemplate Overview</title>
+    <style>
+        /*
+        ====================================================================
+          Modern Dark Theme CSS for Markdown Documents v2.0
+        ====================================================================
+          - Font: Google Product Sans
+          - Style: Dark, pageless, Google Material Design inspired
+          - Added C++ Syntax Highlighting
+        ====================================================================
+        */
+
+        /* --- Import Google's Product Sans Font --- */
+        @import url('https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+
+        /* --- Main Body & Document Styling --- */
+        body {
+            font-family: 'Product Sans', sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #202124;
+            /* Google's dark grey background */
+            color: #e8eaed;
+            /* Light grey text for readability */
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Main Content Container --- */
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px 40px;
+            background-color: #2d2e30;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+        }
+
+        /* --- Typography --- */
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #f1f3f4;
+            font-weight: 700;
+            border-bottom: 1px solid #3c4043;
+            padding-bottom: 8px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2em;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            border-bottom: none;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #bdc1c6;
+            border-bottom: none;
+            margin-top: 32px;
+        }
+
+        h3 code {
+            font-size: 0.8em;
+            color: #8ab4f8;
+        }
+
+        p {
+            font-size: 1em;
+            margin-bottom: 16px;
+        }
+
+        strong {
+            color: #e8eaed;
+            font-weight: 700;
+        }
+
+        /* --- Links --- */
+        a {
+            color: #8ab4f8;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        a:hover {
+            color: #a7c5f9;
+            text-decoration: underline;
+        }
+
+        /* --- Code Blocks (General) --- */
+        code {
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            background-color: #202124;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #bdc1c6;
+        }
+
+        pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #e8eaed;
+        }
+
+        /* --- NEW: C++ Syntax Highlighting --- */
+        .sh-preprocessor {
+            color: #c586c0;
+        }
+
+        /* #include */
+        .sh-keyword {
+            color: #569cd6;
+        }
+
+        /* void, if, else */
+        .sh-type {
+            color: #4ec9b0;
+        }
+
+        /* String, CommandCallback, SmartDevice */
+        .sh-function {
+            color: #dcdcaa;
+        }
+
+        /* myDevice.publish, pinMode */
+        .sh-variable {
+            color: #9cdcfe;
+        }
+
+        /* payload, command */
+        .sh-string {
+            color: #ce9178;
+        }
+
+        /* "Hello World" */
+        .sh-comment {
+            color: #6a9955;
+        }
+
+        /* // This is a comment */
+        .sh-literal {
+            color: #b5cea8;
+        }
+
+        /* HIGH, INPUT */
+
+        /* --- Other Elements --- */
+        ul,
+        ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        li>p {
+            margin-bottom: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #3c4043;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #3c4043;
+            color: #f1f3f4;
+            font-weight: 700;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #282a2c;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #3c4043;
+            margin: 40px 0;
+        }
+
+        .license {
+            text-align: center;
+            font-style: italic;
+            color: #9aa0a6;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div id="home" class="page">
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">McMaster Smart Classroom</h1>
+            <p class="text-center text-secondary text-lg mb-8">Welcome, Future Engineers! Your mission is to bring this
+                Smart
+                Classroom to life. Each team has a critical station to build. This handbook is your guide, providing
+                mission
+                briefings and a reference for the <code>SmartDevice</code> library you'll use.</p>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Getting Started: The
+                Universal
+                Template</h2>
+            <p class="text-secondary">Your journey begins with the <b><code>UniversalDeviceTemplate.ino</code></b> file.
+                This
+                template handles all complex networking behind the scenes. Your job is to "fill in the blanks" with your
+                station's specific code.</p>
+
+            <h3 class="text-xl font-bold text-primary mb-3">Understanding Your Template</h3>
+            <p class="text-secondary">Open the template in your Arduino IDE:
+                <code>File > Examples > SmartDevice > UniversalDeviceTemplate</code>.<br>You'll work within <b>5</b>
+                distinct
+                sections:
+            </p>
+
+            <ol class="list-decimal list-inside pl-4 space-y-4">
+                <li>
+                    <b>Library Inclusions:</b>
+                    <p class="text-secondary mt-2">At the top, you'll see <code>#include &lt;SmartDevice.h&gt;</code>.
+                        Add any
+                        other libraries your station needs here, like <code>&lt;Servo.h&gt;</code> or
+                        <code>&lt;DHT.h&gt;</code>.
+                    </p>
+                    <pre><code><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
+      <span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span>
+      <span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span><span class="sh-comment"> // &lt;-- EXAMPLE!</span></code></pre>
+                </li>
+                <li>
+                    <b>Variable Definitions:</b>
+                    <p class="text-secondary mt-2">Define global variables your program needs, like sensor pins or state
+                        flags.
+                    </p>
+                    <pre><code><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
+      <span class="sh-keyword">const int</span> <span class="sh-variable">sensorPin</span> <span class="sh-operator">=</span> <span class="sh-keyword">PIN_D1</span>; <span class="sh-comment">// Example for a sensor pin</span>
+      <span class="sh-keyword">bool</span> <span class="sh-variable">isDeviceOn</span> <span class="sh-operator">=</span> <span class="sh-keyword">false</span>; <span class="sh-comment">// Example to track state</span></code></pre>
+                </li>
+                <li>
+                    <b>Configuration:</b>
+                    <p class="text-secondary mt-2">You <b>must</b> change these values to match your station's
+                        assignment. Define
+                        your device name and any communication topics it needs.</p>
+                    <pre><code><span class="sh-comment">// 3. CONFIGURATION</span>
+      <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"My_Station_Device"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "Sarah_Door_Lock"</span>
+      <span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">BASE_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"some_room/some_device"</span>; <span class="sh-comment">// &lt;-- CHANGE for your station</span></code></pre>
+                </li>
+                <li>
+                    <b>Object Declarations:</b>
+                    <p class="text-secondary mt-2">Declare objects from libraries here. The
+                        <code>SmartDevice myDevice;</code>
+                        object is already created for you. Add others as needed.
+                    </p>
+                    <pre><code><span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
+      <span class="sh-type">SmartDevice</span> <span class="sh-variable">myDevice</span>;
+      <span class="sh-type">Servo</span> <span class="sh-variable">myServo</span>; <span class="sh-comment">// Example for a servo motor</span></code></pre>
+                </li>
+                <li>
+                    <b>Device Functions:</b>
+                    <p class="text-secondary mt-2">This is where you'll write your station's logic in three key
+                        functions:</p>
+                    <ol class="list-none list-inside pl-4 space-y-4 mt-4">
+                        <li>
+                            <b><code>setupDevice()</code>:</b> Runs <b>once</b> at startup. Use it to initialize
+                            hardware (e.g., set
+                            pin modes, start sensors).
+                            <pre><code><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
+        <span class="sh-function">pinMode</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">OUTPUT</span>); <span class="sh-comment">// Example: Set a pin as an output</span>
+        <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">BASE_TOPIC</span>); <span class="sh-comment">// Example: Listen for commands</span>
+      }</code></pre>
+                        </li>
+                        <li>
+                            <b><code>readSensor()</code>:</b> Runs <b>repeatedly</b>. Use it for continuous tasks like
+                            reading sensors
+                            and publishing their data.
+                            <pre><code><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
+        <span class="sh-keyword">int</span> <span class="sh-variable">sensorValue</span> <span class="sh-operator">=</span> <span class="sh-function">digitalRead</span>(<span class="sh-variable">sensorPin</span>);
+        <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">BASE_TOPIC</span>, <span class="sh-type">String</span>(<span class="sh-variable">sensorValue</span>));
+      }</code></pre>
+                        </li>
+                        <li>
+                            <b><code>triggerActuator(String topic, String command)</code>:</b> Runs <b>only when a
+                                command is
+                                received</b> from the hub. Use it to control actuators like lights or motors.
+                            <pre><code><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
+        <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>) {
+          <span class="sh-function">digitalWrite</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">HIGH</span>); <span class="sh-comment">// Example: Turn something ON</span>
+        }
+      }</code></pre>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+
+            <hr />
+
+            <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">The "System Engine"</h2>
+            <p class="text-secondary">Below the sections you modify is the "System Engine" code. It handles all the
+                background
+                work of connecting to Wi-Fi and the hub. <b>Do not modify this section.</b> It's the foundation of your
+                project!
+            </p>
+
+            <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
+                <h4 class="font-bold text-lg text-accent mb-2">Network Information</h4>
+                <p class="text-sm text-accent/80 mb-3">You will need this for your configuration. It should also be on
+                    the main
+                    whiteboard.</p>
+                <ul class="list-disc list-inside text-sm space-y-2">
+                    <li><b>Wi-Fi Network (SSID):</b> <code>McMasterIoT-Camp</code></li>
+                    <li><b>Wi-Fi Password:</b> <code>Roomba2025</code></li>
+                    <li><b>Hub IP Address:</b> <code>192.168.0.147</code> (confirm with instructor)</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

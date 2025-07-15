@@ -394,6 +394,38 @@
       /* Accent color for icons */
       margin-bottom: 0.5rem;
     }
+
+    /* Custom styling for station panels */
+    .station-panel-link {
+      background-color: #2D2E30;
+      /* card-bg */
+      border: 1px solid #3c4043;
+      /* custom-border */
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .station-panel-link:hover {
+      background-color: rgba(138, 180, 248, 0.05);
+      /* accent/5 */
+      border-color: #8ab4f8;
+      /* accent */
+      transform: translateY(-3px) scale(1.02);
+      /* Slight lift and scale */
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      /* More pronounced shadow */
+    }
+
+    .station-panel-link .material-icons,
+    .station-panel-link .font-bold {
+      transition: color 0.2s ease-in-out;
+    }
+
+    .station-panel-link:hover .material-icons,
+    .station-panel-link:hover .font-bold {
+      color: #c1d9fd;
+      /* light-blue-accent */
+    }
   </style>
   <script>
     // Customizing Tailwind with the color scheme from the handbook
@@ -452,8 +484,6 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center justify-center h-16">
         <div class="flex items-center space-x-2">
-          <a href="#" data-page="home"
-            class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Home</a>
           <a href="#" data-page="overview"
             class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Overview</a>
           <div class="relative" id="dropdown-container">
@@ -477,8 +507,6 @@
               <a href="#" class="dropdown-item" data-page="station6">Station 6: Master Control Panel</a>
             </div>
           </div>
-          <a href="#" data-page="api-reference"
-            class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">API Reference</a>
           <a href="#" data-page="upload-troubleshoot"
             class="nav-item px-4 py-2 text-sm font-medium rounded-xl transition-colors">Upload &
             Troubleshoot</a>
@@ -488,112 +516,6 @@
   </nav>
 
   <main class="max-w-4xl mx-auto p-4 md:p-8">
-    <div id="home" class="page">
-      <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">McMaster Smart Classroom</h1>
-      <p class="text-center text-secondary text-lg mb-8">Welcome, Future Engineers! Your mission is to bring this Smart
-        Classroom to life. Each team has a critical station to build. This handbook is your guide, providing mission
-        briefings and a reference for the <code>SmartDevice</code> library you'll use.</p>
-
-      <hr />
-
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">Getting Started: The Universal
-        Template</h2>
-      <p class="text-secondary">Your journey begins with the <b><code>UniversalDeviceTemplate.ino</code></b> file. This
-        template handles all complex networking behind the scenes. Your job is to "fill in the blanks" with your
-        station's specific code.</p>
-
-      <h3 class="text-xl font-bold text-primary mb-3">Understanding Your Template</h3>
-      <p class="text-secondary">Open the template in your Arduino IDE:
-        <code>File > Examples > SmartDevice > UniversalDeviceTemplate</code>.<br>You'll work within <b>5</b> distinct
-        sections:
-      </p>
-
-      <ol class="list-decimal list-inside pl-4 space-y-4">
-        <li>
-          <b>Library Inclusions:</b>
-          <p class="text-secondary mt-2">At the top, you'll see <code>#include &lt;SmartDevice.h&gt;</code>. Add any
-            other libraries your station needs here, like <code>&lt;Servo.h&gt;</code> or <code>&lt;DHT.h&gt;</code>.
-          </p>
-          <pre><code><span class="sh-comment">// 1. LIBRARY INCLUSIONS</span>
-<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;SmartDevice.h&gt;</span>
-<span class="sh-preprocessor">#include</span> <span class="sh-string">&lt;Servo.h&gt;</span><span class="sh-comment"> // &lt;-- EXAMPLE!</span></code></pre>
-        </li>
-        <li>
-          <b>Variable Definitions:</b>
-          <p class="text-secondary mt-2">Define global variables your program needs, like sensor pins or state flags.
-          </p>
-          <pre><code><span class="sh-comment">// 2. VARIABLE DEFINITIONS</span>
-<span class="sh-keyword">const int</span> <span class="sh-variable">sensorPin</span> <span class="sh-operator">=</span> <span class="sh-keyword">PIN_D1</span>; <span class="sh-comment">// Example for a sensor pin</span>
-<span class="sh-keyword">bool</span> <span class="sh-variable">isDeviceOn</span> <span class="sh-operator">=</span> <span class="sh-keyword">false</span>; <span class="sh-comment">// Example to track state</span></code></pre>
-        </li>
-        <li>
-          <b>Configuration:</b>
-          <p class="text-secondary mt-2">You <b>must</b> change these values to match your station's assignment. Define
-            your device name and any communication topics it needs.</p>
-          <pre><code><span class="sh-comment">// 3. CONFIGURATION</span>
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"My_Station_Device"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS! e.g., "Sarah_Door_Lock"</span>
-<span class="sh-keyword">const char</span><span class="sh-operator">*</span> <span class="sh-variable">BASE_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"some_room/some_device"</span>; <span class="sh-comment">// &lt;-- CHANGE for your station</span></code></pre>
-        </li>
-        <li>
-          <b>Object Declarations:</b>
-          <p class="text-secondary mt-2">Declare objects from libraries here. The <code>SmartDevice myDevice;</code>
-            object is already created for you. Add others as needed.</p>
-          <pre><code><span class="sh-comment">// 4. OBJECT DECLARATIONS</span>
-<span class="sh-type">SmartDevice</span> <span class="sh-variable">myDevice</span>;
-<span class="sh-type">Servo</span> <span class="sh-variable">myServo</span>; <span class="sh-comment">// Example for a servo motor</span></code></pre>
-        </li>
-        <li>
-          <b>Device Functions:</b>
-          <p class="text-secondary mt-2">This is where you'll write your station's logic in three key functions:</p>
-          <ol class="list-none list-inside pl-4 space-y-4 mt-4">
-            <li>
-              <b><code>setupDevice()</code>:</b> Runs <b>once</b> at startup. Use it to initialize hardware (e.g., set
-              pin modes, start sensors).
-              <pre><code><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
-  <span class="sh-function">pinMode</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">OUTPUT</span>); <span class="sh-comment">// Example: Set a pin as an output</span>
-  <span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">BASE_TOPIC</span>); <span class="sh-comment">// Example: Listen for commands</span>
-}</code></pre>
-            </li>
-            <li>
-              <b><code>readSensor()</code>:</b> Runs <b>repeatedly</b>. Use it for continuous tasks like reading sensors
-              and publishing their data.
-              <pre><code><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
-  <span class="sh-keyword">int</span> <span class="sh-variable">sensorValue</span> <span class="sh-operator">=</span> <span class="sh-function">digitalRead</span>(<span class="sh-variable">sensorPin</span>);
-  <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">BASE_TOPIC</span>, <span class="sh-type">String</span>(<span class="sh-variable">sensorValue</span>));
-}</code></pre>
-            </li>
-            <li>
-              <b><code>triggerActuator(String topic, String command)</code>:</b> Runs <b>only when a command is
-                received</b> from the hub. Use it to control actuators like lights or motors.
-              <pre><code><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>) {
-    <span class="sh-function">digitalWrite</span>(<span class="sh-keyword">PIN_D7</span>, <span class="sh-keyword">HIGH</span>); <span class="sh-comment">// Example: Turn something ON</span>
-  }
-}</code></pre>
-            </li>
-          </ol>
-        </li>
-      </ol>
-
-      <hr />
-
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">The "System Engine"</h2>
-      <p class="text-secondary">Below the sections you modify is the "System Engine" code. It handles all the background
-        work of connecting to Wi-Fi and the hub. <b>Do not modify this section.</b> It's the foundation of your project!
-      </p>
-
-      <div class="mt-8 bg-accent/10 border border-accent/30 border-l-4 border-l-accent px-6 py-4 rounded-xl">
-        <h4 class="font-bold text-lg text-accent mb-2">Network Information</h4>
-        <p class="text-sm text-accent/80 mb-3">You will need this for your configuration. It should also be on the main
-          whiteboard.</p>
-        <ul class="list-disc list-inside text-sm space-y-2">
-          <li><b>Wi-Fi Network (SSID):</b> <code>McMasterIoT-Camp</code></li>
-          <li><b>Wi-Fi Password:</b> <code>Roomba2025</code></li>
-          <li><b>Hub IP Address:</b> <code>192.168.0.147</code> (confirm with instructor)</li>
-        </ul>
-      </div>
-    </div>
-
     <div id="overview" class="page">
       <!-- Palette: Original Handbook Theme -->
       <!-- Background: #202124, Surface: #2d2e30, Primary: #e8eaed, Secondary: #bdc1c6, Accent: #8ab4f8, Border: #3c4043 -->
@@ -766,30 +688,42 @@
         <p class="mt-4 text-lg text-secondary max-w-3xl mx-auto">Each station plays a vital role. Together, you form the
           complete Smart Classroom system!</p>
         <div class="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-          <div class="overview-card p-4 rounded-2xl">
-            <p class="text-4xl"><span class="material-icons text-5xl align-middle">ac_unit</span></p>
-            <p class="font-bold mt-2">HVAC</p>
-          </div>
-          <div class="overview-card p-4 rounded-2xl">
-            <p class="text-4xl"><span class="material-icons text-5xl align-middle">thermostat</span></p>
-            <p class="font-bold mt-2">Sensors</p>
-          </div>
-          <div class="overview-card p-4 rounded-2xl">
-            <p class="text-4xl"><span class="material-icons text-5xl align-middle">lightbulb</span></p>
-            <p class="font-bold mt-2">Lighting</p>
-          </div>
-          <div class="overview-card p-4 rounded-2xl">
-            <p class="text-4xl"><span class="material-icons text-5xl align-middle">lock</span></p>
-            <p class="font-bold mt-2">Security</p>
-          </div>
-          <div class="overview-card p-4 rounded-2xl">
-            <p class="text-4xl"><span class="material-icons text-5xl align-middle">blinds_closed</span></p>
-            <p class="font-bold mt-2">Curtain</p>
-          </div>
-          <div class="overview-card p-4 rounded-2xl">
-            <p class="text-4xl"><span class="material-icons text-5xl align-middle">tune</span></p>
-            <p class="font-bold mt-2">Panel</p>
-          </div>
+          <!-- Station 1: HVAC -->
+          <a href="#" data-page="station1"
+            class="station-panel-link block h-full w-full p-4 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+            <p class="text-4xl"><span class="material-icons text-5xl align-middle text-accent">ac_unit</span></p>
+            <p class="font-bold mt-2 text-primary">HVAC</p>
+          </a>
+          <!-- Station 2: Sensors -->
+          <a href="#" data-page="station2"
+            class="station-panel-link block h-full w-full p-4 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+            <p class="text-4xl"><span class="material-icons text-5xl align-middle text-accent">thermostat</span></p>
+            <p class="font-bold mt-2 text-primary">Sensors</p>
+          </a>
+          <!-- Station 3: Lighting -->
+          <a href="#" data-page="station3"
+            class="station-panel-link block h-full w-full p-4 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+            <p class="text-4xl"><span class="material-icons text-5xl align-middle text-accent">lightbulb</span></p>
+            <p class="font-bold mt-2 text-primary">Lighting</p>
+          </a>
+          <!-- Station 4: Security -->
+          <a href="#" data-page="station4"
+            class="station-panel-link block h-full w-full p-4 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+            <p class="text-4xl"><span class="material-icons text-5xl align-middle text-accent">lock</span></p>
+            <p class="font-bold mt-2 text-primary">Security</p>
+          </a>
+          <!-- Station 5: Curtain -->
+          <a href="#" data-page="station5"
+            class="station-panel-link block h-full w-full p-4 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+            <p class="text-4xl"><span class="material-icons text-5xl align-middle text-accent">blinds_closed</span></p>
+            <p class="font-bold mt-2 text-primary">Curtain</p>
+          </a>
+          <!-- Station 6: Panel -->
+          <a href="#" data-page="station6"
+            class="station-panel-link block h-full w-full p-4 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+            <p class="text-4xl"><span class="material-icons text-5xl align-middle text-accent">tune</span></p>
+            <p class="font-bold mt-2 text-primary">Panel</p>
+          </a>
         </div>
       </section>
     </div>
@@ -854,19 +788,11 @@
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
   <span class="sh-keyword">int</span> <span class="sh-variable">pinToControl</span> <span class="sh-operator">=</span> <span class="sh-operator">-</span><span class="sh-literal">1</span>;
 
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">HVAC_TOPIC</span>) {
-    <span class="sh-variable">pinToControl</span> <span class="sh-operator">=</span> <span class="sh-variable">HVAC_PIN</span>;
-  } <span class="sh-preprocessor">else if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">KETTLE_TOPIC</span>) {
-    <span class="sh-variable">pinToControl</span> <span class="sh-operator">=</span> <span class="sh-variable">KETTLE_PIN</span>;
-  }
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">HVAC_TOPIC</span>) <span class="sh-variable">pinToControl</span> <span class="sh-operator">=</span> <span class="sh-variable">HVAC_PIN</span>;
+  <span class="sh-preprocessor">else if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">KETTLE_TOPIC</span>) <span class="sh-variable">pinToControl</span> <span class="sh-operator">=</span> <span class="sh-variable">KETTLE_PIN</span>;
 
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">pinToControl</span> <span class="sh-operator">!=</span> <span class="sh-operator">-</span><span class="sh-literal">1</span>) {
-    <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>) {
-      <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pinToControl</span>, <span class="sh-keyword">HIGH</span>); <span class="sh-comment">// Turn ON</span>
-    } <span class="sh-preprocessor">else</span> {
-      <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pinToControl</span>, <span class="sh-keyword">LOW</span>); <span class="sh-comment">// Turn OFF</span>
-    }
-  }
+  <span class="sh-comment">// Turn ON or OFF based on command</span>
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">pinToControl</span> <span class="sh-operator">!=</span> <span class="sh-operator">-</span><span class="sh-literal">1</span>) <span class="sh-function">digitalWrite</span>(<span class="sh-variable">pinToControl</span>, <span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>);
 }</code></pre>
         </li>
       </ul>
@@ -1001,7 +927,7 @@
 <span class="sh-keyword">const int</span> <span class="sh-variable">BULB_PIN</span> <span class="sh-operator">=</span> <span class="sh-keyword">PIN_D6</span>;
 
 <span class="sh-comment">// 3. SERVER CONFIGURATION</span>
-<span class="sh-keyword">const char</span> <span class="sh-operator">*</span><span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"Station_3_Sample"</span>;
+<span class="sh-keyword">const char</span> <span class="sh-operator">*</span><span class="sh-variable">DEVICE_NAME</span> <span class="sh-operator">=</span> <span class="sh-string">"Glowing_Emu"</span>; <span class="sh-comment">// &lt;-- CHANGE THIS!</span>
 <span class="sh-keyword">const char</span> <span class="sh-operator">*</span><span class="sh-variable">RGB_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"classroom/lights"</span>;
 <span class="sh-keyword">const char</span> <span class="sh-operator">*</span><span class="sh-variable">BULB_TOPIC</span> <span class="sh-operator">=</span> <span class="sh-string">"entryway/light"</span>;</code></pre>
         </li>
@@ -1020,8 +946,7 @@
         </li>
         <li><b>Helper Function <code>setLightColor()</code>:</b> This function decodes a color value and sets the RGB
           LED. You must ADD this function to the code yourself.
-          <pre><code class="language-cpp"><span class="sh-comment">// NEW HELPER FUNCTION TO ACTIVATE COLORED LED</span>
-<span class="sh-keyword">void</span> <span class="sh-function">setLightColor</span>(<span class="sh-type">uint32_t</span> <span class="sh-variable">color</span>)
+          <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setLightColor</span>(<span class="sh-type">uint32_t</span> <span class="sh-variable">color</span>)
 {
   <span class="sh-function">analogWrite</span>(<span class="sh-variable">RED_PIN</span>, (<span class="sh-variable">color</span> <span class="sh-operator">&gt;&gt;</span> <span class="sh-number">16</span>) <span class="sh-operator">&amp;</span> <span class="sh-number">0xFF</span>);
   <span class="sh-function">analogWrite</span>(<span class="sh-variable">GREEN_PIN</span>, (<span class="sh-variable">color</span> <span class="sh-operator">&gt;&gt;</span> <span class="sh-number">8</span>) <span class="sh-operator">&amp;</span> <span class="sh-number">0xFF</span>);
@@ -1119,7 +1044,7 @@
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
   <span class="sh-class">Wire</span>.<span class="sh-function">requestFrom</span>(<span class="sh-variable">DOOR_CONTROLLER_ADDRESS</span>, <span class="sh-literal">1</span>); <span class="sh-comment">// Request 1 byte of status data</span>
   
-  <span class="sh-keyword">if</span> (<span class="sh-class">Wire</span>.<span class="sh-function">available</span>()) {
+  <span class="sh-preprocessor">if</span> (<span class="sh-class">Wire</span>.<span class="sh-function">available</span>()) {
     <span class="sh-keyword">byte</span> <span class="sh-variable">statusByte</span> <span class="sh-operator">=</span> <span class="sh-class">Wire</span>.<span class="sh-function">read</span>();
     
     <span class="sh-comment">// Unpack the data from the byte using bitwise operations</span>
@@ -1127,11 +1052,11 @@
     <span class="sh-keyword">bool</span> <span class="sh-variable">isLocked</span>   <span class="sh-operator">=</span> (<span class="sh-variable">statusByte</span> <span class="sh-operator">&gt;&gt;</span> <span class="sh-literal">1</span>) <span class="sh-operator">&amp;</span> <span class="sh-literal">1</span>;
 
     <span class="sh-comment">// Only publish if the state has changed</span>
-    <span class="sh-keyword">if</span> (<span class="sh-variable">isLocked</span> <span class="sh-operator">!=</span> <span class="sh-variable">lastReportedLockState</span>) {
+    <span class="sh-preprocessor">if</span> (<span class="sh-variable">isLocked</span> <span class="sh-operator">!=</span> <span class="sh-variable">lastReportedLockState</span>) {
       <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">LOCK_TOPIC</span>, <span class="sh-variable">isLocked</span> ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>);
       <span class="sh-variable">lastReportedLockState</span> <span class="sh-operator">=</span> <span class="sh-variable">isLocked</span>;
     }
-    <span class="sh-keyword">if</span> (<span class="sh-variable">isDoorOpen</span> <span class="sh-operator">!=</span> <span class="sh-variable">lastReportedDoorState</span>) {
+    <span class="sh-preprocessor">if</span> (<span class="sh-variable">isDoorOpen</span> <span class="sh-operator">!=</span> <span class="sh-variable">lastReportedDoorState</span>) {
       <span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">DOOR_TOPIC</span>, <span class="sh-variable">isDoorOpen</span> ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>);
       <span class="sh-variable">lastReportedDoorState</span> <span class="sh-operator">=</span> <span class="sh-variable">isDoorOpen</span>;
     }
@@ -1141,11 +1066,11 @@
         <li><b><code>triggerActuator()</code>:</b> When a command comes from the cloud, send the corresponding command
           code to the Door Controller over I2C.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-  <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">LOCK_TOPIC</span>) {
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">LOCK_TOPIC</span>) {
     <span class="sh-class">Wire</span>.<span class="sh-function">beginTransmission</span>(<span class="sh-variable">DOOR_CONTROLLER_ADDRESS</span>);
-    <span class="sh-keyword">if</span> (<span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>) {
+    <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>) {
       <span class="sh-class">Wire</span>.<span class="sh-function">write</span>(<span class="sh-literal">2</span>); <span class="sh-comment">// Send command code 2 for LOCK</span>
-    } <span class="sh-keyword">else</span> {
+    } <span class="sh-preprocessor">else</span> {
       <span class="sh-class">Wire</span>.<span class="sh-function">write</span>(<span class="sh-literal">1</span>); <span class="sh-comment">// Send command code 1 for UNLOCK</span>
     }
     <span class="sh-class">Wire</span>.<span class="sh-function">endTransmission</span>();
@@ -1223,7 +1148,7 @@
         <li><b><code>triggerActuator()</code>:</b> When a "DimmedLight" command comes from the hub, extract the
           brightness and send it directly to the controller as the new percentage.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-  <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">CURTAIN_TOPIC</span>) {
+  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">CURTAIN_TOPIC</span>) {
     <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">curtainCmd</span> <span class="sh-operator">=</span> <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
     
     <span class="sh-comment">// Send the desired percentage (0-100) to the controller</span>
@@ -1296,7 +1221,7 @@
         </li>
         <li><b><code>setupDevice()</code>:</b> Use loops to configure all pins and subscribe to all topics.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">setupDevice</span>() {
-  <span class="sh-keyword">for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> <span class="sh-operator">=</span> <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-variable">NUM_CONTROLS</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) {
+  <span class="sh-preprocessor">for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> <span class="sh-operator">=</span> <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-variable">NUM_CONTROLS</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) {
     <span class="sh-function">pinMode</span>(<span class="sh-variable">BTN_PINS</span>[<span class="sh-variable">i</span>], <span class="sh-literal">INPUT_PULLUP</span>);
     <span class="sh-function">pinMode</span>(<span class="sh-variable">RELAY_PINS</span>[<span class="sh-variable">i</span>], <span class="sh-literal">OUTPUT</span>);
     <span class="sh-function">digitalWrite</span>(<span class="sh-variable">RELAY_PINS</span>[<span class="sh-variable">i</span>], <span class="sh-literal">HIGH</span>); <span class="sh-comment">// Relays often need HIGH to be OFF</span>
@@ -1307,17 +1232,17 @@
         <li><b><code>readSensor()</code>:</b> When a button is pressed, toggle the state and construct the correct
           payload to publish.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">readSensor</span>() {
-  <span class="sh-keyword">for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> <span class="sh-operator">=</span> <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-variable">NUM_CONTROLS</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) {
+  <span class="sh-preprocessor">for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> <span class="sh-operator">=</span> <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-variable">NUM_CONTROLS</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) {
     <span class="sh-keyword">bool</span> <span class="sh-variable">currentBtnState</span> <span class="sh-operator">=</span> <span class="sh-function">digitalRead</span>(<span class="sh-variable">BTN_PINS</span>[<span class="sh-variable">i</span>]);
-    <span class="sh-keyword">if</span> (<span class="sh-variable">currentBtnState</span> <span class="sh-operator">==</span> <span class="sh-literal">LOW</span> <span class="sh-operator">&amp;&amp;</span> <span class="sh-variable">lastBtnStates</span>[<span class="sh-variable">i</span>] <span class="sh-operator">==</span> <span class="sh-literal">HIGH</span>) {
+    <span class="sh-preprocessor">if</span> (<span class="sh-variable">currentBtnState</span> <span class="sh-operator">==</span> <span class="sh-literal">LOW</span> <span class="sh-operator">&amp;&amp;</span> <span class="sh-variable">lastBtnStates</span>[<span class="sh-variable">i</span>] <span class="sh-operator">==</span> <span class="sh-literal">HIGH</span>) {
       <span class="sh-variable">deviceStates</span>[<span class="sh-variable">i</span>] <span class="sh-operator">=</span> <span class="sh-operator">!</span><span class="sh-variable">deviceStates</span>[<span class="sh-variable">i</span>]; <span class="sh-comment">// Toggle state</span>
       
       <span class="sh-type">String</span> <span class="sh-variable">payload</span>;
       <span class="sh-comment">// Check if the topic is for a complex light</span>
-      <span class="sh-keyword">if</span> (<span class="sh-function">String</span>(<span class="sh-variable">TOPICS</span>[<span class="sh-variable">i</span>]).<span class="sh-function">indexOf</span>(<span class="sh-string">"light"</span>) <span class="sh-operator">!=</span> <span class="sh-operator">-</span><span class="sh-literal">1</span>) {
+      <span class="sh-preprocessor">if</span> (<span class="sh-function">String</span>(<span class="sh-variable">TOPICS</span>[<span class="sh-variable">i</span>]).<span class="sh-function">indexOf</span>(<span class="sh-string">"light"</span>) <span class="sh-operator">!=</span> <span class="sh-operator">-</span><span class="sh-literal">1</span>) {
         <span class="sh-comment">// Create a JSON command for lights. For simplicity, we just toggle on/off.</span>
         <span class="sh-variable">payload</span> <span class="sh-operator">=</span> <span class="sh-string">"{\"swi\":"</span> <span class="sh-operator">+</span> <span class="sh-function">String</span>(<span class="sh-variable">deviceStates</span>[<span class="sh-variable">i</span>] ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>) <span class="sh-operator">+</span> <span class="sh-string">"}"</span>;
-      } <span class="sh-keyword">else</span> {
+      } <span class="sh-preprocessor">else</span> {
         <span class="sh-comment">// Create a simple boolean command for other devices</span>
         <span class="sh-variable">payload</span> <span class="sh-operator">=</span> <span class="sh-variable">deviceStates</span>[<span class="sh-variable">i</span>] ? <span class="sh-string">"true"</span> : <span class="sh-string">"false"</span>;
       }
@@ -1330,22 +1255,22 @@
 }</code></pre>
         </li>
         <li><b><code>triggerActuator()</code>:</b> Update the relay and local state based on incoming commands. Note
-          that relays are often "active-low", meaning a `LOW` signal turns them ON.
+          that relays are often "active-low", meaning a <code>LOW</code> signal turns them ON.
           <pre><code class="language-cpp"><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-  <span class="sh-keyword">for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> <span class="sh-operator">=</span> <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-variable">NUM_CONTROLS</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) {
-    <span class="sh-keyword">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">TOPICS</span>[<span class="sh-variable">i</span>]) {
+  <span class="sh-preprocessor">for</span> (<span class="sh-keyword">int</span> <span class="sh-variable">i</span> <span class="sh-operator">=</span> <span class="sh-literal">0</span>; <span class="sh-variable">i</span> <span class="sh-operator">&lt;</span> <span class="sh-variable">NUM_CONTROLS</span>; <span class="sh-variable">i</span><span class="sh-operator">++</span>) {
+    <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span> <span class="sh-operator">==</span> <span class="sh-variable">TOPICS</span>[<span class="sh-variable">i</span>]) {
       <span class="sh-keyword">bool</span> <span class="sh-variable">newState</span>;
       <span class="sh-comment">// Check for complex light command or simple boolean</span>
-      <span class="sh-keyword">if</span> (<span class="sh-variable">command</span>.<span class="sh-function">startsWith</span>(<span class="sh-string">"{"</span>)) {
+      <span class="sh-preprocessor">if</span> (<span class="sh-variable">command</span>.<span class="sh-function">startsWith</span>(<span class="sh-string">"{"</span>)) {
         <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">lightCmd</span> <span class="sh-operator">=</span> <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
         <span class="sh-variable">newState</span> <span class="sh-operator">=</span> <span class="sh-variable">lightCmd</span>.<span class="sh-variable">isOn</span>;
-      } <span class="sh-keyword">else</span> {
+      } <span class="sh-preprocessor">else</span> {
         <span class="sh-variable">newState</span> <span class="sh-operator">=</span> (<span class="sh-variable">command</span> <span class="sh-operator">==</span> <span class="sh-string">"true"</span>);
       }
       
       <span class="sh-function">digitalWrite</span>(<span class="sh-variable">RELAY_PINS</span>[<span class="sh-variable">i</span>], <span class="sh-variable">newState</span> ? <span class="sh-literal">LOW</span> : <span class="sh-literal">HIGH</span>); <span class="sh-comment">// LOW for ON, HIGH for OFF</span>
       <span class="sh-variable">deviceStates</span>[<span class="sh-variable">i</span>] <span class="sh-operator">=</span> <span class="sh-variable">newState</span>; <span class="sh-comment">// Sync local state</span>
-      <span class="sh-keyword">break</span>;
+      <span class="sh-preprocessor">break</span>;
     }
   }
 }</code></pre>
@@ -1355,193 +1280,6 @@
       <p class="text-secondary">Your mission succeeds when pressing a button toggles the corresponding device, and the
         relay-controlled LED for that button correctly reflects the device's true state, even when controlled from the
         dashboard.</p>
-    </div>
-
-    <div id="api-reference" class="page">
-      <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">API Reference: SmartDevice Library</h1>
-      <p class="text-center text-secondary text-lg mb-8">This is your reference for the <code>SmartDevice</code>
-        library, your tool for connecting your IoT device to the Smart Classroom Hub.</p>
-
-      <hr />
-
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">GPIO Pin Definitions</h2>
-      <p class="text-secondary">Use these friendly pin names in your code to avoid conflicts with system pins.</p>
-      <table class="w-full text-left text-secondary">
-        <thead>
-          <tr>
-            <th class="py-3 px-4">Macro</th>
-            <th class="py-3 px-4">GPIO Pin</th>
-            <th class="py-3 px-4">Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D0</code></td>
-            <td class="py-2 px-4">16</td>
-            <td class="py-2 px-4">HIGH at boot, used for deep sleep wake.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D1</code></td>
-            <td class="py-2 px-4">5</td>
-            <td class="py-2 px-4">Safe to use. I2C SCL.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D2</code></td>
-            <td class="py-2 px-4">4</td>
-            <td class="py-2 px-4">Safe to use. I2C SDA.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D3</code></td>
-            <td class="py-2 px-4">0</td>
-            <td class="py-2 px-4">Connected to Flash button, boot fails if LOW.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D4</code></td>
-            <td class="py-2 px-4">2</td>
-            <td class="py-2 px-4">HIGH at boot, boot fails if LOW.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D5</code></td>
-            <td class="py-2 px-4">14</td>
-            <td class="py-2 px-4">Safe to use.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D6</code></td>
-            <td class="py-2 px-4">12</td>
-            <td class="py-2 px-4">Safe to use.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D7</code></td>
-            <td class="py-2 px-4">13</td>
-            <td class="py-2 px-4">Safe to use.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>PIN_D8</code></td>
-            <td class="py-2 px-4">15</td>
-            <td class="py-2 px-4">Required for boot, boot fails if HIGH.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">SmartHome Namespace</h2>
-      <p class="text-secondary">The <code>SmartHome</code> namespace contains data types for IoT variables, simplifying
-        how you handle complex data like smart lights.</p>
-
-      <h3 class="text-xl font-bold text-primary mb-3"><code>enum LightType</code></h3>
-      <p class="text-secondary mt-2">Defines the type of light being controlled.</p>
-      <ul class="list-disc list-inside pl-4 space-y-2 text-secondary">
-        <li><code>DIMMABLE</code>: A light that can be turned on/off and have its brightness adjusted.</li>
-        <li><code>COLOR</code>: A light that has on/off, brightness, and color (hue/saturation) control.</li>
-      </ul>
-
-      <h3 class="text-xl font-bold text-primary mb-3"><code>struct Light</code></h3>
-      <p class="text-secondary mt-2">Represents the state of a smart light. The <code>commandToLight</code> function
-        populates this struct for you from an incoming command.</p>
-      <table class="w-full text-left text-secondary">
-        <thead>
-          <tr>
-            <th class="py-3 px-4">Member</th>
-            <th class="py-3 px-4">Type</th>
-            <th class="py-3 px-4">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="py-2 px-4"><code>isOn</code></td>
-            <td class="py-2 px-4"><code>bool</code></td>
-            <td class="py-2 px-4"><code>true</code> if ON, <code>false</code> if OFF.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>brightness</code></td>
-            <td class="py-2 px-4"><code>int</code></td>
-            <td class="py-2 px-4">Brightness level (0-100).</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>hue</code></td>
-            <td class="py-2 px-4"><code>int</code></td>
-            <td class="py-2 px-4">Color hue (0-360). Only for <code>COLOR</code> lights.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>saturation</code></td>
-            <td class="py-2 px-4"><code>int</code></td>
-            <td class="py-2 px-4">Color saturation (0-100). Only for <code>COLOR</code> lights.</td>
-          </tr>
-          <tr>
-            <td class="py-2 px-4"><code>type</code></td>
-            <td class="py-2 px-4"><code>LightType</code></td>
-            <td class="py-2 px-4">Specifies if the light is <code>DIMMABLE</code> or <code>COLOR</code>.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">SmartDevice Class</h2>
-      <p class="text-secondary">The main class for handling all networking and communication.</p>
-
-      <h3 class="text-xl font-bold text-primary mb-3">Core Methods</h3>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent">
-          <code>void begin(const char* deviceName, const char* wifi_ssid, const char* wifi_pass, const char* mqtt_broker)</code>
-        </h4>
-        <p class="text-sm text-secondary">Initializes the device, connects to Wi-Fi, and connects to the MQTT Hub. Call
-          this once in your main <code>setup()</code> function.</p>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>void update()</code></h4>
-        <p class="text-sm text-secondary">Keeps the device connected and processes messages. This <b>must</b> be called
-          in every iteration of your main <code>loop()</code>.</p>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>void publishTo(String fullTopic, String payload)</code></h4>
-        <p class="text-sm text-secondary">Publishes a message to a specific MQTT topic. Use this to send sensor data or
-          status updates.</p>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>void subscribeTo(String fullTopic)</code></h4>
-        <p class="text-sm text-secondary">Subscribes your device to a topic to receive messages, like commands from the
-          hub.</p>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>void onMessage(MessageCallback callback)</code></h4>
-        <p class="text-sm text-secondary">Registers your handler function (like <code>triggerActuator</code>) to be
-          called when any message is received.</p>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>bool isConnected()</code></h4>
-        <p class="text-sm text-secondary">Returns <code>true</code> if the device is currently connected to the MQTT
-          Hub, <code>false</code> otherwise.</p>
-      </div>
-
-      <h3 class="text-xl font-bold text-primary mb-3">Static Helper Functions</h3>
-      <p class="text-secondary">These functions are helpers that you can call directly from the <code>SmartDevice</code>
-        class without needing an object. They make common tasks, especially for lighting, much simpler.</p>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>static SmartHome::Light commandToLight(String command)</code></h4>
-        <p class="text-sm text-secondary">Parses an incoming JSON command string into an easy-to-use <code>Light</code>
-          struct. This is the first step in handling any light command.</p>
-        <pre
-          class="mt-4"><code><span class="sh-comment">// In triggerActuator:</span>
-<span class="sh-class">SmartHome::Light</span> <span class="sh-variable">lightCmd</span> <span class="sh-operator">=</span> <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
-<span class="sh-keyword">if</span> (<span class="sh-variable">lightCmd</span>.<span class="sh-variable">isOn</span>) { <span class="sh-comment">/* ... */</span> }</code></pre>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>static uint32_t getRGB(SmartHome::Light lightCommand)</code></h4>
-        <p class="text-sm text-secondary">Converts a <code>Light</code> struct into a single color value that the
-          NeoPixel library can understand. It handles both full color (from hue/saturation) and dimmable white
-          (grayscale).</p>
-        <pre class="mt-4"><code><span class="sh-comment">// For NeoPixel strips:</span>
-<span class="sh-variable">strip</span>.<span class="sh-function">fill</span>(<span class="sh-class">SmartDevice</span>::<span class="sh-function">getRGB</span>(<span class="sh-variable">lightCmd</span>));
-<span class="sh-variable">strip</span>.<span class="sh-function">show</span>();</code></pre>
-      </div>
-      <div class="highlight-box">
-        <h4 class="font-bold text-accent"><code>static uint8_t getBrightnessValue(SmartHome::Light lightCommand)</code>
-        </h4>
-        <p class="text-sm text-secondary">Gets a brightness value (0-255) suitable for a standard dimmable LED using
-          <code>analogWrite()</code>. It converts the 0-100 brightness from the command.
-        </p>
-        <pre
-          class="mt-4"><code><span class="sh-comment">// For standard dimmable LEDs:</span>
-<span class="sh-function">analogWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-class">SmartDevice</span>::<span class="sh-function">getBrightnessValue</span>(<span class="sh-variable">lightCmd</span>));</code></pre>
-      </div>
     </div>
 
     <div id="upload-troubleshoot" class="page">
@@ -1620,7 +1358,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       // --- DOM Element References ---
       const pages = document.querySelectorAll('.page');
-      const navLinks = document.querySelectorAll('.nav-item, .dropdown-item');
+      // Updated navLinks to include the new station panel links
+      const navLinks = document.querySelectorAll('.nav-item, .dropdown-item, .station-panel-link');
       const dropdownContainer = document.getElementById('dropdown-container');
       const dropdownButton = document.getElementById('nav-missions-btn');
       const dropdownMenu = document.getElementById('dropdown-menu');
@@ -1639,8 +1378,16 @@
           const isForCurrentPage = link.dataset.page === pageId;
           const isDropdownPageActive = activePage && activePage.id.startsWith('station');
 
+          // Reset styling for all nav and dropdown items
           link.classList.remove('bg-accent', 'text-custom-bg', 'font-bold');
-          link.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+          // Only apply hover styles to nav-items and dropdown-items, not station-panel-links
+          if (!link.classList.contains('station-panel-link')) {
+            link.classList.add('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+          } else {
+            // Ensure station-panel-links don't get these nav item specific hover styles
+            link.classList.remove('text-secondary', 'hover:bg-custom-border', 'hover:text-primary');
+          }
+
 
           if (isForCurrentPage && !link.classList.contains('dropdown-item')) {
             link.classList.add('bg-accent', 'text-custom-bg', 'font-bold');
@@ -1704,7 +1451,7 @@
         item.classList.add('block', 'w-full', 'text-left', 'px-4', 'py-2', 'text-sm', 'text-primary', 'hover:bg-accent', 'hover:text-custom-bg', 'transition-colors', 'rounded-lg');
       });
 
-      showPage('home'); // Show home page on initial load
+      showPage('overview'); // Show overview page on initial load
 
       // Chart rendering function for the infographic page
       function renderInfographicCharts() {

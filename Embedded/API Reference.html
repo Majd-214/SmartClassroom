@@ -233,19 +233,14 @@
         <div id="api-reference" class="page">
             <h1 class="text-4xl md:text-5xl font-bold text-center text-primary mb-4">API Reference: SmartDevice Library
             </h1>
-            <p class="text-center text-secondary text-lg mb-8">This section provides a comprehensive reference for the
-                <code>SmartDevice</code> library, your primary tool for connecting your IoT device to the Smart
-                Classroom Hub.
-                Understanding these functions and data types is crucial for building robust and interactive projects.
-            </p>
+            <p class="text-center text-secondary text-lg mb-8">This is your reference for the <code>SmartDevice</code>
+                library, your tool for connecting your IoT device to the Smart Classroom Hub.</p>
 
             <hr />
 
             <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">GPIO Pin Definitions
             </h2>
-            <p class="text-secondary">These are the safe-to-use GPIO pin definitions for your ESP8266 NodeMCU board. Use
-                these
-                friendly names in your code to avoid conflicts with essential system pins.</p>
+            <p class="text-secondary">Use these friendly pin names in your code to avoid conflicts with system pins.</p>
             <table class="w-full text-left text-secondary">
                 <thead>
                     <tr>
@@ -258,27 +253,27 @@
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D0</code></td>
                         <td class="py-2 px-4">16</td>
-                        <td class="py-2 px-4">HIGH at boot, used to wake up from deep sleep.</td>
+                        <td class="py-2 px-4">HIGH at boot, used for deep sleep wake.</td>
                     </tr>
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D1</code></td>
                         <td class="py-2 px-4">5</td>
-                        <td class="py-2 px-4">Safe to use.</td>
+                        <td class="py-2 px-4">Safe to use. I2C SCL.</td>
                     </tr>
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D2</code></td>
                         <td class="py-2 px-4">4</td>
-                        <td class="py-2 px-4">Safe to use.</td>
+                        <td class="py-2 px-4">Safe to use. I2C SDA.</td>
                     </tr>
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D3</code></td>
                         <td class="py-2 px-4">0</td>
-                        <td class="py-2 px-4">Connected to Flash button, boot fails if pulled LOW.</td>
+                        <td class="py-2 px-4">Connected to Flash button, boot fails if LOW.</td>
                     </tr>
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D4</code></td>
                         <td class="py-2 px-4">2</td>
-                        <td class="py-2 px-4">HIGH at boot, boot fails if pulled LOW.</td>
+                        <td class="py-2 px-4">HIGH at boot, boot fails if LOW.</td>
                     </tr>
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D5</code></td>
@@ -298,28 +293,27 @@
                     <tr>
                         <td class="py-2 px-4"><code>PIN_D8</code></td>
                         <td class="py-2 px-4">15</td>
-                        <td class="py-2 px-4">Required for boot, boot fails if pulled HIGH.</td>
+                        <td class="py-2 px-4">Required for boot, boot fails if HIGH.</td>
                     </tr>
                 </tbody>
             </table>
 
             <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">SmartHome Namespace</h2>
-            <p class="text-secondary">The <code>SmartHome</code> namespace contains data structures (structs and enums)
-                used
-                for defining IoT variable types. These structures simplify sending and receiving complex data,
-                especially for
-                devices like smart lights.</p>
+            <p class="text-secondary">The <code>SmartHome</code> namespace contains data types for IoT variables,
+                simplifying
+                how you handle complex data like smart lights.</p>
 
             <h3 class="text-xl font-bold text-primary mb-3"><code>enum LightType</code></h3>
-            <p class="text-secondary mt-2">Defines the type of light being represented.</p>
+            <p class="text-secondary mt-2">Defines the type of light being controlled.</p>
             <ul class="list-disc list-inside pl-4 space-y-2 text-secondary">
-                <li><code>DIMMABLE_WHITE</code>: For lights that can only control brightness (0-255).</li>
-                <li><code>FULL_COLOR</code>: For lights that can control brightness and color (RGB).</li>
+                <li><code>DIMMABLE</code>: A light that can be turned on/off and have its brightness adjusted.</li>
+                <li><code>COLOR</code>: A light that has on/off, brightness, and color (hue/saturation) control.</li>
             </ul>
 
             <h3 class="text-xl font-bold text-primary mb-3"><code>struct Light</code></h3>
-            <p class="text-secondary mt-2">Represents the state of a smart light, including its type, on/off state,
-                brightness, and color (for full-color lights).</p>
+            <p class="text-secondary mt-2">Represents the state of a smart light. The <code>commandToLight</code>
+                function
+                populates this struct for you from an incoming command.</p>
             <table class="w-full text-left text-secondary">
                 <thead>
                     <tr>
@@ -330,298 +324,116 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="py-2 px-4"><code>type</code></td>
-                        <td class="py-2 px-4"><code>LightType</code></td>
-                        <td class="py-2 px-4">Specifies if the light is dimmable white or full color.</td>
-                    </tr>
-                    <tr>
-                        <td class="py-2 px-4"><code>state</code></td>
+                        <td class="py-2 px-4"><code>isOn</code></td>
                         <td class="py-2 px-4"><code>bool</code></td>
                         <td class="py-2 px-4"><code>true</code> if ON, <code>false</code> if OFF.</td>
                     </tr>
                     <tr>
                         <td class="py-2 px-4"><code>brightness</code></td>
-                        <td class="py-2 px-4"><code>uint8_t</code></td>
-                        <td class="py-2 px-4">Brightness level (0-255).</td>
+                        <td class="py-2 px-4"><code>int</code></td>
+                        <td class="py-2 px-4">Brightness level (0-100).</td>
                     </tr>
                     <tr>
-                        <td class="py-2 px-4"><code>color</code></td>
-                        <td class="py-2 px-4"><code>uint32_t</code></td>
-                        <td class="py-2 px-4">RGB color in <code>0xRRGGBB</code> format (e.g., <code>0xFF0000</code> for
-                            Red).
-                            Only relevant for <code>FULL_COLOR</code> lights.</td>
+                        <td class="py-2 px-4"><code>hue</code></td>
+                        <td class="py-2 px-4"><code>int</code></td>
+                        <td class="py-2 px-4">Color hue (0-360). Only for <code>COLOR</code> lights.</td>
                     </tr>
                     <tr>
-                        <td class="py-2 px-4"><code>payload()</code></td>
-                        <td class="py-2 px-4"><code>String</code></td>
-                        <td class="py-2 px-4">Generates a JSON string payload from the struct's current state, ready for
-                            MQTT
-                            publication.</td>
+                        <td class="py-2 px-4"><code>saturation</code></td>
+                        <td class="py-2 px-4"><code>int</code></td>
+                        <td class="py-2 px-4">Color saturation (0-100). Only for <code>COLOR</code> lights.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4"><code>type</code></td>
+                        <td class="py-2 px-4"><code>LightType</code></td>
+                        <td class="py-2 px-4">Specifies if the light is <code>DIMMABLE</code> or <code>COLOR</code>.
+                        </td>
                     </tr>
                 </tbody>
             </table>
 
             <h2 class="text-3xl font-bold text-primary border-b border-custom-border pb-3 mb-6">SmartDevice Class</h2>
-            <p class="text-secondary">The <code>SmartDevice</code> class provides all the essential functionalities for
-                your
-                ESP8266 to connect to Wi-Fi, communicate with the MQTT broker, and handle incoming/outgoing messages.
-            </p>
+            <p class="text-secondary">The main class for handling all networking and communication.</p>
 
-            <h3 class="text-xl font-bold text-primary mb-3">Constructor</h3>
+            <h3 class="text-xl font-bold text-primary mb-3">Core Methods</h3>
             <div class="highlight-box">
-                <h4 class="font-bold text-accent"><code>SmartDevice()</code></h4>
-                <p class="text-sm text-secondary">Initializes a new instance of the <code>SmartDevice</code> class. You
-                    will
-                    typically declare this as a global object in your sketch.</p>
-                <pre><code><span class="sh-class">SmartDevice</span> <span class="sh-variable">myDevice</span>; <span class="sh-comment">// Declare a SmartDevice object</span></code></pre>
+                <h4 class="font-bold text-accent">
+                    <code>void begin(const char* deviceName, const char* wifi_ssid, const char* wifi_pass, const char* mqtt_broker)</code>
+                </h4>
+                <p class="text-sm text-secondary">Initializes the device, connects to Wi-Fi, and connects to the MQTT
+                    Hub. Call
+                    this once in your main <code>setup()</code> function.</p>
             </div>
-
-            <h3 class="text-xl font-bold text-primary mb-3">Public Methods</h3>
-
-            <div class="highlight-box">
-                <h4 class="font-bold text-accent"><code>void begin(const char *deviceName, const char *wifi_ssid, const char
-                        *wifi_pass, const char *mqtt_broker)</code></h4>
-                <p class="text-sm text-secondary">Initializes the device, connects to the specified Wi-Fi network, and
-                    establishes a connection to the MQTT Hub. This function should be called once in your
-                    <code>setup()</code>
-                    function.
-                </p>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Parameter</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"><code>deviceName</code></td>
-                            <td class="py-1 px-4"><code>const char *</code></td>
-                            <td class="py-1 px-4">A unique name for your device (e.g., "Station1_HVAC").</td>
-                        </tr>
-                        <tr>
-                            <td class="py-1 px-4"><code>wifi_ssid</code></td>
-                            <td class="py-1 px-4"><code>const char *</code></td>
-                            <td class="py-1 px-4">The Wi-Fi network SSID (e.g., "McMasterIoT-Camp").</td>
-                        </tr>
-                        <tr>
-                            <td class="py-1 px-4"><code>wifi_pass</code></td>
-                            <td class="py-1 px-4"><code>const char *</code></td>
-                            <td class="py-1 px-4">The Wi-Fi network password (e.g., "Roomba2025").</td>
-                        </tr>
-                        <tr>
-                            <td class="py-1 px-4"><code>mqtt_broker</code></td>
-                            <td class="py-1 px-4"><code>const char *</code></td>
-                            <td class="py-1 px-4">The IP address of the MQTT Broker (e.g., "192.168.0.147").</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pre
-                    class="mt-4"><code><span class="sh-variable">myDevice</span>.<span class="sh-function">begin</span>(<span class="sh-variable">DEVICE_NAME</span>, <span class="sh-variable">WIFI_SSID</span>, <span class="sh-variable">WIFI_PASSWORD</span>, <span class="sh-variable">MQTT_BROKER_IP</span>);</code></pre>
-            </div>
-
             <div class="highlight-box">
                 <h4 class="font-bold text-accent"><code>void update()</code></h4>
-                <p class="text-sm text-secondary">Keeps the device connected to Wi-Fi and the MQTT Hub, and processes
-                    any
-                    incoming messages. This function <b>MUST</b> be called in every iteration of your Arduino
-                    <code>loop()</code>
-                    function.
-                </p>
-                <pre><code><span class="sh-keyword">void</span> <span class="sh-function">loop</span>() {
-  <span class="sh-variable">myDevice</span>.<span class="sh-function">update</span>(); <span class="sh-comment">// Keep the device online and process messages</span>
-  <span class="sh-function">readSensor</span>(); <span class="sh-comment">// Your custom sensor reading function</span>
-}</code></pre>
+                <p class="text-sm text-secondary">Keeps the device connected and processes messages. This <b>must</b> be
+                    called
+                    in every iteration of your main <code>loop()</code>.</p>
             </div>
-
             <div class="highlight-box">
                 <h4 class="font-bold text-accent"><code>void publishTo(String fullTopic, String payload)</code></h4>
-                <p class="text-sm text-secondary">Publishes a raw string message to a specific MQTT topic path. Use this
-                    to
-                    send data (e.g., sensor readings, status updates) from your device to the central hub or other
-                    subscribed
-                    devices.</p>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Parameter</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"><code>fullTopic</code></td>
-                            <td class="py-1 px-4"><code>String</code></td>
-                            <td class="py-1 px-4">The complete MQTT topic path (e.g.,
-                                "<code>classroom/station1/temperature</code>").</td>
-                        </tr>
-                        <tr>
-                            <td class="py-1 px-4"><code>payload</code></td>
-                            <td class="py-1 px-4"><code>String</code></td>
-                            <td class="py-1 px-4">The message content as a string. For Light messages, use
-                                <code>Light.payload()</code>.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pre
-                    class="mt-4"><code><span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">BASE_TOPIC</span> + <span class="sh-string">"/temperature"</span>, <span class="sh-function">String</span>(<span class="sh-variable">currentTemp</span>));
-<span class="sh-class">SmartHome::Light</span> <span class="sh-variable">myLight</span>; <span class="sh-comment">// Example Light object</span>
-<span class="sh-variable">myLight</span>.<span class="sh-variable">state</span> = <span class="sh-keyword">true</span>;
-<span class="sh-variable">myLight</span>.<span class="sh-variable">brightness</span> = <span class="sh-literal">150</span>;
-<span class="sh-variable">myDevice</span>.<span class="sh-function">publishTo</span>(<span class="sh-variable">BASE_TOPIC</span> + <span class="sh-string">"/light"</span>, <span class="sh-variable">myLight</span>.<span class="sh-function">payload</span>());</code></pre>
+                <p class="text-sm text-secondary">Publishes a message to a specific MQTT topic. Use this to send sensor
+                    data or
+                    status updates.</p>
             </div>
-
             <div class="highlight-box">
                 <h4 class="font-bold text-accent"><code>void subscribeTo(String fullTopic)</code></h4>
-                <p class="text-sm text-secondary">Subscribes your device to a specific MQTT topic path, allowing it to
-                    receive
-                    messages published on that topic. This version also stores the subscription for automatic
-                    re-subscription on
-                    reconnect.</p>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Parameter</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"><code>fullTopic</code></td>
-                            <td class="py-1 px-4"><code>String</code></td>
-                            <td class="py-1 px-4">The complete MQTT topic path to subscribe to (e.g.,
-                                "<code>classroom/station1s</code>").</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pre
-                    class="mt-4"><code><span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-variable">BASE_TOPIC</span> + <span class="sh-string">"s"</span>);
-<span class="sh-variable">myDevice</span>.<span class="sh-function">subscribeTo</span>(<span class="sh-string">"classroom/master/broadcast"</span>); <span class="sh-comment">// Subscribe to a global topic</span></code></pre>
+                <p class="text-sm text-secondary">Subscribes your device to a topic to receive messages, like commands
+                    from the
+                    hub.</p>
             </div>
-
             <div class="highlight-box">
                 <h4 class="font-bold text-accent"><code>void onMessage(MessageCallback callback)</code></h4>
-                <p class="text-sm text-secondary">Registers a function to handle all incoming MQTT messages received by
-                    your
-                    device. The registered <code>callback</code> function will be executed whenever a message arrives on
-                    a
-                    topic your device is subscribed to.</p>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Parameter</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"><code>callback</code></td>
-                            <td class="py-1 px-4"><code>MessageCallback</code></td>
-                            <td class="py-1 px-4">A pointer to a function with the signature
-                                <code>void func(String topic, String payload)</code>.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pre
-                    class="mt-4"><code><span class="sh-comment">// Define your message handler function</span>
-<span class="sh-keyword">void</span> <span class="sh-function">myMessageHandler</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">payload</span>) {
-  <span class="sh-comment">// Process the incoming message</span>
-  <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">"Received on topic: "</span>);
-  <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-variable">topic</span>);
-  <span class="sh-function">Serial</span>.<span class="sh-function">print</span>(<span class="sh-string">". Payload: "</span>);
-  <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-variable">payload</span>);
-}
-        
-<span class="sh-comment">// In your setup() function:</span>
-<span class="sh-variable">myDevice</span>.<span class="sh-function">onMessage</span>(<span class="sh-variable">myMessageHandler</span>);</code></pre>
+                <p class="text-sm text-secondary">Registers your handler function (like <code>triggerActuator</code>) to
+                    be
+                    called when any message is received.</p>
             </div>
-
             <div class="highlight-box">
                 <h4 class="font-bold text-accent"><code>bool isConnected()</code></h4>
-                <p class="text-sm text-secondary">Checks if the MQTT client is currently connected to the central hub.
-                </p>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Returns</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"></td>
-                            <td class="py-1 px-4"><code>bool</code></td>
-                            <td class="py-1 px-4"><code>true</code> if connected, <code>false</code> otherwise.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pre class="mt-4"><code><span class="sh-preprocessor">if</span> (<span class="sh-variable">myDevice</span>.<span class="sh-function">isConnected</span>()) {
-  <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Device is online."</span>);
-} <span class="sh-keyword">else</span> {
-  <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Device is offline, attempting reconnect..."</span>);
-}</code></pre>
+                <p class="text-sm text-secondary">Returns <code>true</code> if the device is currently connected to the
+                    MQTT
+                    Hub, <code>false</code> otherwise.</p>
             </div>
 
+            <h3 class="text-xl font-bold text-primary mb-3">Static Helper Functions</h3>
+            <p class="text-secondary">These functions are helpers that you can call directly from the
+                <code>SmartDevice</code>
+                class without needing an object. They make common tasks, especially for lighting, much simpler.
+            </p>
             <div class="highlight-box">
                 <h4 class="font-bold text-accent"><code>static SmartHome::Light commandToLight(String command)</code>
                 </h4>
-                <p class="text-sm text-secondary">A static helper function to parse an incoming raw command string
-                    (typically
-                    from an MQTT message payload) into a structured <code>SmartHome::Light</code> object. This
-                    simplifies
-                    handling light-related commands.</p>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Parameter</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"><code>command</code></td>
-                            <td class="py-1 px-4"><code>String</code></td>
-                            <td class="py-1 px-4">The raw command string (e.g., "ON", "OFF", "BRIGHTNESS:120",
-                                "COLOR:#FF00FF").</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="w-full text-left text-secondary mt-2">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4">Returns</th>
-                            <th class="py-2 px-4">Type</th>
-                            <th class="py-2 px-4">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-1 px-4"></td>
-                            <td class="py-1 px-4"><code>SmartHome::Light</code></td>
-                            <td class="py-1 px-4">A <code>Light</code> struct populated with the parsed command details.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pre class="mt-4"><code><span class="sh-keyword">void</span> <span class="sh-function">triggerActuator</span>(<span class="sh-type">String</span> <span class="sh-variable">topic</span>, <span class="sh-type">String</span> <span class="sh-variable">command</span>) {
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">topic</span>.<span class="sh-function">endsWith</span>(<span class="sh-string">"/light/set"</span>)) {
-  <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">lightState</span> = <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
-  <span class="sh-preprocessor">if</span> (<span class="sh-variable">lightState</span>.<span class="sh-variable">state</span>) {
-    <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Light ON!"</span>);
-  } <span class="sh-preprocessor">else</span> {
-    <span class="sh-function">Serial</span>.<span class="sh-function">println</span>(<span class="sh-string">"Light OFF!"</span>);
-  }
-    <span class="sh-comment">// Apply brightness/color based on lightState members</span>
-  }
-}</code></pre>
+                <p class="text-sm text-secondary">Parses an incoming JSON command string into an easy-to-use
+                    <code>Light</code>
+                    struct. This is the first step in handling any light command.
+                </p>
+                <pre
+                    class="mt-4"><code><span class="sh-comment">// In triggerActuator:</span>
+      <span class="sh-class">SmartHome::Light</span> <span class="sh-variable">lightCmd</span> <span class="sh-operator">=</span> <span class="sh-class">SmartDevice</span>::<span class="sh-function">commandToLight</span>(<span class="sh-variable">command</span>);
+      <span class="sh-keyword">if</span> (<span class="sh-variable">lightCmd</span>.<span class="sh-variable">isOn</span>) { <span class="sh-comment">/* ... */</span> }</code></pre>
+            </div>
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent"><code>static uint32_t getRGB(SmartHome::Light lightCommand)</code>
+                </h4>
+                <p class="text-sm text-secondary">Converts a <code>Light</code> struct into a single color value that
+                    the
+                    NeoPixel library can understand. It handles both full color (from hue/saturation) and dimmable white
+                    (grayscale).</p>
+                <pre class="mt-4"><code><span class="sh-comment">// For NeoPixel strips:</span>
+      <span class="sh-variable">strip</span>.<span class="sh-function">fill</span>(<span class="sh-class">SmartDevice</span>::<span class="sh-function">getRGB</span>(<span class="sh-variable">lightCmd</span>));
+      <span class="sh-variable">strip</span>.<span class="sh-function">show</span>();</code></pre>
+            </div>
+            <div class="highlight-box">
+                <h4 class="font-bold text-accent">
+                    <code>static uint8_t getBrightnessValue(SmartHome::Light lightCommand)</code>
+                </h4>
+                <p class="text-sm text-secondary">Gets a brightness value (0-255) suitable for a standard dimmable LED
+                    using
+                    <code>analogWrite()</code>. It converts the 0-100 brightness from the command.
+                </p>
+                <pre
+                    class="mt-4"><code><span class="sh-comment">// For standard dimmable LEDs:</span>
+      <span class="sh-function">analogWrite</span>(<span class="sh-variable">BULB_PIN</span>, <span class="sh-class">SmartDevice</span>::<span class="sh-function">getBrightnessValue</span>(<span class="sh-variable">lightCmd</span>));</code></pre>
             </div>
         </div>
     </main>
