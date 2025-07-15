@@ -17,7 +17,7 @@ echo.
 
 :: --- Step 1: Copy the hidden installer ---
 echo [ACTION] Copying setup files...
-xcopy "%~dp0\%desktop_script_name%" "%desktop_path%\" /H /Y /I > nul
+copy "%~dp0\%desktop_script_name%" "%desktop_path%\" > nul
 if %errorlevel% neq 0 (
     echo [ERROR] Could not copy installer. Please try again.
     pause
