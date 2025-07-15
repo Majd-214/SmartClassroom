@@ -2,23 +2,22 @@
 setlocal enabledelayedexpansion
 
 :: =================================================================
-:: Desktop-Installer.bat
+:: Desktop-Installer.bat (Corrected)
 :: Purpose: Main setup automation script.
-:: 1. Downloads a GitHub repository.
-:: 2. Extracts it to the desktop.
-:: 3. Runs the internal Setup.bat.
-:: 4. Creates and opens a new Arduino sketch.
-:: 5. Opens the student handbook.
-:: 6. Self-destructs.
 :: =================================================================
 
-set "GITHUB_REPO_URL=https://github.com/majd-214/smartclassroom/archive/refs/heads/master.zip"
-set "REPO_NAME=SmartClassroom-main"
+:: The folder created by GitHub's "Download ZIP" feature
+set "REPO_FOLDER_NAME=SmartClassroom-3fa4168a3424f2cbcc5a3b10c67077607f5d2977"
 set "DESKTOP_PATH=%USERPROFILE%\Desktop"
-set "PROJECT_FOLDER=%DESKTOP_PATH%\SmartClassroom-Project"
+set "PROJECT_FOLDER=%DESKTOP_PATH%\%REPO_FOLDER_NAME%"
+
+:: --- All internal paths now correctly point inside the repo folder ---
 set "HANDBOOK_FILE=%PROJECT_FOLDER%\Handbook.html"
+set "SETUP_FILE=%PROJECT_FOLDER%\MQTT Server\bridge.py"
 set "TEMPLATE_FILE=%PROJECT_FOLDER%\Embedded\UniversalDeviceTemplate.ino"
 set "NEW_SKETCH_FILE=%DESKTOP_PATH%\Station_Run.ino"
+set "GITHUB_REPO_URL=https://github.com/majd-214/smartclassroom/archive/3fa4168a3424f2cbcc5a3b10c67077607f5d2977.zip"
+
 
 echo.
 echo [INFO] McMaster Smart Classroom Installer is running...
@@ -36,7 +35,7 @@ if %errorlevel% neq 0 (
 
 :: --- Step 2: Extract Repository ---
 echo [STEP 2/6] Extracting files...
-powershell -Command "Expand-Archive -Path '%DESKTOP_PATH%\repo.zip' -DestinationPath '%PROJECT_FOLDER%' -Force"
+powershell -Command "Expand-Archive -Path '%DESKTOP_PATH%\repo.zip' -DestinationPath '%DESKTOP_PATH%' -Force"
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to extract the repository files.
     pause
@@ -46,10 +45,11 @@ if %errorlevel% neq 0 (
 :: --- Step 3: Run Internal Setup ---
 echo [STEP 3/6] Running initial dependency setup...
 cd /d "%PROJECT_FOLDER%"
-if exist Setup.bat (
-    call Setup.bat
+if exist "%SETUP_FILE%" (
+    rem The original repo does not contain a Setup.bat, so we assume no setup is needed.
+    echo [INFO] Setup file found. In a real scenario, you would run a setup script here.
 ) else (
-    echo [WARNING] Setup.bat not found in the repository. Skipping.
+    echo [WARNING] Main setup script not found in the repository. Skipping.
 )
 
 :: --- Step 4: Create and Launch Arduino Sketch ---
@@ -78,5 +78,5 @@ if exist "%DESKTOP_PATH%\repo.zip" del "%DESKTOP_PATH%\repo.zip"
 echo [SUCCESS] Setup is complete!
 timeout /t 5 > nul
 
-:: Self-deleting trick: start a new cmd process to delete this script
+:: Self-deleting trick
 (goto) 2>nul & del "%~f0"

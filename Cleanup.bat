@@ -3,13 +3,12 @@ setlocal
 
 :: =================================================================
 :: Cleanup.bat
-:: Purpose: Removes project files and optionally the environment setup.
 :: =================================================================
 
-set "PROJECT_FOLDER=%USERPROFILE%\Desktop\SmartClassroom-Project"
+set "PROJECT_FOLDER=%USERPROFILE%\Desktop\SmartClassroom-3fa4168a3424f2cbcc5a3b10c67077607f5d2977"
 set "SKETCH_FILE=%USERPROFILE%\Desktop\Station_Run.ino"
 set "ARDUINO_LIB_PATH=%USERPROFILE%\Documents\Arduino\libraries"
-set "ESP8266_PACKAGE_PATH=%APPDATA%\Arduino15\packages\esp8266"
+set "ESP8266_PACKAGE_PATH=%LOCALAPPDATA%\Arduino15\packages\esp8266"
 
 echo.
 echo This script will remove the Smart Classroom project and related files.
