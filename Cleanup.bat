@@ -1,64 +1,54 @@
 @echo off
 setlocal
 
-echo ===================================================================
-echo   McMaster Smart Classroom - Environment Cleanup
-echo ===================================================================
-echo This script will attempt to uninstall all libraries and boards
-echo installed by the setup script.
-echo.
+:: =================================================================
+:: Cleanup.bat
+:: Purpose: Removes project files and optionally the environment setup.
+:: =================================================================
 
-:: --- 1. Find CLI ---
-echo [+] Searching for arduino-cli.exe...
-set "CLI_DIR=%CD%\arduino_cli"
-set "ARDUINO_CLI_PATH="
-where arduino-cli >nul 2>nul
-if %errorlevel%==0 (
-    echo    Found arduino-cli in system PATH.
-    set ARDUINO_CLI_PATH=FOUND
+set "PROJECT_FOLDER=%USERPROFILE%\Desktop\SmartClassroom-Project"
+set "SKETCH_FILE=%USERPROFILE%\Desktop\Station_Run.ino"
+set "ARDUINO_LIB_PATH=%USERPROFILE%\Documents\Arduino\libraries"
+set "ESP8266_PACKAGE_PATH=%APPDATA%\Arduino15\packages\esp8266"
+
+echo.
+echo This script will remove the Smart Classroom project and related files.
+echo.
+set /p "choice=Are you sure you want to continue? (Y/N): "
+if /i not "%choice%"=="Y" goto :eof
+
+:: --- Step 1: Delete Project Folder and Sketch ---
+echo [CLEANUP] Removing project folder and desktop sketch...
+if exist "%PROJECT_FOLDER%" (
+    rmdir /s /q "%PROJECT_FOLDER%"
+    echo [OK] Project folder deleted.
+)
+if exist "%SKETCH_FILE%" (
+    del "%SKETCH_FILE%"
+    echo [OK] Desktop sketch deleted.
 )
 
-if not defined ARDUINO_CLI_PATH (
-    if exist "%CLI_DIR%\arduino-cli.exe" (
-        echo    Found local CLI in %CLI_DIR%
-        set "PATH=%PATH%;%CLI_DIR%"
+:: --- Step 2: Uninstall Environment (Optional) ---
+echo.
+set /p "uninstall_env=Do you want to uninstall the ESP8266 boards and libraries? (Y/N): "
+if /i not "%uninstall_env%"=="Y" goto :finished
+
+echo [CLEANUP] Removing ESP8266 board package...
+if exist "%ESP8266_PACKAGE_PATH%" (
+    rmdir /s /q "%ESP8266_PACKAGE_PATH%"
+    echo [OK] ESP8266 package deleted.
+)
+
+echo [CLEANUP] Removing installed libraries...
+set "LIBRARIES_TO_UNINSTALL=PubSubClient ArduinoJson Adafruit_NeoPixel"
+for %%L in (%LIBRARIES_TO_UNINSTALL%) do (
+    if exist "%ARDUINO_LIB_PATH%\%%L" (
+        rmdir /s /q "%ARDUINO_LIB_PATH%\%%L"
+        echo [OK] Library '%%L' deleted.
     )
 )
 
-if not defined ARDUINO_CLI_PATH (
-    echo WARNING: arduino-cli.exe not found. Cannot run uninstall commands.
-    echo          Please uninstall libraries and boards manually in the Arduino IDE.
-    goto :delete_cli
-)
-
-:: --- 2. Reset Security Setting and Uninstall Libraries ---
+:finished
 echo.
-echo [1/3] Resetting Config and Uninstalling Libraries...
-arduino-cli config set library.enable_unsafe_install false
-arduino-cli lib uninstall "SmartDevice" "DHT sensor library" "Adafruit Unified Sensor" "Adafruit NeoPixel" "PubSubClient" "ArduinoJson"
-
-:: --- 3. Uninstall Board ---
-echo.
-echo [2/3] Uninstalling ESP8266 Board Package...
-arduino-cli core uninstall esp8266:esp8266
-
-:: --- 4. Delete Downloaded CLI ---
-:delete_cli
-echo.
-echo [3/3] Deleting temporary CLI folder...
-if exist "%CLI_DIR%" (
-    rmdir /s /q "%CLI_DIR%"
-    echo    Folder '%CLI_DIR%' has been removed.
-) else (
-    echo    No local CLI folder to remove.
-)
-
-echo.
-echo ===================================================================
-echo   Cleanup Complete.
-echo ===================================================================
-
-:end
-endlocal
-echo Press any key to exit.
-pause > nul
+echo [SUCCESS] Cleanup complete.
+pause
