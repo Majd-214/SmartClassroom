@@ -2,17 +2,18 @@
 setlocal enabledelayedexpansion
 
 :: =================================================================
-:: Desktop-Installer.bat (Final Version with Folder and Exit Fix)
+:: Desktop-Installer.bat (Final Version with Auto-Setup)
 :: =================================================================
 
 set "GITHUB_REPO_URL=https://github.com/Majd-214/SmartClassroom/archive/refs/heads/master.zip"
 set "REPO_FOLDER_NAME=SmartClassroom-master"
 set "DESKTOP_PATH=%USERPROFILE%\Desktop"
 set "PROJECT_FOLDER=%DESKTOP_PATH%\%REPO_FOLDER_NAME%"
+
+:: --- Define all file paths ---
+set "SETUP_BAT_FILE=%PROJECT_FOLDER%\Setup.bat"
 set "HANDBOOK_FILE=%PROJECT_FOLDER%\Handbook.html"
 set "TEMPLATE_FILE=%PROJECT_FOLDER%\Embedded\examples\UniversalDeviceTemplate\UniversalDeviceTemplate.ino"
-
-:: --- FIX #1: Define the sketch folder and the file path inside it ---
 set "SKETCH_FOLDER=%DESKTOP_PATH%\Station"
 set "NEW_SKETCH_FILE=%SKETCH_FOLDER%\Station.ino"
 
@@ -26,7 +27,7 @@ echo [INFO] This script will now download and set up your project files.
 echo.
 
 :: --- Step 1: Download GitHub Repository ---
-echo [STEP 1/4] Downloading project files...
+echo [STEP 1/5] Downloading project files...
 powershell -Command "Invoke-WebRequest -Uri '%GITHUB_REPO_URL%' -OutFile '%DESKTOP_PATH%\repo.zip'"
 if %errorlevel% neq 0 (
     echo [ERROR] Download failed.
@@ -35,7 +36,7 @@ if %errorlevel% neq 0 (
 )
 
 :: --- Step 2: Extract Repository ---
-echo [STEP 2/4] Extracting files to your desktop...
+echo [STEP 2/5] Extracting files to your desktop...
 powershell -Command "Expand-Archive -Path '%DESKTOP_PATH%\repo.zip' -DestinationPath '%DESKTOP_PATH%' -Force"
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to extract files.
@@ -46,15 +47,21 @@ if %errorlevel% neq 0 (
 echo [INFO] Verifying files...
 timeout /t 2 /nobreak > nul
 
-:: --- Step 3: Create Sketch in its own folder and Open Files ---
-echo [STEP 3/4] Creating sketch and opening handbook...
+:: --- NEW STEP 3: Run the setup script from within the repository ---
+echo [STEP 3/5] Running internal dependency setup...
+if exist "%SETUP_BAT_FILE%" (
+    :: 'call' runs the other script and waits for it to finish
+    call "%SETUP_BAT_FILE%"
+) else (
+    echo [INFO] No internal Setup.bat found. Skipping.
+)
 
-:: --- FIX #1 (continued): Create the directory first ---
+:: --- Step 4: Create Sketch in its own folder and Open Files ---
+echo [STEP 4/5] Creating sketch and opening handbook...
 if not exist "%SKETCH_FOLDER%" mkdir "%SKETCH_FOLDER%"
 
 if exist "%TEMPLATE_FILE%" (
     copy "%TEMPLATE_FILE%" "%NEW_SKETCH_FILE%" > nul
-    start "" "%NEW_SKETCH_FILE%"
 ) else (
     echo [ERROR] Could not find the Arduino template file in the extracted folder.
     echo Path checked: %TEMPLATE_FILE%
@@ -64,17 +71,15 @@ if exist "%HANDBOOK_FILE%" (
     start "" "%HANDBOOK_FILE%"
 )
 
-:: --- Step 4: Final Cleanup and Self-Destruct ---
-echo [STEP 4/4] Finalizing and cleaning up...
+:: --- Step 5: Final Cleanup, IDE Launch, and Self-Destruct ---
+echo [STEP 5/5] Finalizing and cleaning up...
 :cleanup
 if exist "%DESKTOP_PATH%\repo.zip" del "%DESKTOP_PATH%\repo.zip" > nul
 
 echo.
-echo [SUCCESS] Setup is complete! This window will now close.
-timeout /t 3 > nul
+echo [SUCCESS] Setup is complete! Launching IDE and exiting...
+timeout /t 2 > nul
 
-:: --- FIX #2: More robust self-deletion and exit ---
-:: Start a new, hidden command prompt that waits 1 second, then deletes the original script.
-:: The main script then exits immediately, closing the window.
-start "Delete" /B cmd /c "timeout /t 1 /nobreak > nul & del /F /A:H "%~f0""
+:: This command launches the IDE and self-deletes the installer in the background
+start "Launching IDE" /B cmd /c "start \"\" \"%NEW_SKETCH_FILE%\" & del /F /A:H \"%~f0\""
 exit
